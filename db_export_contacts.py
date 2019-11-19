@@ -80,7 +80,7 @@ def update_db_table(connection, table, update_fields, where_condition):
 # Below 2 functions are user input with timeout
 def get_user_input(message):
 	signal.signal(signal.SIGALRM, handler)
-	signal.alarm(3)
+	signal.alarm(10)
 	try:
 		user_input = raw_input(message)
 	except:
@@ -339,7 +339,7 @@ def export_contacts(driver):
 			driver.execute_script("arguments[0].click();", cancelClk)
 			contactDetails = [linkedInEmail, linkedInName, linkedInDesignation, linkedInUrl]
 			contactList.append(contactDetails)
-			return contactList
+		return contactList
 	except Exception as e:
 		print(e)
 		print("Unable to Export contacts")
@@ -362,7 +362,7 @@ def export_contacts_to_db(contactDataList):
 		create_db(hostname, db_name, username, password)
 		connection = sql_connection(hostname, db_name, username, password)
 		# create table 'contacts'
-		createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(50) UNIQUE KEY NOT NULL, name VARCHAR(30) NOT NULL, designation VARCHAR(30) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
+		createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(50) UNIQUE KEY NOT NULL, name VARCHAR(50) NOT NULL, designation VARCHAR(600) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
 		execute_custom_sql(connection, createTableSql)
 	except Exception as e:
 		pass
@@ -376,28 +376,34 @@ def export_contacts_to_db(contactDataList):
 			connection.commit()
 		except Exception as e:
 			print(e)
-			pass
+			# continue
 
-def remove_synced_accounts(drive):
+def remove_synced_accounts(driver):
 	time.sleep(2)
 	driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
 	time.sleep(1)
 	mngClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember73"]')))
 	driver.execute_script("arguments[0].click();", mngClk)
-	rmvClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember149"]')))
-	driver.execute_script("arguments[0].click();", rmvClk)
+	try:
+		rmvClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember149"]')))
+		driver.execute_script("arguments[0].click();", rmvClk)
+		rmvClk2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember1174"]/div/ul/li[2]/button')))
+		driver.execute_script("arguments[0].click();", rmvClk2)
+	except Exception as e:
+		# //ul[@class="list-style-none.mh5"]/div
+		pass
 
 
 
 # Program Execution
 gmail_credentials = [
-	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
+	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 ]
 
 linkedin_credentials = [
-	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
+	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 ]
 
 # operating system 
@@ -445,9 +451,9 @@ nextLinkedInCredIndex = 0
 switch_to_linkedin_account(driver, nextLinkedInCredIndex)
 contactDataList = export_contacts(driver)
 contactCSVDataList = contactDataList
-export_contacts_to_csv([["Email ID", "Contact Name", "Designation", "LinkedIn link"]]+contactCSVDataList)
+# export_contacts_to_csv(["Email ID", "Contact Name", "Designation", "LinkedIn link"]+contactCSVDataList)
 export_contacts_to_db(contactDataList)
-remove_synced_accounts(drive)
+# remove_synced_accounts(driver)
 logout_from_linkedin(driver)
 # End Driver
 driver.quit()
