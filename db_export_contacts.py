@@ -1,5 +1,6 @@
 # # pip install selenium
 # # pip install phantomjs
+# # Linux chrome browser version - Version 78.0.3904.108
 
 
 import json
@@ -78,13 +79,13 @@ def update_db_table(connection, table, update_fields, where_condition):
 
 
 # Below 2 functions are user input with timeout
-def get_user_input(message):
+def get_user_input(message, default_value=Keys.RETURN):
 	signal.signal(signal.SIGALRM, handler)
-	signal.alarm(10)
+	signal.alarm(5)
 	try:
 		user_input = raw_input(message)
 	except:
-		user_input = Keys.RETURN
+		user_input = default_value
 	print('')
 	return user_input
 
@@ -132,7 +133,7 @@ def logout_from_gmail(driver):
 			removeClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="yDmH0d"]/div[4]/div/div[2]/div[3]/div[1]/span')))
 			removeClk.click()
 			time.sleep(3)
-			print("Remove the account from browser")
+			print("Removed the account from browser")
 		except Exception as e:
 			pass
 	except Exception as e:
@@ -210,8 +211,8 @@ def import_contacts(driver, username):
 	except Exception as e:
 		print(e)
 		print("Error in importing contacts from Gmail["+username+"]")
-		continueExec = get_user_input("Continue execution with different LinkedIn Account? (y/n)")
-		if continueExec.strip().lower() == 'y':
+		continueExec = get_user_input("Skip & continue execution with same LinkedIn Account (Default:Yes)? (y/n) ", 'y')
+		if continueExec.strip().lower() == 'n':
 			logout_from_linkedin(driver)
 			switch_to_linkedin_account(driver, nextLinkedInCredIndex)
 		else:
@@ -333,7 +334,7 @@ def export_contacts(driver):
 				linkedInUrl = ''
 			# print(linkedInEmail+" = "+linkedInUrl)
 
-			# clode modal
+			# close modal
 			cancelSelector = '//*[@id="artdeco-modal-outlet"]/div/div/button'
 			cancelClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, cancelSelector)))
 			driver.execute_script("arguments[0].click();", cancelClk)
@@ -367,7 +368,7 @@ def export_contacts_to_db(contactDataList):
 	except Exception as e:
 		pass
 
-	for contact in contactDataList:
+	for contact in contactDataList or []:
 		try:
 			mycursor = connection.cursor()
 			sql = "INSERT INTO "+table_name+" (email, name, designation, other_details) VALUES (%s, %s, %s, %s)"
@@ -382,26 +383,37 @@ def remove_synced_accounts(driver):
 	time.sleep(2)
 	driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
 	time.sleep(1)
-	mngClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember73"]')))
-	driver.execute_script("arguments[0].click();", mngClk)
 	try:
+		mngClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember73"]')))
+		driver.execute_script("arguments[0].click();", mngClk)
 		rmvClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember149"]')))
 		driver.execute_script("arguments[0].click();", rmvClk)
 		rmvClk2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember1174"]/div/ul/li[2]/button')))
 		driver.execute_script("arguments[0].click();", rmvClk2)
 	except Exception as e:
-		# //ul[@class="list-style-none.mh5"]/div
+		try:
+			listResults = driver.find_elements_by_xpath('//ul[@class="list-style-none.mh5"]/div') # //ul[@class="list-style-none.mh5"]/div
+			for account in listResults or []:
+				rmvClk = account.find_element_by_xpath('//li/div/button')
+				driver.execute_script("arguments[0].click();", rmvClk)
+				# //*[@id="ember144"]/div/div[2]/div/ul/li[2]/button
+				rmvClk2 = account.find_element_by_xpath('//*[@id="ember144"]/div/div[2]/div/ul/li[2]/button')
+				driver.execute_script("arguments[0].click();", rmvClk2)
+		except Exception as e:
+			print(e)
 		pass
 
 
 
 # Program Execution
 gmail_credentials = [
+	{"username": "ralph110293@gmail.com", "password": "ajency#123"},
 	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
 	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 ]
 
 linkedin_credentials = [
+	{"username": "ralph110293@gmail.com", "password": "ajency#123"},
 	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
 	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 ]
@@ -418,7 +430,7 @@ else:
 	# phantomjs_path = "assets/mac/phantomjs"
 
 
-continueExec = get_user_input("Do you want to execute in normal browser mode? (y/n): ")
+continueExec = get_user_input("Do you want to execute in normal browser mode (Default:No)? (y/n): ")
 if continueExec.strip().lower() == 'y':
 	# Normal Browser
 	driver = webdriver.Chrome(driver_path)
@@ -446,14 +458,14 @@ else:
 	  service_args=['--verbose', '--log-path=/tmp/chromedriver.log'])
 
 
-
 nextLinkedInCredIndex = 0
+print driver.capabilities['version']
 switch_to_linkedin_account(driver, nextLinkedInCredIndex)
 contactDataList = export_contacts(driver)
 contactCSVDataList = contactDataList
 # export_contacts_to_csv(["Email ID", "Contact Name", "Designation", "LinkedIn link"]+contactCSVDataList)
 export_contacts_to_db(contactDataList)
-# remove_synced_accounts(driver)
+remove_synced_accounts(driver)
 logout_from_linkedin(driver)
 # End Driver
 driver.quit()
