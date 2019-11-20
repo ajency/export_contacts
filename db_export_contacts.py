@@ -1,7 +1,7 @@
 # # pip install selenium
 # # pip install phantomjs
 # # Linux chrome browser version - Version 78.0.3904.108
-
+# # https://chromedriver.storage.googleapis.com/index.html?path=78.0.3904.105/
 
 import json
 import signal
@@ -14,14 +14,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
-# logging.debug('This is a debug message')
-# logging.info('This is an info message')
-# logging.warning('This is a warning message')
-# logging.error('This is an error message')
-# logging.critical('This is a critical message')
-LOG_FILENAME = 'custom_logs.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # Functions Defined
 def create_db(host_name, mydatabase, user_name, password):
@@ -95,7 +87,7 @@ def handler():
 
 # LogIn function for Gmail Account
 def login_to_gmail(driver, username, password):
-	print("Logging In into Gmail")
+	print("Logging In into Gmail as "+username)
 	try:
 		driver.get("https://accounts.google.com/")
 		driver.find_element_by_id('identifierId').send_keys(username)
@@ -142,7 +134,7 @@ def logout_from_gmail(driver):
 
 # LogIn function for LinkedIn Account
 def login_to_linkedin(driver, username, password):
-	print("Logging In into linkedIn")
+	print("Logging In into linkedIn as "+username)
 	try:
 		driver.get("https://www.linkedin.com/login")
 		user = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
@@ -159,11 +151,16 @@ def login_to_linkedin(driver, username, password):
 
 # LogOut function for LinkedIn Account
 def logout_from_linkedin(driver):
+	try:
+		remove_synced_accounts(driver)
+	except Exception as e:
+		print(e)
+		print("Unable to remove synced accounts from linkedIn account")
+
 	print("Logging out from linkedIn")
 	try:
 		driver.get("https://www.linkedin.com/mynetwork/import-contacts/")
 		# Logout drop down
-		# //*[@id="nav-settings__dropdown-trigger"]
 		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
 		clk.click()
 		# Logout
@@ -176,7 +173,8 @@ def logout_from_linkedin(driver):
 
 # Import contacts from Gmail to LinkedIn
 def import_contacts(driver, username):
-	print("Importing contacts from gmail")
+	print("Importing contacts from gmail("+username+")")
+	global linkedin_credentials
 	driver.get("https://www.linkedin.com/mynetwork/import-contacts/")	
 	time.sleep(3)
 	clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember48"]/a')))
@@ -202,17 +200,17 @@ def import_contacts(driver, username):
 			except Exception as e:
 				print("return to LinkedIn")
 		else:
-			print("Error Occured while Importing Contacts from Gmail Account")
+			print("Error Occured while Importing Contacts from Gmail Account("+username+")")
 		driver.switch_to.window(driver.window_handles[0])
 	try:
 		time.sleep(3)
 		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
 		print("Contacts imported from Gmail["+username+"] to LinkedIn")
 	except Exception as e:
-		print(e)
+		# print(e)
 		print("Error in importing contacts from Gmail["+username+"]")
-		continueExec = get_user_input("Skip & continue execution with same LinkedIn Account (Default:Yes)? (y/n) ", 'y')
-		if continueExec.strip().lower() == 'n':
+		continueExec = get_user_input("continue execution with same LinkedIn Account (Default:No)? (y/n) ", 'n')
+		if continueExec.strip().lower() == 'n' and nextLinkedInCredIndex < len(linkedin_credentials):
 			logout_from_linkedin(driver)
 			switch_to_linkedin_account(driver, nextLinkedInCredIndex)
 		else:
@@ -261,7 +259,7 @@ def switch_to_gmail_account(driver, nextCredIndex=0):
 		import_contacts(driver, gmailUsername)
 		logout_from_gmail(driver)
 	except Exception as e:
-		print(e)
+		# print(e)
 		print("Gmail login for "+gmailUsername+" failed")
 		logging.debug("Gmail login for "+gmailUsername+" failed")
 
@@ -318,12 +316,10 @@ def export_contacts(driver):
 			linkedInEmailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div[1]/p'
 			for detail in linkedContactDetails:
 				label = detail.find_element_by_xpath('.//label').text
-				# print(label)
 				if label == 'Email address':
 					linkedInEmailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div['+str(count)+']/p'
 					break
 				count += 1
-			# print(linkedInEmailSelector)
 
 			linkedInUrlSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[1]/div[2]/div/div/span/a'
 			linkedInEmail = driver.find_element_by_xpath(linkedInEmailSelector).text
@@ -332,7 +328,6 @@ def export_contacts(driver):
 				# linkedInUrl = 'https://www.linkedin.com'+linkedInUrl
 			except Exception as e:
 				linkedInUrl = ''
-			# print(linkedInEmail+" = "+linkedInUrl)
 
 			# close modal
 			cancelSelector = '//*[@id="artdeco-modal-outlet"]/div/div/button'
@@ -342,8 +337,9 @@ def export_contacts(driver):
 			contactList.append(contactDetails)
 		return contactList
 	except Exception as e:
-		print(e)
+		# print(e)
 		print("Unable to Export contacts")
+
 
 def export_contacts_to_csv(contactDataList):
 	# convert array to CSV
@@ -351,6 +347,7 @@ def export_contacts_to_csv(contactDataList):
 		writer = csv.writer(csvFile)
 		writer.writerows(contactDataList)
 	csvFile.close()
+
 
 def export_contacts_to_db(contactDataList):
 	# save data to DB
@@ -363,7 +360,7 @@ def export_contacts_to_db(contactDataList):
 		create_db(hostname, db_name, username, password)
 		connection = sql_connection(hostname, db_name, username, password)
 		# create table 'contacts'
-		createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(50) UNIQUE KEY NOT NULL, name VARCHAR(50) NOT NULL, designation VARCHAR(600) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
+		createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(250) UNIQUE KEY NOT NULL, name VARCHAR(250) NOT NULL, designation VARCHAR(1500) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
 		execute_custom_sql(connection, createTableSql)
 	except Exception as e:
 		pass
@@ -379,43 +376,53 @@ def export_contacts_to_db(contactDataList):
 			print(e)
 			# continue
 
+
 def remove_synced_accounts(driver):
-	time.sleep(2)
-	driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
-	time.sleep(1)
+	driver.get("https://www.linkedin.com/mynetwork/settings/manage-syncing/")
+	time.sleep(5)
+	listResults = driver.find_elements_by_xpath('//*[@id="ember42"]/section/ul/div') # //ul[@class="list-style-none.mh5"]/div
 	try:
-		mngClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember73"]')))
-		driver.execute_script("arguments[0].click();", mngClk)
-		rmvClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember149"]')))
-		driver.execute_script("arguments[0].click();", rmvClk)
-		rmvClk2 = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember1174"]/div/ul/li[2]/button')))
-		driver.execute_script("arguments[0].click();", rmvClk2)
+		for account in listResults or []:
+			rmvClk = account.find_element_by_xpath('.//li/div/button')
+			driver.execute_script("arguments[0].click();", rmvClk)
+			rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button[@class="js-mn-manage-source-confirm"]'
+			rmvClk2 = driver.find_element_by_xpath(rmvclk2Selector)
+			driver.execute_script("arguments[0].click();", rmvClk2)
 	except Exception as e:
-		try:
-			listResults = driver.find_elements_by_xpath('//ul[@class="list-style-none.mh5"]/div') # //ul[@class="list-style-none.mh5"]/div
-			for account in listResults or []:
-				rmvClk = account.find_element_by_xpath('//li/div/button')
-				driver.execute_script("arguments[0].click();", rmvClk)
-				# //*[@id="ember144"]/div/div[2]/div/ul/li[2]/button
-				rmvClk2 = account.find_element_by_xpath('//*[@id="ember144"]/div/div[2]/div/ul/li[2]/button')
-				driver.execute_script("arguments[0].click();", rmvClk2)
-		except Exception as e:
-			print(e)
+		# print(e)
 		pass
+	time.sleep(1)
+	driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
+	time.sleep(5)
+	try:
+		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
+		print("Unable to remove synced accounts")
+	except Exception as e:
+		print("Removal of synced accounts was successful")
+	time.sleep(1)
 
 
+
+
+# logging.debug('This is a debug message')
+# logging.info('This is an info message')
+# logging.warning('This is a warning message')
+# logging.error('This is an error message')
+# logging.critical('This is a critical message')
+LOG_FILENAME = 'custom_logs.log'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # Program Execution
 gmail_credentials = [
-	{"username": "ralph110293@gmail.com", "password": "ajency#123"},
 	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
 	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
+	{"username": "ralph110293@gmail.com", "password": "ajency#123"},
 ]
 
 linkedin_credentials = [
-	{"username": "ralph110293@gmail.com", "password": "ajency#123"},
-	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
 	{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
+	{"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
+	{"username": "ralph110293@gmail.com", "password": "ajency#123"},
 ]
 
 # operating system 
@@ -461,10 +468,10 @@ else:
 nextLinkedInCredIndex = 0
 switch_to_linkedin_account(driver, nextLinkedInCredIndex)
 contactDataList = export_contacts(driver)
-contactCSVDataList = contactDataList
-# export_contacts_to_csv(["Email ID", "Contact Name", "Designation", "LinkedIn link"]+contactCSVDataList)
 export_contacts_to_db(contactDataList)
-remove_synced_accounts(driver)
 logout_from_linkedin(driver)
 # End Driver
 driver.quit()
+
+contactCSVDataList = contactDataList or []
+export_contacts_to_csv([["Email ID", "Contact Name", "Designation", "LinkedIn link"]]+contactCSVDataList)
