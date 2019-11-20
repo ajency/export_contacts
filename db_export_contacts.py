@@ -459,7 +459,6 @@ else:
 
 
 nextLinkedInCredIndex = 0
-print driver.capabilities['version']
 switch_to_linkedin_account(driver, nextLinkedInCredIndex)
 contactDataList = export_contacts(driver)
 contactCSVDataList = contactDataList
