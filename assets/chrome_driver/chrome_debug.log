@@ -1,0 +1,22 @@
+[1127/184251.667366:WARNING:resource_bundle.cc(368)] locale_file_path.empty() for locale 
+[1127/184251.682502:WARNING:resource_bundle.cc(368)] locale_file_path.empty() for locale 
+[1127/184251.764964:ERROR:gpu_process_transport_factory.cc(1009)] Lost UI shared context.
+[1127/184251.776048:ERROR:instance.cc(49)] Unable to locate service manifest for metrics
+[1127/184251.776096:ERROR:service_manager.cc(890)] Failed to resolve service name: metrics
+[1127/184251.914676:ERROR:gl_implementation.cc(292)] Failed to load /home/tanvi/Documents/python_workspace/virtual_environment/export_contacts/assets/chrome_driver/libosmesa.so: /home/tanvi/Documents/python_workspace/virtual_environment/export_contacts/assets/chrome_driver/libosmesa.so: cannot open shared object file: No such file or directory
+[1127/184252.329912:WARNING:histograms.cc(40)] Started multiple compositor clients (Browser, Renderer) in one process. Some metrics will be disabled.
+[1127/184253.230689:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184255.399029:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184255.399416:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184255.504282:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184255.504723:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184255.766138:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184255.766830:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184301.815440:INFO:CONSOLE(3842)] "Using profile voyager-web-feed for route feed.index", source: https://static-exp1.licdn.com/sc/h/89679kd7u8l51kxyp1yc7e8ar (3842)
+[1127/184303.913082:INFO:CONSOLE(15265)] "This response was unable to be parsed as json.", source: https://static-exp1.licdn.com/sc/h/1gq1y3thurqnkpns2mugzt72x,8xilnvpnek8tthl0lyxvrmdjs,667gfl11ikw8xuavr0c6mwfpi,exs1rdo4vyfh41avxu96a1ea6 (15265)
+[1127/184305.161864:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184305.165229:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184305.170568:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184305.309297:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184305.342745:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
+[1127/184305.348929:ERROR:gpu_command_buffer_stub.cc(611)] ContextResult::kFatalFailure: Failed to create default offscreen surface.
