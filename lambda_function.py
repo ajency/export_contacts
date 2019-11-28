@@ -38,8 +38,8 @@ def lambda_handler(event, context):
 	print("Running in Headless browser mode..")
 	select_different_linked_in_account(nextLinkedInCredIndex)
 
-	print("Reading message from Queue..")
-	print(receiveMessageFromSQSQueue("https://sqs.us-east-1.amazonaws.com/452266237699/process-queue", "us-east-1"))
+	# print("Reading message from Queue..")
+	# print(receiveMessageFromSQSQueue("https://sqs.us-east-1.amazonaws.com/452266237699/process-queue", "us-east-1"))
 
 	print("Execution Completed")
 	sys.exit()
