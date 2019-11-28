@@ -155,18 +155,16 @@ def login_to_linkedin(driver, username, password):
 		pwd = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "password")))
 		pwd.clear()
 		pwd.send_keys(password)
-		print("LOGGING")
 		# submit_form
 		login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
 		login.click()
-		time.sleep(10)
 		print(driver.current_url)
-		logged_in = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'nav-settings__dropdown-trigger')))
+		logged_in = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'nav-settings__dropdown-trigger')))
 		print("LOGIN SUCCESS - no error")
 	except Exception as e:
 		print("LOGIN EXCEPTION")
 		print(e)
-		print(driver.current_url)
+		print("Current URL : "+driver.current_url)
 		payload = {
 			"driver": driver,
 			"exception": e,
@@ -177,7 +175,7 @@ def login_to_linkedin(driver, username, password):
 			},
 		}
 		print("Page elements were not found")
-		raise
+		pass
 
 
 
