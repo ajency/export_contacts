@@ -363,4 +363,4 @@ def deleteMessageFromSQSQueue(queue_url, region_name, receipt_handle):
 #span attr('email') security-noreply@linkedin.com
 # class="h7 bg ie"
 # //*[@id=":d3"]/div[1]/table/tbody/tr/td/center/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr[3]/td/p/strong
-# lambda_handler(None, None)
+lambda_handler(None, None)
