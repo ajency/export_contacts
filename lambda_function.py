@@ -150,7 +150,7 @@ def login_to_linkedin(driver, username, password):
 			verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 			print("Email verification required")
 			verify_email.clear()
-			user_input = raw_input("Please enter the email verification code sent to the email ID")
+			user_input = input("Please enter the email verification code sent to the email ID")
 			verify_email.send_keys(user_input)
 			confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
 			driver.execute_script("arguments[0].click();", confirm)
