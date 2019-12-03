@@ -31,6 +31,7 @@ linkedin_credentials = [
 nextEmailCredIndex = 0
 nextLinkedInCredIndex = 0
 
+
 def lambda_handler(event, context):
 	hostname = socket.gethostname()
 	IPAddr = socket.gethostbyname(hostname)
@@ -218,6 +219,15 @@ def initialize_new_driver():
 
 
 
+# Debug Logger
+def debug_exception(driver, exception, custom_exception='', content=[]):
+	print(exception)
+	print(custom_exception)
+	logging.info(custom_exception)
+	# logging.debug("\n Date& time: "+time.strftime("%b %d %Y %H:%M:%S")+"\n Exception: ")
+	# logging.info(exception)
+	# logging.debug("\n Custom Exception Message: "+custom_exception+"\n URL: "+driver.current_url+"\n Content: \n"+str(content)+"\n")
+
 
 
 
@@ -269,7 +279,6 @@ def switch_to_linkedin_account(driver, nextCredIndex=0):
 	else:
 		login_to_linkedin(driver, linkedinUsername, linkedinPassword)
 		nextLinkedInCredIndex = nextCredIndex + 1
-		isLinkedInLoggedIn = False
 		time.sleep(0.3)
 		try:
 			# check if login was successful
@@ -278,20 +287,36 @@ def switch_to_linkedin_account(driver, nextCredIndex=0):
 			confirmLogIn = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
 			print("LinkedIn login for "+linkedinUsername+" was successful")
 			logging.info("LinkedIn login for "+linkedinUsername+" was successful")
-			isLinkedInLoggedIn = True
 		except Exception as e:
 			print("LOGIN FAILED")
 			print(e)
 			print(driver.current_url)
 			print("LinkedIn login for "+linkedinUsername+" failed")
 			logging.error('Current URL: '+driver.current_url+'\n LinkedIn login for '+linkedinUsername+' failed - ' + str(e))
-			isLinkedInLoggedIn = False
-			if nextLinkedInCredIndex < len(linkedin_credentials):
-				switch_to_linkedin_account(driver, nextLinkedInCredIndex)
-			else:
-				print("No more linkedIn accounts available")
-				logging.info("No more linkedIn accounts available")
+			# debug_exception(driver, e, "LinkedIn login for "+linkedinUsername+" failed", {'page_html': driver.find_element_by_xpath("//body").get_attribute('innerHTML')})
 			pass
+
+
+
+def check_for_verification(driver):
+	try:
+		verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
+		verify_email.clear()
+		print("Email verification required")
+		logging.info("Email verification required for email ID("+username+")")
+		user_input = input("Please enter the email verification code sent to the email ID("+username+"): ")
+		verify_email.send_keys(user_input)
+		confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+		driver.execute_script("arguments[0].click();", confirm)
+		pass
+	except Exception as e:
+		try:
+			WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
+			print("Recaptcha verification required")
+			logging.debug("Recaptcha verification required")
+		except Exception as e:
+			pass
+		pass
 
 
 
@@ -309,24 +334,8 @@ def login_to_linkedin(driver, username, password):
 		# submit_form
 		login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
 		login.click()
-		try:
-			verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
-			verify_email.clear()
-			print("Email verification required")
-			logging.info("Email verification required for email ID("+username+")")
-			user_input = input("Please enter the email verification code sent to the email ID("+username+"): ")
-			verify_email.send_keys(user_input)
-			confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-			driver.execute_script("arguments[0].click();", confirm)
-			pass
-		except Exception as e:
-			try:
-				WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
-				print("Recaptcha verification required")
-				logging.debug("Recaptcha verification required")
-			except Exception as e:
-				pass
-			pass
+		# check for verification
+		check_for_verification(driver)
 	except Exception as e:
 		print(e)
 		print("Page elements were not found")
@@ -360,35 +369,35 @@ def logout_from_linkedin(driver):
 
 
 
-def switch_to_gmail_account(driver, nextCredIndex=0):
-	global email_credentials
-	global nextEmailCredIndex
-	if check_login_to_gmail(driver):
-		print("Already logged in to Gmail")
-		logging.info("Already logged in to Gmail")
-	else:
-		if nextCredIndex >= len(email_credentials):
-			nextCredIndex = len(email_credentials)-1
-		gmailUsername = email_credentials[nextCredIndex]['username']
-		gmailPassword = email_credentials[nextCredIndex]['password']
-		login_to_gmail(driver, gmailUsername, gmailPassword)
-		nextEmailCredIndex = nextCredIndex + 1
-		time.sleep(3)
-		try:
-			# check if login was successful
-			confirmLogIn = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
-			print("Gmail Log In for "+gmailUsername+" was successful")
-			logging.info("Gmail Log In for "+gmailUsername+" was successful")
-		except Exception as e:
-			print(e)
-			print(driver.current_url)
-			print("Gmail login for "+gmailUsername+" failed")
-			logging.error('Current URL: '+driver.current_url+'\n Gmail login for '+gmailUsername+' failed - ' + str(e))
-			if nextCredIndex < len(email_credentials):
-				switch_to_gmail_account(driver, nextCredIndex)
-			else:
-				print("No more gmail accounts available")
-				logging.info("No more gmail accounts available")
+# def switch_to_gmail_account(driver, nextCredIndex=0):
+# 	global email_credentials
+# 	global nextEmailCredIndex
+# 	if check_login_to_gmail(driver):
+# 		print("Already logged in to Gmail")
+# 		logging.info("Already logged in to Gmail")
+# 	else:
+# 		if nextCredIndex >= len(email_credentials):
+# 			nextCredIndex = len(email_credentials)-1
+# 		gmailUsername = email_credentials[nextCredIndex]['username']
+# 		gmailPassword = email_credentials[nextCredIndex]['password']
+# 		login_to_gmail(driver, gmailUsername, gmailPassword)
+# 		nextEmailCredIndex = nextCredIndex + 1
+# 		time.sleep(3)
+# 		try:
+# 			# check if login was successful
+# 			confirmLogIn = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
+# 			print("Gmail Log In for "+gmailUsername+" was successful")
+# 			logging.info("Gmail Log In for "+gmailUsername+" was successful")
+# 		except Exception as e:
+# 			print(e)
+# 			print(driver.current_url)
+# 			print("Gmail login for "+gmailUsername+" failed")
+# 			logging.error('Current URL: '+driver.current_url+'\n Gmail login for '+gmailUsername+' failed - ' + str(e))
+# 			if nextCredIndex < len(email_credentials):
+# 				switch_to_gmail_account(driver, nextCredIndex)
+# 			else:
+# 				print("No more gmail accounts available")
+# 				logging.info("No more gmail accounts available")
 		
 
 
@@ -475,12 +484,12 @@ def check_for_account_in_outlook(driver, username, password):
 		driver.get("https://account.microsoft.com/")
 		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'mectrl_body_signOut')))
 		print("OutLook Log In for "+username+" was successful")
-		# import_contacts
-		import_contacts(driver, username, "outlook")
-		contactDataList = export_contacts(driver)
-		export_contacts_to_db(contactDataList)
+		# # import_contacts
+		# import_contacts(driver, username, "outlook")
+		# contactDataList = export_contacts(driver)
+		# export_contacts_to_db(contactDataList)
 		logout_from_outlook(driver)
-		remove_synced_accounts(driver)
+		# remove_synced_accounts(driver)
 	except Exception as e:
 		# print(e)
 		print("Microsoft Outlook account may not be present for "+username)
@@ -529,7 +538,6 @@ def logout_from_yahoo(driver):
 
 # LogIn function for OutLook Account
 def login_to_outlook(driver, username, password):
-	print("Logging In into OutLook as "+username)
 	try:
 		driver.get("https://login.live.com/")
 		time.sleep(2)
@@ -542,6 +550,7 @@ def login_to_outlook(driver, username, password):
 			txt = driver.find_element_by_id("usernameError").text
 			print(txt)
 		except Exception as e:
+			print("Logging In into OutLook as "+username)
 			pwd = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="i0118"]')))
 			pwd.send_keys(password)
 			# form submit
