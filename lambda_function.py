@@ -424,24 +424,29 @@ def logout_from_gmail(driver):
 			logout.click()
 			print('Gmail logout success')
 			logging.info('Gmail logout success')
-			try:
-				WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]')))
-				# class="BHzsHc"
-				removeAccounttClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div/ul/li[3]')))
-				removeAccounttClk.click()
-				selectClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div[1]/ul/li[1]')))
-				selectClk.click()
-				# //*[@id="yDmH0d"]/div[5]/div/div[2]/div[3]/div[1]
-				removeClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="yDmH0d"]/div[5]/div/div[2]/div[3]/div[1]')))
-				driver.execute_script("arguments[0].click();", removeClk)
-				# removeClk.click()
-				time.sleep(3)
-				print("Removed the account from browser")
-			except Exception as e:
-				pass
 		except Exception as e:
 			print(e)
 			logging.error('Current URL: '+driver.current_url+'\n Gmail logout failed - ' + str(e))
+	# remove previously loggedin accounts
+	remove_previous_loggedin_gmail_accounts(driver)
+		
+
+def remove_previous_loggedin_gmail_accounts(driver):
+	try:
+		driver.get("http://accounts.google.com/ServiceLogin/signinchooser")
+		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]')))
+		removeAccounttClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div/ul/li[3]')))
+		removeAccounttClk.click()
+		selectClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div[1]/ul/li[1]')))
+		selectClk.click()
+		# //*[@id="yDmH0d"]/div[5]/div/div[2]/div[3]/div[1]
+		removeClk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="yDmH0d"]/div[5]/div/div[2]/div[3]/div[1]')))
+		driver.execute_script("arguments[0].click();", removeClk)
+		# removeClk.click()
+		time.sleep(3)
+		print("Removed the account from browser")
+	except Exception as e:
+		pass
 
 
 
