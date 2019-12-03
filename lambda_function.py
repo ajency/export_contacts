@@ -48,7 +48,7 @@ def lambda_handler(event, context):
 	driver.close()
 	sys.exit()
 
-	# initiate_driver = raw_input("To create new instance, enter 'reset' & press enter. ")
+	# initiate_driver = input("To create new instance, enter 'reset' & press enter. ")
 	# driver = initialize_driver(initiate_driver)
 	# retreive_driver_cookies(driver, "https://accounts.google.com/")
 	# switch_to_gmail_account(driver)
@@ -59,7 +59,7 @@ def lambda_handler(event, context):
 	# # save_cookies(driver)
 
 	# # logout_from_linkedin(driver)
-	# raw_input("wert")
+	# input("wert")
 	# logout_from_gmail(driver)
 	# # # import_contacts
 	# # import_contacts(driver, gmailUsername)
@@ -77,7 +77,7 @@ def go_to_step(driver):
 	print("D - Logout from Gmail")
 	print("X - Exit Script (Default)")
 	print("__________________________________________________________")
-	user_input = raw_input("Enter your step: ")
+	user_input = input("Enter your step: ")
 	method_exec = user_input.strip().upper()
 	if method_exec == "A":
 		switch_to_gmail_account(driver)
@@ -145,13 +145,13 @@ def retreive_driver_cookies(driver, url):
 
 def initialize_driver(driver_name):
 	if driver_name.upper() == "RESET":
-		saveAs = raw_input("Save this new instance as: ")
+		saveAs = input("Save this new instance as: ")
 		if saveAs:
 			print("Current instance will be saved as '"+saveAs+"'")
 		else:
 			print("Current instance will not be saved")
 	else:
-		openInstance = raw_input("Enter name of previous instance that you want to continue: ")
+		openInstance = input("Enter name of previous instance that you want to continue: ")
 		# session_id = "9d6e0addbccca60bc50f853b0227cb4a"
 		# executor_url = "http://127.0.0.1:47429"
 	driver = initialize_new_driver()
