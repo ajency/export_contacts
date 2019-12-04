@@ -1,3 +1,4 @@
+dotenv
 colorama
 docopt
 decopts==1.0.2

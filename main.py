@@ -1,21 +1,13 @@
 """Greeter.
 
 Usage:
-  exporter.py export <env> [--partial] [--config=<filepath>]
-  exporter.py import <env> [--partial] [--config=<filepath>]
-  exporter.py update <env> [--partial] [--config=<filepath>]
-  exporter.py schema <env> [--config=<filepath>]
-  exporter.py (-h | --help)
+  main.py <env> [--auto]
+  main.py (-h | --help)
 
 Options:
   -h --help             Show this screen.
-  export                Export the remote db and save to csv
-  import                Import to local db from csv
-  update                Export and import in a single command
-  schema                Downlaod the schema (without data)
-  --env                 Set the environment (aqua,bright,catalog).
-  --partial             Choose if partial import/export (non mandatory)
-  --config=<filepath>   Config file path.
+  <env>                Set the environment (aqua,bright,catalog).
+  --auto             Choose if partial import/export (non mandatory)
 
 """
 
@@ -23,20 +15,28 @@ Options:
 import sys
 from docopt import docopt
 from colorama import init
+from exporter import Exporter
+from pathlib import Path
+from dotenv import load_dotenv
+
 
 
 def main():
     args = docopt(__doc__)
+    print(args)
 
-    # if args['--config']:
-    #     pass
-    # else:
-    #     print("Config path not provided!")
-    #     sys.exit()
-    print("Operation started")
+    if args['<env>']:
+        pass
+    else:
+        print("environment not provided!")
+        sys.exit()
+    exporter = Exporter(args['<env>'], args['--auto'])
+    exporter.start()
 
 
 
 if __name__ == '__main__':
+    env_path = Path('.') / '.env'
+    load_dotenv(dotenv_path=env_path)
     init()
     main()
