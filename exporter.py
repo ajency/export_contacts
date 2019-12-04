@@ -8,7 +8,6 @@ class Exporter():
         self.auto = auto
         self.logger = CustomLogger()
 
-
     def start(self):
         self.logger.info("Operation started for "+self.env)
 
