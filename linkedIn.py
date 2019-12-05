@@ -19,14 +19,41 @@ class LinkedIn():
 	def perform_action(self, action, action_url=""):
 		# LinkedIn - Log In code
 		if action == "login":
-			self.login(action_url)
-		# LinkedIn - Log Out code
-		elif action == "logout":
-			self.logout(action_url)
+			if self.is_user_logged_in():
+				self.exporter.logger.info("Already Logged In to LinkedIn")
+				self.exporter.logger.file_log("Already Logged In to LinkedIn", url=self.driver.current_url, type='')
+			else:
+				self.login(action_url)
 		elif action == "verify-account":
 			self.verify_account()
 		elif action == "check-login":
-			self.is_user_logged_in()
+			self.check_login_status()
+		# LinkedIn - Log Out code
+		elif action == "logout":
+			if not self.is_user_logged_in():
+				self.exporter.logger.info("Need to Login before logging out from LinkedIn")
+				self.exporter.logger.file_log("Need to Login before logging out from LinkedIn", url=self.driver.current_url, type='')
+			else:
+				self.logout(action_url)
+
+
+	def is_user_logged_in(self):
+		is_loggedin = False
+		try:
+			# check if login was successful
+			self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/")
+			time.sleep(1)
+			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
+			is_loggedin = True
+			return is_loggedin
+			# profile_info = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="profile-nav-item"]/div'))).get_attribute('innerHTML')
+			# if profile_info:
+				# is_loggedin = True
+		except Exception as e:
+			is_loggedin = False
+			return is_loggedin
+			pass
+		return is_loggedin
 
 
 	def login(self, action_url):
@@ -88,6 +115,7 @@ class LinkedIn():
 			pass
 		else:
 			# need to call handler
+			self.exporter.logger.file_log("Page Source:\n"+str(self.driver.page_source)+"\n", url=self.driver.current_url, type='Verification Failure')
 			pass
 
 
@@ -141,15 +169,15 @@ class LinkedIn():
 		pass
 
 
-	def is_user_logged_in(self):
+	def check_login_status(self):
 		username = self.credentials[self.linkedin_cred_index]['username']
 		try:
 			# check if login was successful
 			# confirmLogIn = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon', [], 10)
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
 			message = "LinkedIn login for "+username+" was successful"
+			# self.linkedin_cred_index += 1
 			self.exporter.logger.info(message)
-			self.linkedin_cred_index += 1
 			self.exporter.logger.file_log(message, url=self.driver.current_url, type='Test - success')
 		except Exception as e:
 			message = "LinkedIn login for "+username+" failed"
