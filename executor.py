@@ -1,6 +1,7 @@
 import numpy 
 import os,sys,time,datetime,platform
 from logger import CustomLogger
+from linkedIn import LinkedIn
 
 class Executor():
 	"""docstring for Executor"""

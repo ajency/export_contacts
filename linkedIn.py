@@ -4,78 +4,116 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from config import *
-from common_functions import *
 
 class LinkedIn():
 	"""docstring for LinkedIn"""
 	def __init__(self):
-		# super(LinkedIn, self).__init__()
-		self.driver = initialize_driver()
-		self.linkedInCredentials = linkedin_credentials
+		super(LinkedIn, self).__init__()
+		self.linkedin_cred_index = 0
+
+
+	def perform_action(action, action_url=""):
+		# LinkedIn - Log In code
+		if action == "login":
+			self.login(action_url)
+		# LinkedIn - Log Out code
+		elif action == "logout":
+			self.logout(action_url)
+		elif action == "verify-account":
+			self.verify_account()			
+
+
+	def login(self, action_url):
+		self.driver.get(action_url)
+
+		username = "alina.jose1102@gmail.com"
+		password = "Ajency#123"
+		try:
+			self.normal_linkedin_login(username, password)
+		except Exception as e:
+			# log exception
+			try:
+				# Another other login method available
+				# self.other_linkedin_login()
+				pass
+			except Exception as e:
+				# log exception
+				print("Unable to precess request")
+				pass
+
+
+	def logout(self, action_url):
+		self.driver.get(action_url)
+		try:
+			self.normal_linkedin_logout()
+		except Exception as e:
+			# log exception
+			print("Unable to precess request")
+			pass
+		pass
+
+
+	def verify_account(self):
+		try:
+			self.email_verification()
+		except Exception as e:
+			# Another type of verification
+			try:
+				self.recaptcha_verification()
+			except Exception as e:
+				# log exception
+				pass
+			pass
+
+
+	# Normal page load - login 
+	def normal_linkedin_login(self, username, password):
+		user = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
+		user.send_keys(username)
+		# pwd = find_element_by_id_with_timeout(self.driver, 'password', [], 10)
+		pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "password")))
+		pwd.send_keys(password)
+		# submit_form
+		# login = find_element_by_xpath_with_timeout(self.driver, '//*[@id="app__container"]/main/div/form/div[3]/button', [], 10)
+		login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
+		login.click()
+
+
+	# Normal page load - logout 
+	def normal_linkedin_logout(self):
+		# clk = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-trigger"]', [], 10)
+		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
+		clk.click()
+		print("Logging out from linkedIn")
+		# Logout
+		# logout = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li', [], 10)
+		logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li')))
+		logout.click()
+
+
+	# email verification
+	def email_verification(self):
+		verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
+		print("Email verification required")
+		verify_email.clear()
+		user_input = input("Please enter the verification code sent via mail to "+username+": ")
+		verify_email.send_keys(user_input)
+		confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+		driver.execute_script("arguments[0].click();", confirm)
+		pass
+
+
+	# Recaptcha verification
+	def recaptcha_verification(self):
+		WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
+		print("Recaptcha verification required")
+		pass
 
 
 	# LogIn function for LinkedIn Account
 	def login_to_linkedin(self, username, password):
-		print("Logging In into linkedIn as "+username)
-		try:
-			self.driver.get("https://www.linkedin.com/login")
-			# user = find_element_by_id_with_timeout(self.driver, 'username', [], 10)
-			user = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
-			user.send_keys(username)
-			# pwd = find_element_by_id_with_timeout(self.driver, 'password', [], 10)
-			pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "password")))
-			pwd.send_keys(password)
-			# submit_form
-			# login = find_element_by_xpath_with_timeout(self.driver, '//*[@id="app__container"]/main/div/form/div[3]/button', [], 10)
-			login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
-			login.click()
-
-			try:
-				verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
-				print("Email verification required")
-				verify_email.clear()
-				user_input = input("Please enter the verification code sent via mail to "+username+": ")
-				verify_email.send_keys(user_input)
-				confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-				driver.execute_script("arguments[0].click();", confirm)
-				pass
-			except Exception as e:
-				try:
-					WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
-					print("Recaptcha verification required")
-					pass
-				except Exception as e:
-					print("__")
-					pass
-				pass
-		except Exception as e:
-			print("Page elements were not found")
-
-
-	# LogOut function for LinkedIn Account
-	def logout_from_linkedin(self):
-		print("Logging out from linkedIn")
-		try:
-			self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/")
-			# Logout drop down
-			# clk = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-trigger"]', [], 10)
-			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
-			clk.click()
-			# Logout
-			# logout = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li', [], 10)
-			logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li')))
-			logout.click()
-		except Exception as e:
-			print(e)
-
-
-	def switch_to_linkedin_account(self, nextCredIndex=0):
-		global nextLinkedInCredIndex
-		linkedinUsername = self.linkedInCredentials[nextCredIndex]['username']
-		linkedinPassword = self.linkedInCredentials[nextCredIndex]['password']
-		self.login_to_linkedin(linkedinUsername, linkedinPassword)
-		nextLinkedInCredIndex = nextCredIndex + 1
+		self.perform_action("login", "https://www.linkedin.com/login")
+		self.perform_action("verify-account")
 		try:
 			# check if login was successful
 			self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/")
@@ -84,11 +122,12 @@ class LinkedIn():
 			print("LinkedIn login for "+linkedinUsername+" was successful")
 		except Exception as e:
 			print("LinkedIn login for "+linkedinUsername+" failed")
-			if nextLinkedInCredIndex < len(self.linkedInCredentials):
-				# select_different_linked_in_account(nextLinkedInCredIndex)
-				print('')
-			else:
-				print("No more linkedIn accounts available")
+
+
+	# LogOut function for LinkedIn Account
+	def logout_from_linkedin(self):
+		self.perform_action("logout", "https://www.linkedin.com/mynetwork/import-contacts/")
+
 
 
 	# Export contacts
@@ -218,21 +257,3 @@ class LinkedIn():
 		time.sleep(1)
 
 
-# payload = {
-# 	"driver": driver,
-# 	"exception": e,
-# 	"redirected_url": driver.current_url,
-# 	"request_data": {
-# 		"emailUsername": email_credentials[nextEmailCredIndex]['username'],
-# 		"emailPassword": email_credentials[nextEmailCredIndex]['password'],
-# 		"linkedinUsername": linkedinUsername,
-# 		"linkedinPassword": linkedinPassword,
-# 	},
-# }
-
-linkedin_obj = LinkedIn()
-linkedin_obj.switch_to_linkedin_account()
-x = linkedin_obj.export_contacts()
-print("_________________________")
-# print(x)
-linkedin_obj.logout_from_linkedin()
