@@ -4,15 +4,19 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from common_functions import *
 
 class LinkedIn():
 	"""docstring for LinkedIn"""
-	def __init__(self):
+	def __init__(self, exporter):
 		super(LinkedIn, self).__init__()
 		self.linkedin_cred_index = 0
+		self.driver = exporter.driver
+		self.exporter = exporter
+		self.credentials = self.exporter.get_credentials('linkedin')
 
 
-	def perform_action(action, action_url=""):
+	def perform_action(self, action, action_url=""):
 		# LinkedIn - Log In code
 		if action == "login":
 			self.login(action_url)
@@ -20,54 +24,78 @@ class LinkedIn():
 		elif action == "logout":
 			self.logout(action_url)
 		elif action == "verify-account":
-			self.verify_account()			
+			self.verify_account()
+		elif action == "check-login":
+			self.is_user_logged_in()
 
 
 	def login(self, action_url):
 		self.driver.get(action_url)
-
-		username = "alina.jose1102@gmail.com"
-		password = "Ajency#123"
-		try:
-			self.normal_linkedin_login(username, password)
-		except Exception as e:
-			# log exception
-			try:
-				# Another other login method available
-				# self.other_linkedin_login()
+		if self.linkedin_cred_index < len(self.credentials):
+			username = self.credentials[self.linkedin_cred_index]['username']
+			password = self.credentials[self.linkedin_cred_index]['password']
+			
+			if search_element_by_id(self.driver, 'username'):
+				try:
+					self.normal_linkedin_login(username, password)
+				except Exception as e:
+					message = "\n Exception: "+str(e)+"\n Page Source: \n"+driver.page_source+"\n"
+					self.exporter.logger.error(message)
+					self.exporter.logger.file_log(message, driver.current_url, "Login Error")
+			else:
+				# need to call handler
 				pass
-			except Exception as e:
-				# log exception
-				print("Unable to precess request")
-				pass
+		else:
+			print("no more linkedin accounts")
 
 
 	def logout(self, action_url):
 		self.driver.get(action_url)
-		try:
-			self.normal_linkedin_logout()
-		except Exception as e:
-			# log exception
-			print("Unable to precess request")
+		if search_element_by_id(self.driver, 'nav-settings__dropdown-trigger'):
+			try:
+				self.normal_linkedin_logout()
+			except Exception as e:
+				# log exception
+				message = "\n Exception: "+str(e)+"\n Page Source: \n"+self.driver.page_source+"\n"
+				self.exporter.logger.error(message)
+				self.exporter.logger.file_log(message, url=self.driver.current_url, type='Log Out - Failed')
+				pass
+		else:
+			# need to call handler
 			pass
+		
 		pass
 
 
 	def verify_account(self):
-		try:
-			self.email_verification()
-		except Exception as e:
-			# Another type of verification
+		if search_element_by_id(self.driver, 'input__email_verification_pin'):
 			try:
-				self.recaptcha_verification()
+				self.email_verification(username)
 			except Exception as e:
 				# log exception
-				pass
+				message = "\n Exception: "+str(e)+"\n Page Source: \n"+self.driver.page_source+"\n"
+				self.exporter.logger.error(message)
+				self.exporter.logger.file_log(message, url=self.driver.current_url, type='Email verify - Failed')
 			pass
+		elif search_element_by_id(self.driver, "recaptcha-anchor"):
+			try:
+				self.recaptcha_verification(username)
+			except Exception as e:
+				# log exception
+				message = "\n Exception: "+str(e)+"\n Page Source: \n"+self.driver.page_source+"\n"
+				self.exporter.logger.error(message)
+				self.exporter.logger.file_log(message, url=self.driver.current_url, type='Recaptcha verify - Failed')
+			pass
+		else:
+			# need to call handler
+			pass
+
 
 
 	# Normal page load - login 
 	def normal_linkedin_login(self, username, password):
+		self.exporter.logger.info("Logging into LinkedIn as "+username)
+		self.exporter.logger.file_log("Logging into LinkedIn as "+username, url=self.driver.current_url, type='')
 		user = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
 		user.send_keys(username)
 		# pwd = find_element_by_id_with_timeout(self.driver, 'password', [], 10)
@@ -84,11 +112,14 @@ class LinkedIn():
 		# clk = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-trigger"]', [], 10)
 		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
 		clk.click()
-		print("Logging out from linkedIn")
+		self.exporter.logger.info("Logging out from LinkedIn")
+		self.exporter.logger.file_log("Logging out from LinkedIn", url=self.driver.current_url, type='')
 		# Logout
 		# logout = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li', [], 10)
 		logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li')))
 		logout.click()
+		self.exporter.logger.info("Logging out from LinkedIn successful")
+		self.exporter.logger.file_log("Logging out from LinkedIn successful", url=self.driver.current_url, type='')
 
 
 	# email verification
@@ -110,18 +141,27 @@ class LinkedIn():
 		pass
 
 
-	# LogIn function for LinkedIn Account
-	def login_to_linkedin(self, username, password):
-		self.perform_action("login", "https://www.linkedin.com/login")
-		self.perform_action("verify-account")
+	def is_user_logged_in(self):
+		username = self.credentials[self.linkedin_cred_index]['username']
 		try:
 			# check if login was successful
-			self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/")
 			# confirmLogIn = find_element_by_xpath_with_timeout(self.driver, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon', [], 10)
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
-			print("LinkedIn login for "+linkedinUsername+" was successful")
+			message = "LinkedIn login for "+username+" was successful"
+			self.exporter.logger.info(message)
+			self.linkedin_cred_index += 1
+			self.exporter.logger.file_log(message, url=self.driver.current_url, type='Test - success')
 		except Exception as e:
-			print("LinkedIn login for "+linkedinUsername+" failed")
+			message = "LinkedIn login for "+username+" failed"
+			self.exporter.logger.error(message)
+			self.exporter.logger.file_log(message, url=self.driver.current_url, type='Test - failed')
+
+
+	# LogIn function for LinkedIn Account
+	def login_to_linkedin(self):
+		self.perform_action("login", "https://www.linkedin.com/login")
+		self.perform_action("verify-account")
+		self.perform_action("check-login", "https://www.linkedin.com/mynetwork/import-contacts/")
 
 
 	# LogOut function for LinkedIn Account

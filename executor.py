@@ -5,13 +5,15 @@ from linkedIn import LinkedIn
 
 class Executor():
 	"""docstring for Executor"""
-	def __init__(self):
+	def __init__(self, exporter):
 		super(Executor, self).__init__()
-		# self.arg = arg
+		self.driver = exporter.driver
+		self.logger = exporter.logger
+		self.linkedin = LinkedIn(exporter)
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):
-		execution_sequence = "1 2"
+		execution_sequence = "1 2 0"
 		if not auto_execution_mode:
 			execution_sequence = self.get_user_defined_execution_sequence()
 		sequence = execution_sequence.split()
@@ -71,55 +73,69 @@ class Executor():
 		sys.exit()
 
 	def step_one(self):
-		print("step_one")
+		print("step 1")
+		self.linkedin.login_to_linkedin()
+		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_two(self):
-		print("step_two")
+		print("step 2")
+		self.linkedin.logout_from_linkedin()
+		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_three(self):
 		print("step_three")
+		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_four(self):
 		print("step_four")
+		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	# def step_five(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_six(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_seven(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_eight(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_nine(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_ten(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_eleven(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	# def step_twelve(self):
 	# 	print("invalid_step")
+	#	self.logger.file_log(message, url=None, type=None)
 	# 	pass
 
 	def invalid_step(self, step=''):
 		message = "Step ("+str(step)+") is an invalid step"
 		print(message)
-		# CustomLogger.warning(message)
+		# self.logger.file_log(message, url=None, type=None)
 		pass

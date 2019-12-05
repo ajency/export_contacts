@@ -3,6 +3,7 @@ from driver import Driver
 from executor import Executor
 from os import environ
 from credential_parser import CredentialParser
+from common_functions import *
 
 class Exporter():
     def __init__(self, env, auto):
@@ -12,7 +13,6 @@ class Exporter():
         logger = CustomLogger()
         self.logger = logger
         self.web_driver = Driver()
-        self.executor = Executor()
 
 
     def start(self):
@@ -29,7 +29,12 @@ class Exporter():
 
         # initialize driver
         self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
+        # initialize executor
+        self.executor = Executor(self)
+        # type and sequence of execution
         self.executor.get_execution_sequence(self.auto)
+
+        # driver close
         self.driver.close()
 
         ##to close the log file once everything is done
