@@ -17,7 +17,10 @@ class Exporter():
         self.gmail_credentials = self.get_credentials('gmail')
         print(self.gmail_credentials)
 
+        ## to persist the log
         self.logger.file_log("This is test message","test url","testing")
+
+        ##to close the log file once everything is done
         self.logger.close_logger_file()
 
     def get_credentials(self,key):
