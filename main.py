@@ -6,8 +6,8 @@ Usage:
 
 Options:
   -h --help             Show this screen.
-  <env>                Set the environment (aqua,bright,catalog).
-  --auto             Choose if partial import/export (non mandatory)
+  <env>                Set the environment (dev,prod).
+  --auto             Choose if the process is auto (non mandatory)
 
 """
 
@@ -23,7 +23,6 @@ from dotenv import load_dotenv
 
 def main():
     args = docopt(__doc__)
-    print(args)
 
     if args['<env>']:
         pass
