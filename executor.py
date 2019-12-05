@@ -2,6 +2,7 @@ import numpy
 import os,sys,time,datetime,platform
 from logger import CustomLogger
 from linkedIn import LinkedIn
+from gmail import Gmail
 
 class Executor():
 	"""docstring for Executor"""
@@ -9,6 +10,7 @@ class Executor():
 		super(Executor, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
+		self.gmail = Gmail(exporter)
 		self.linkedin = LinkedIn(exporter)
 
 
@@ -85,12 +87,14 @@ class Executor():
 		pass
 
 	def step_three(self):
-		print("step_three")
+		print("step 3")
+		self.gmail.login_to_gmail()
 		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_four(self):
-		print("step_four")
+		print("step 4")
+		self.gmail.logout_from_gmail()
 		# self.logger.file_log(message, url=None, type=None)
 		pass
 
