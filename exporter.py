@@ -1,4 +1,6 @@
 from logger import CustomLogger
+from driver import Driver
+from executor import Executor
 from os import environ
 from credential_parser import CredentialParser
 
@@ -9,12 +11,14 @@ class Exporter():
         self.auto = auto
         logger = CustomLogger()
         self.logger = logger
+        self.web_driver = Driver()
+        self.executor = Executor()
 
 
     def start(self):
+
         self.logger.info("Operation started for "+self.env)
         self.gmail_credentials = self.get_credentials('gmail')
-        print(self.gmail_credentials)
 
         ## to persist the log
         self.logger.log("This is more logging message another",{
@@ -22,6 +26,11 @@ class Exporter():
             'type': "some type",
             'data': "some data"
         })
+
+        # initialize driver
+        self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
+        self.executor.get_execution_sequence(self.auto)
+        self.driver.close()
 
         ##to close the log file once everything is done
         self.logger.close_logger()
@@ -33,7 +42,5 @@ class Exporter():
             return conf_parser.parse_config(key)
         else:
             return []
-
-
 
 
