@@ -9,10 +9,6 @@ class Executor():
 		# self.arg = arg
 
 
-	def execute_func(self, method_name):
-		return getattr(self, str(method_name))
-
-
 	def get_execution_sequence(self, auto_execution_mode=True):
 		execution_sequence = "1 2"
 		if not auto_execution_mode:
