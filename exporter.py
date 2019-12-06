@@ -18,6 +18,7 @@ class Exporter():
     def start(self):
 
         self.logger.info("Operation started for "+self.env)
+        self.logger.info("Log File Path "+self.logger.file_path)
         self.gmail_credentials = self.get_credentials('gmail')
 
         ## to persist the log
@@ -42,7 +43,7 @@ class Exporter():
 
     def get_credentials(self,key):
         if self.data_source == 'file':
-            self.logger.info("Data source is file")
+            # self.logger.info("Data source is file")
             conf_parser = CredentialParser(self.logger)
             return conf_parser.parse_config(key)
         else:

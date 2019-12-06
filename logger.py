@@ -38,7 +38,8 @@ class CustomLogger():
     def local_logger(self):
         log_path = 'logs/' + time.strftime("%Y%m%d")
         Path(log_path).mkdir(parents=True, exist_ok=True)
-        filename = log_path + "/" + self.session_id + '.txt'
+        filename = log_path+"/"+self.session_id + '.txt'
+        self.file_path = filename
 
         if os.path.exists(filename):
             append_write = 'a'

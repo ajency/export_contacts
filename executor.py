@@ -3,6 +3,8 @@ import os,sys,time,datetime,platform
 from logger import CustomLogger
 from linkedIn import LinkedIn
 from gmail import Gmail
+from handler import Handler
+from config import *
 
 class Executor():
 	"""docstring for Executor"""
@@ -10,14 +12,16 @@ class Executor():
 		super(Executor, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
+		self.handler = Handler(self.driver, self.logger)
 		self.gmail = Gmail(exporter)
 		self.linkedin = LinkedIn(exporter)
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):
-		execution_sequence = "1 2 3 4 0"
+		execution_sequence = auto_execution_sequence
 		if not auto_execution_mode:
 			execution_sequence = self.get_user_defined_execution_sequence()
+		self.handler.success("Execution sequence: "+str(execution_sequence))
 		sequence = execution_sequence.split()
 		for step in sequence:
 			my_step = int(str(step).strip())
@@ -63,7 +67,7 @@ class Executor():
 		print("")
 		print(" 0 - Exits the Script")
 		print("__________________________________________________________")
-		sequence = input("Enter manual execution sequence seperated by <space> between each step, \n Example: 1 3 2  \n Enter your sequence: ")
+		sequence = input("Enter manual execution sequence seperated by <space> between each step(Example: 1 2 3), \n Enter your sequence: ")
 		if sequence:
 			return sequence
 		else:
