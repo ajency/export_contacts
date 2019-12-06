@@ -125,7 +125,7 @@ class LinkedInHandler(base_handler):
 		else:
 			message = "Unable to identify linkedIn account verification Page"
 			# self.exception(message, 'login', self.login_url)
-			super(LinkedInHandler, self).exception(message)
+			# super(LinkedInHandler, self).exception(message)
 			pass
 
 
