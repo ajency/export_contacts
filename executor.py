@@ -67,7 +67,7 @@ class Executor():
 		print("")
 		print(" 0 - Exits the Script")
 		print("__________________________________________________________")
-		sequence = input("Enter manual execution sequence seperated by <space> between each step(Example: 1 2 3), \n Enter your sequence: ")
+		sequence = input("Enter manual execution sequence seperated by <space> between each step (Example: 1 2 3) \n Enter your sequence: ")
 		if sequence:
 			return sequence
 		else:

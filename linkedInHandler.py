@@ -24,7 +24,7 @@ class LinkedInHandler(base_handler):
 			self.continue_process()
 			pass
 
-	def retry_process(self, retry_action):
+	def retry_process(self, retry_action, data):
 		if retry_action == 'login':
 			use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 			if use_diff_cred.strip().lower() == 'y':
@@ -33,8 +33,8 @@ class LinkedInHandler(base_handler):
 			if self.linkedin_cred_index < len(self.credentials):
 				username = self.credentials[self.linkedin_cred_index]['username']
 				password = self.credentials[self.linkedin_cred_index]['password']
-				self.in_progress("Retrying using "+username+" : "+password)
-				self.login(username, password)
+				self.in_progress("Retrying using "+username)
+				self.login(data)
 			else:
 				self.exit_process("No more LinkedIn accounts available")
 			pass
@@ -54,7 +54,7 @@ class LinkedInHandler(base_handler):
 				try:
 					self.normal_linkedin_login(username, password)
 				except Exception as e:
-					self.exception(e, 'login')
+					self.exception(e, 'login', action_url)
 			else:
 				message = "Unable to Identify LinkedIn Login Page"
 				super(LinkedInHandler, self).exception(message)

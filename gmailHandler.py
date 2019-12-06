@@ -24,20 +24,19 @@ class GmailHandler(base_handler):
 			self.continue_process()
 			pass
 
-	def retry_process(self, retry_action):
+	def retry_process(self, retry_action, data):
 		if retry_action == 'login':
 			use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 			if use_diff_cred.strip().lower() == 'y':
 				self.gmail_cred_index += 1
-
+				pass
 			if self.gmail_cred_index < len(self.credentials):
 				username = self.credentials[self.gmail_cred_index]['username']
 				password = self.credentials[self.gmail_cred_index]['password']
-				self.in_progress("Retrying using "+username+" : "+password)
-				self.login(username, password)
+				self.in_progress("Retrying using "+username+" : ")
+				self.login(data)
 			else:
 				self.exit_process("No more Gmail accounts available")
-			pass
 			pass
 		else:
 			self.exit_process("Unknown Gmail Retry Method")
@@ -53,7 +52,7 @@ class GmailHandler(base_handler):
 				try:
 					self.normal_gmail_login(username, password)
 				except Exception as e:
-					self.exception(e, 'login')
+					self.exception(e, 'login', action_url)
 			else:
 				message = "Unable to Identify Gmail Login Page"
 				super(GmailHandler, self).exception(message)
@@ -64,6 +63,7 @@ class GmailHandler(base_handler):
 
 	# Normal page load - login 
 	def normal_gmail_login(self, username, password):
+		self.in_progress("Logging into Gmail as "+username)
 		self.driver.get("https://accounts.google.com/signin/v2")
 		self.driver.find_element_by_id('identifierId').send_keys(username)
 		self.driver.find_element_by_id("identifierNext").click()
