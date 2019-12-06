@@ -72,7 +72,7 @@ class Gmail():
 
 
 	def logout(self, action_url):
-		self.normal_gmail_logout(self, action_url)
+		self.normal_gmail_logout(action_url)
 		try:
 			self.remove_previous_loggedin_gmail_accounts()
 		except Exception as e:
@@ -121,11 +121,10 @@ class Gmail():
 		# pwd.send_keys(Keys.RETURN)
 		login = self.driver.find_element_by_id("passwordNext")
 		login.click()
-		login.click()
 
 
 	# Normal page load - logout 
-	def normal_gmail_logout(self):
+	def normal_gmail_logout(self, action_url):
 		self.exporter.logger.info("Logging out from Gmail")
 		self.exporter.logger.file_log("Logging out from Gmail", url=self.driver.current_url, type='')
 		# Logout
@@ -194,7 +193,6 @@ class Gmail():
 		self.driver.execute_script("arguments[0].click();", removeClk)
 		# removeClk.click()
 		time.sleep(3)
-		print("Removed the account from browser")
 		message = "Removed currently logged out account from browser"
-		self.exporter.logger.error(message)
+		self.exporter.logger.info(message)
 		self.exporter.logger.file_log(message, url=self.driver.current_url, type='Test - failed')

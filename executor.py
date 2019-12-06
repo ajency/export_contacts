@@ -15,7 +15,7 @@ class Executor():
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):
-		execution_sequence = "1 2 0"
+		execution_sequence = "1 2 3 4 0"
 		if not auto_execution_mode:
 			execution_sequence = self.get_user_defined_execution_sequence()
 		sequence = execution_sequence.split()
@@ -76,19 +76,19 @@ class Executor():
 
 	def step_one(self):
 		print("step 1")
-		self.linkedin.login_to_linkedin()
+		self.gmail.login_to_gmail()
 		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_two(self):
 		print("step 2")
-		self.linkedin.logout_from_linkedin()
+		self.linkedin.login_to_linkedin()
 		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_three(self):
 		print("step 3")
-		self.gmail.login_to_gmail()
+		self.linkedin.logout_from_linkedin()
 		# self.logger.file_log(message, url=None, type=None)
 		pass
 
