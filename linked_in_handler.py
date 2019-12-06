@@ -1,13 +1,7 @@
-from logger import CustomLogger
-from os import environ
 from credential_parser import CredentialParser
 
-class Exporter():
-    def __init__(self, env, auto):
-        self.env = environ.get('EXPORTER_ENVIRONMENT')
-        self.data_source = environ.get('EXPORTER_DATA_SOURCE')
-        self.auto = auto
-        logger = CustomLogger()
+class LinkedInHandler():
+    def __init__(self, logger):
         self.logger = logger
 
 
@@ -17,14 +11,10 @@ class Exporter():
         print(self.gmail_credentials)
 
         ## to persist the log
-        self.logger.log("This is more logging message another",{
-            'url': "some url",
-            'type': "some type",
-            'data': "some data"
-        })
+        self.logger.file_log("This is test message","test url","testing")
 
         ##to close the log file once everything is done
-        self.logger.close_logger()
+        self.logger.close_logger_file()
 
     def get_credentials(self,key):
         if self.data_source == 'file':

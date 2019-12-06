@@ -1,3 +1,5 @@
+termcolor
+timber
 dotenv
 colorama
 docopt
