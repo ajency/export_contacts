@@ -46,7 +46,6 @@ class CustomLogger():
             append_write = 'w'
         return open(filename, append_write)
 
-
     def log(self, message, context):
         if environ.get('LOGGER_BACKEND') == 'timber':
             with timber.context(session={'id': self.session_id}):
@@ -67,7 +66,6 @@ class CustomLogger():
     def close_logger(self):
         if environ.get('LOGGER_BACKEND') == 'local':
             self.logger.close()
-
 
     def info(self,message):
         timestampstring = datetime.datetime.now().strftime("%H:%M:%S")
