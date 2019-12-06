@@ -118,7 +118,7 @@ class GmailHandler(base_handler):
 		else:
 			message = "Unable to identify Gmail account verification Page"
 			# self.exception(message, 'login', self.login_url)
-			# super(GmailHandler, self).exception(message)
+			super(GmailHandler, self).exception(message)
 			pass
 
 
