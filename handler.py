@@ -33,8 +33,9 @@ class Handler():
 	def continue_process(self):
 		pass
 	
-	def exit_process(self):
-		message = "Exit script execution"
+	def exit_process(self, message=''):
+		if not message:
+			message = "Exit script execution"
 		self.logger.error(message)
 		self.logger.file_log(message, url=self.driver.current_url, type='Exit Script')
 		self.driver.close()
