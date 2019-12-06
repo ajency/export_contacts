@@ -2,10 +2,10 @@ import os,sys,time,csv,datetime,platform
 from handler import Handler as base_handler
 from common_functions import *
 
-class linkedInHandler(base_handler):
-	"""docstring for linkedInHandler"""
+class LinkedInHandler(base_handler):
+	"""docstring for LinkedInHandler"""
 	def __init__(self, driver, logger, credentials):
-		super(linkedInHandler, self).__init__(driver, logger)
+		super(LinkedInHandler, self).__init__(driver, logger)
 		self.driver = driver
 		self.logger = logger
 		self.linkedin_cred_index = 0
@@ -57,7 +57,7 @@ class linkedInHandler(base_handler):
 					self.exception(e, 'login')
 			else:
 				message = "Unable to Identify LinkedIn Login Page"
-				super(linkedInHandler, self).exception(message)
+				super(LinkedInHandler, self).exception(message)
 				pass
 		else:
 			self.exit_process("No LinkedIn accounts available")
@@ -82,11 +82,12 @@ class linkedInHandler(base_handler):
 				self.normal_linkedin_logout()
 			except Exception as e:
 				message = str(e)
-				super(linkedInHandler, self).exception(message)
+				super(LinkedInHandler, self).exception(message)
 				pass
 		else:
 			message = "Unable to Identify LinkedIn Logout Page"
-			super(linkedInHandler, self).exception(message)
+			# super(LinkedInHandler, self).exception(message)
+			self.exception(message, 'login')
 			pass
 
 	# Normal page load - logout 
@@ -109,7 +110,7 @@ class linkedInHandler(base_handler):
 				# log exception
 				message = "\n Email verification - Failed \n"+str(e)
 				self.exception(message, 'login')
-				# super(linkedInHandler, self).exception(message)
+				# super(LinkedInHandler, self).exception(message)
 			pass
 		elif search_element_by_id(self.driver, "recaptcha-anchor"):
 			try:
@@ -118,12 +119,12 @@ class linkedInHandler(base_handler):
 				# log exception
 				message = "\n Recaptcha verification - Failed \n"+str(e)
 				self.exception(message, 'login')
-				# super(linkedInHandler, self).exception(message)
+				# super(LinkedInHandler, self).exception(message)
 			pass
 		else:
 			message = "Unable to identify linkedIn account verification Page"
 			# self.exception(message, 'login')
-			super(linkedInHandler, self).exception(message)
+			super(LinkedInHandler, self).exception(message)
 			pass
 
 
@@ -142,7 +143,7 @@ class linkedInHandler(base_handler):
 	# Recaptcha verification
 	def recaptcha_verification(self, username):
 		WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
-		super(linkedInHandler, self).exception("Recaptcha verification")
+		super(LinkedInHandler, self).exception("Recaptcha verification")
 		pass
 
 
@@ -156,7 +157,7 @@ class linkedInHandler(base_handler):
 			self.success(message)
 		except Exception as e:
 			message = "LinkedIn login for "+username+" failed"
-			super(linkedInHandler, self).exception(message)
+			super(LinkedInHandler, self).exception(message)
 
 
 	def export_contacts(self):
@@ -231,7 +232,7 @@ class linkedInHandler(base_handler):
 				contactList.append(contactDetails)
 			return contactList
 		except Exception as e:
-			super(linkedInHandler, self).exception("Exception: "+e+"\n Unable to Export contacts")
+			super(LinkedInHandler, self).exception("Exception: "+e+"\n Unable to Export contacts")
 
 
 	# # Remove previous synced accounts

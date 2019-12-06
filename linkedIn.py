@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from linkedInHandler import linkedInHandler
+from linkedInHandler import LinkedInHandler
 from common_functions import *
 
 class LinkedIn():
@@ -14,9 +14,8 @@ class LinkedIn():
 		self.linkedin_cred_index = 0
 		self.driver = exporter.driver
 		self.logger = exporter.logger
-		self.linkedin_handler = linkedInHandler(self.driver, self.logger, exporter.get_credentials('linkedin'))
-		self.exporter = exporter
-		self.credentials = self.exporter.get_credentials('linkedin')
+		self.linkedin_handler = LinkedInHandler(self.driver, self.logger, exporter.get_credentials('linkedin'))
+		self.credentials = exporter.get_credentials('linkedin')
 
 
 	def perform_action(self, action, action_url=""):
