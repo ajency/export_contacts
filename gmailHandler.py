@@ -10,6 +10,7 @@ class GmailHandler(base_handler):
 		self.logger = logger
 		self.gmail_cred_index = 0
 		self.credentials = credentials
+		self.login_url = "https://accounts.google.com/signin/v2"
 
 
 	def exception(self, message, retry_method, data):
@@ -102,7 +103,7 @@ class GmailHandler(base_handler):
 			except Exception as e:
 				# log exception
 				message = "\n Gmail Email verification - Failed \n"+str(e)
-				self.exception(message, 'login')
+				self.exception(message, 'login', self.login_url)
 				# super(GmailHandler, self).exception(message)
 			pass
 		elif search_element_by_id(self.driver, "recaptcha-anchor"):
@@ -111,12 +112,12 @@ class GmailHandler(base_handler):
 			except Exception as e:
 				# log exception
 				message = "\n Gmail Recaptcha verification - Failed \n"+str(e)
-				self.exception(message, 'login')
+				self.exception(message, 'login', self.login_url)
 				# super(GmailHandler, self).exception(message)
 			pass
 		else:
 			message = "Unable to identify Gmail account verification Page"
-			# self.exception(message, 'login')
+			# self.exception(message, 'login', self.login_url)
 			super(GmailHandler, self).exception(message)
 			pass
 
@@ -152,7 +153,7 @@ class GmailHandler(base_handler):
 		except Exception as e:
 			message = "Gmail login for "+username+" failed"
 			# super(GmailHandler, self.exception(message)
-			self.exception(message, 'login')
+			self.exception(message, 'login', self.login_url)
 
 
 

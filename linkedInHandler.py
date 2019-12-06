@@ -10,6 +10,7 @@ class LinkedInHandler(base_handler):
 		self.logger = logger
 		self.linkedin_cred_index = 0
 		self.credentials = credentials
+		self.login_url = "https://www.linkedin.com/login"
 
 
 	def exception(self, message, retry_method, data):
@@ -87,7 +88,7 @@ class LinkedInHandler(base_handler):
 		else:
 			message = "Unable to Identify LinkedIn Logout Page"
 			# super(LinkedInHandler, self).exception(message)
-			self.exception(message, 'login')
+			self.exception(message, 'login', self.login_url)
 			pass
 
 	# Normal page load - logout 
@@ -109,7 +110,7 @@ class LinkedInHandler(base_handler):
 			except Exception as e:
 				# log exception
 				message = "\n Email verification - Failed \n"+str(e)
-				self.exception(message, 'login')
+				self.exception(message, 'login', self.login_url)
 				# super(LinkedInHandler, self).exception(message)
 			pass
 		elif search_element_by_id(self.driver, "recaptcha-anchor"):
@@ -118,12 +119,12 @@ class LinkedInHandler(base_handler):
 			except Exception as e:
 				# log exception
 				message = "\n Recaptcha verification - Failed \n"+str(e)
-				self.exception(message, 'login')
+				self.exception(message, 'login', self.login_url)
 				# super(LinkedInHandler, self).exception(message)
 			pass
 		else:
 			message = "Unable to identify linkedIn account verification Page"
-			# self.exception(message, 'login')
+			# self.exception(message, 'login', self.login_url)
 			super(LinkedInHandler, self).exception(message)
 			pass
 
@@ -157,7 +158,8 @@ class LinkedInHandler(base_handler):
 			self.success(message)
 		except Exception as e:
 			message = "LinkedIn login for "+username+" failed"
-			super(LinkedInHandler, self).exception(message)
+			# super(LinkedInHandler, self).exception(message)
+			self.exception(message, 'login', self.login_url)
 
 
 	def export_contacts(self):
