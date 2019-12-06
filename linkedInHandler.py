@@ -12,13 +12,13 @@ class LinkedInHandler(base_handler):
 		self.credentials = credentials
 
 
-	def exception(self, message, retry_method):
+	def exception(self, message, retry_method, data):
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		if next_step.strip().lower() == "x":
 			self.exit_process(message)
 			pass
 		elif next_step.strip().lower() == "r":
-			self.retry_process(retry_method)
+			self.retry_process(retry_method, data)
 			pass
 		else:
 			self.continue_process()
