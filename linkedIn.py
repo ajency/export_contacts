@@ -98,6 +98,7 @@ class LinkedIn():
 
 	def verify_account(self):
 		# self.linkedin_handler.verify_account()
+		username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
 		if search_element_by_id(self.driver, 'input__email_verification_pin'):
 			try:
 				self.linkedin_handler.email_verification(username)
