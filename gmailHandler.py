@@ -44,24 +44,6 @@ class GmailHandler(base_handler):
 		pass
 
 
-	def login(self, action_url):
-		if self.gmail_cred_index < len(self.credentials):
-			self.driver.get(action_url)
-			username = self.credentials[self.gmail_cred_index]['username']
-			password = self.credentials[self.gmail_cred_index]['password']
-			if search_element_by_id(self.driver, 'identifierId'):
-				try:
-					self.normal_gmail_login(username, password)
-				except Exception as e:
-					self.exception(e, 'login', action_url)
-			else:
-				message = "Unable to Identify Gmail Login Page"
-				super(GmailHandler, self).exception(message)
-				pass
-		else:
-			self.exit_process("No Gmail accounts available")
-
-
 	# Normal page load - login 
 	def normal_gmail_login(self, username, password):
 		self.in_progress("Logging into Gmail as "+username)
@@ -77,14 +59,6 @@ class GmailHandler(base_handler):
 		login.click()
 
 
-	def logout(self, action_url):
-		try:
-			self.normal_gmail_logout(action_url)
-		except Exception as e:
-			message = str(e)
-			super(GmailHandler, self).exception(message)
-			pass
-
 
 	# Normal page load - logout 
 	def normal_gmail_logout(self, action_url):
@@ -94,32 +68,6 @@ class GmailHandler(base_handler):
 		self.remove_previous_loggedin_gmail_accounts()
 		self.success("Logging out from Gmail successful")
 
-
-	def verify_account(self):
-		username = self.credentials[self.gmail_cred_index]['username']
-		if search_element_by_id(self.driver, 'input__email_verification_pin'):
-			try:
-				self.email_verification(username)
-			except Exception as e:
-				# log exception
-				message = "\n Gmail Email verification - Failed \n"+str(e)
-				self.exception(message, 'login', self.login_url)
-				# super(GmailHandler, self).exception(message)
-			pass
-		elif search_element_by_id(self.driver, "recaptcha-anchor"):
-			try:
-				self.recaptcha_verification(username)
-			except Exception as e:
-				# log exception
-				message = "\n Gmail Recaptcha verification - Failed \n"+str(e)
-				self.exception(message, 'login', self.login_url)
-				# super(GmailHandler, self).exception(message)
-			pass
-		else:
-			message = "Unable to identify Gmail account verification Page"
-			# self.exception(message, 'login', self.login_url)
-			super(GmailHandler, self).exception(message)
-			pass
 
 
 	# email verification

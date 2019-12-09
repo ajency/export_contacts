@@ -11,11 +11,11 @@ class LinkedIn():
 	"""docstring for LinkedIn"""
 	def __init__(self, exporter):
 		super(LinkedIn, self).__init__()
-		self.linkedin_cred_index = 0
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.linkedin_handler = LinkedInHandler(self.driver, self.logger, exporter.get_credentials('linkedin'))
-		self.credentials = exporter.get_credentials('linkedin')
+		# self.linkedin_cred_index = 0
+		# self.credentials = exporter.get_credentials('linkedin')
 
 
 	def perform_action(self, action, action_url=""):
@@ -57,16 +57,67 @@ class LinkedIn():
 
 
 	def login(self, action_url):
-		self.linkedin_handler.login(action_url)
+		# self.linkedin_handler.login(action_url)
+		if self.linkedin_handler.linkedin_cred_index < len(self.linkedin_handler.credentials):
+			self.driver.get(action_url)
+			username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
+			password = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['password']
+			if search_element_by_id(self.driver, 'username'):
+				try:
+					self.linkedin_handler.normal_linkedin_login(username, password)
+				except Exception as e:
+					self.linkedin_handler.exception(e, 'login', action_url)
+			else:
+				message = "Unable to Identify LinkedIn Login Page"
+				super(self.linkedin_handler, self).exception(message)
+				pass
+		else:
+			self.linkedin_handler.exit_process("No LinkedIn accounts available")
 
 
 	def logout(self, action_url):
-		self.linkedin_handler.logout(action_url)
-		pass
+		# self.linkedin_handler.logout(action_url)
+		self.driver.get(action_url)
+		if search_element_by_id(self.driver, 'nav-settings__dropdown-trigger'):
+			try:
+				self.linkedin_handler.normal_linkedin_logout()
+			except Exception as e:
+				message = str(e)
+				super(self.linkedin_handler, self).exception(message)
+				pass
+		else:
+			message = "Unable to Identify LinkedIn Logout Page"
+			# super(self.linkedin_handler, self).exception(message)
+			self.linkedin_handler.exception(message, 'login', self.login_url)
+			pass
 
 
 	def verify_account(self):
-		self.linkedin_handler.verify_account()
+		# self.linkedin_handler.verify_account()
+		if search_element_by_id(self.driver, 'input__email_verification_pin'):
+			try:
+				self.linkedin_handler.email_verification(username)
+			except Exception as e:
+				# log exception
+				message = "\n Email verification - Failed \n"+str(e)
+				self.linkedin_handler.exception(message, 'login', self.login_url)
+				# super(self.linkedin_handler, self).exception(message)
+			pass
+		elif search_element_by_id(self.driver, "recaptcha-anchor"):
+			try:
+				self.linkedin_handler.recaptcha_verification(username)
+			except Exception as e:
+				# log exception
+				message = "\n Recaptcha verification - Failed \n"+str(e)
+				self.linkedin_handler.exception(message, 'login', self.login_url)
+				# super(self.linkedin_handler, self).exception(message)
+			pass
+		else:
+			if not self.is_user_logged_in():
+				message = "Unable to identify linkedIn account verification Page"
+				self.linkedin_handler.exception(message, 'login', self.login_url)
+				# super(self.linkedin_handler, self).exception(message)
+			pass
 
 
 	def check_login_status(self):
