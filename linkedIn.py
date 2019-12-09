@@ -18,13 +18,13 @@ class LinkedIn():
 		# self.credentials = exporter.get_credentials('linkedin')
 
 
-	def perform_action(self, action, action_url=""):
+	def perform_action(self, action, data=[]):
 		# LinkedIn - Log In code
 		if action == "login":
 			if self.is_user_logged_in():
 				self.linkedin_handler.warning("Already Logged In to LinkedIn")
 			else:
-				self.login(action_url)
+				self.login()
 		elif action == "verify-account":
 			self.verify_account()
 		elif action == "check-login":
@@ -34,7 +34,7 @@ class LinkedIn():
 			if not self.is_user_logged_in():
 				self.linkedin_handler.warning("Need to Login before logging out from LinkedIn")
 			else:
-				self.logout(action_url)
+				self.logout()
 
 
 	def is_user_logged_in(self):
@@ -56,17 +56,19 @@ class LinkedIn():
 		return is_loggedin
 
 
-	def login(self, action_url):
+	def login(self):
 		# self.linkedin_handler.login(action_url)
 		if self.linkedin_handler.linkedin_cred_index < len(self.linkedin_handler.credentials):
-			self.driver.get(action_url)
+			self.driver.get(self.linkedin_handler.login_url)
 			username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
 			password = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['password']
 			if search_element_by_id(self.driver, 'username'):
 				try:
 					self.linkedin_handler.normal_linkedin_login(username, password)
 				except Exception as e:
-					self.linkedin_handler.exception(e, 'login', action_url)
+					retry = self.linkedin_handler.exception(e, 'login')
+					if retry :
+						self.login()
 			else:
 				message = "Unable to Identify LinkedIn Login Page"
 				super(self.linkedin_handler, self).exception(message)
@@ -75,9 +77,9 @@ class LinkedIn():
 			self.linkedin_handler.exit_process("No LinkedIn accounts available")
 
 
-	def logout(self, action_url):
+	def logout(self):
 		# self.linkedin_handler.logout(action_url)
-		self.driver.get(action_url)
+		self.driver.get(self.linkedin_handler.logout_url)
 		if search_element_by_id(self.driver, 'nav-settings__dropdown-trigger'):
 			try:
 				self.linkedin_handler.normal_linkedin_logout()
@@ -88,7 +90,9 @@ class LinkedIn():
 		else:
 			message = "Unable to Identify LinkedIn Logout Page"
 			# super(self.linkedin_handler, self).exception(message)
-			self.linkedin_handler.exception(message, 'login', self.login_url)
+			retry = self.linkedin_handler.exception(message, 'login')
+			if retry:
+				self.logout()
 			pass
 
 
@@ -100,8 +104,10 @@ class LinkedIn():
 			except Exception as e:
 				# log exception
 				message = "\n Email verification - Failed \n"+str(e)
-				self.linkedin_handler.exception(message, 'login', self.login_url)
 				# super(self.linkedin_handler, self).exception(message)
+				retry = self.linkedin_handler.exception(message, 'login')
+				if retry:
+					self.verify_account()
 			pass
 		elif search_element_by_id(self.driver, "recaptcha-anchor"):
 			try:
@@ -109,14 +115,18 @@ class LinkedIn():
 			except Exception as e:
 				# log exception
 				message = "\n Recaptcha verification - Failed \n"+str(e)
-				self.linkedin_handler.exception(message, 'login', self.login_url)
 				# super(self.linkedin_handler, self).exception(message)
+				retry = self.linkedin_handler.exception(message, 'login')
+				if retry:
+					self.verify_account()
 			pass
 		else:
 			if not self.is_user_logged_in():
 				message = "Unable to identify linkedIn account verification Page"
-				self.linkedin_handler.exception(message, 'login', self.login_url)
 				# super(self.linkedin_handler, self).exception(message)
+				retry = self.linkedin_handler.exception(message, 'login')
+				if retry:
+					self.verify_account()
 			pass
 
 
@@ -126,14 +136,14 @@ class LinkedIn():
 
 	# LogIn function for LinkedIn Account
 	def login_to_linkedin(self):
-		self.perform_action("login", "https://www.linkedin.com/login")
+		self.perform_action("login")
 		self.perform_action("verify-account")
-		self.perform_action("check-login", "https://www.linkedin.com/mynetwork/import-contacts/")
+		self.perform_action("check-login")
 
 
 	# LogOut function for LinkedIn Account
 	def logout_from_linkedin(self):
-		self.perform_action("logout", "https://www.linkedin.com/mynetwork/import-contacts/")
+		self.perform_action("logout")
 
 
 

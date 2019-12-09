@@ -11,6 +11,9 @@ class GmailHandler(base_handler):
 		self.gmail_cred_index = 0
 		self.credentials = credentials
 		self.login_url = "https://accounts.google.com/signin/v2"
+		self.logout_url = "https://www.google.com/accounts/Logout"
+		self.check_login_url = "https://accounts.google.com"
+		self.sign_in_chooser_url = "http://accounts.google.com/ServiceLogin/signinchooser"
 
 
 	def exception(self, message, retry_method, data):
@@ -47,7 +50,6 @@ class GmailHandler(base_handler):
 	# Normal page load - login 
 	def normal_gmail_login(self, username, password):
 		self.in_progress("Logging into Gmail as "+username)
-		self.driver.get("https://accounts.google.com/signin/v2")
 		self.driver.find_element_by_id('identifierId').send_keys(username)
 		self.driver.find_element_by_id("identifierNext").click()
 		time.sleep(5)
@@ -61,10 +63,10 @@ class GmailHandler(base_handler):
 
 
 	# Normal page load - logout 
-	def normal_gmail_logout(self, action_url):
+	def normal_gmail_logout(self):
 		self.in_progress("Logging out from Gmail")
 		# Logout
-		self.driver.get(action_url)
+		self.driver.get(self.logout_url)
 		self.remove_previous_loggedin_gmail_accounts()
 		self.success("Logging out from Gmail successful")
 
@@ -72,19 +74,20 @@ class GmailHandler(base_handler):
 
 	# email verification
 	def email_verification(self, username):
-		verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
+		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
 		verify_email.clear()
 		user_input = input("Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.send_keys(user_input)
-		confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-		driver.execute_script("arguments[0].click();", confirm)
+		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+		self.driver.execute_script("arguments[0].click();", confirm)
 		pass
 
 
 	# Recaptcha verification
 	def recaptcha_verification(self, username):
-		WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
+		self.in_progress("Recaptcha verification")
+		WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'playCaptchaButton')))
 		super(GmailHandler, self).exception("Recaptcha verification")
 		pass
 
@@ -96,7 +99,7 @@ class GmailHandler(base_handler):
 			# check if login was successful
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
 			self.gmail_cred_index += 1
-			message = "Gmail login for "+username+" was successful"
+			message = "Logged In into Gmail as "+username+" successfully"
 			self.success(message)
 		except Exception as e:
 			message = "Gmail login for "+username+" failed"
@@ -106,7 +109,7 @@ class GmailHandler(base_handler):
 
 
 	def remove_previous_loggedin_gmail_accounts(self):
-		self.driver.get("http://accounts.google.com/ServiceLogin/signinchooser")
+		self.driver.get(self.sign_in_chooser_url)
 		WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]')))
 		removeAccounttClk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div/ul/li[3]')))
 		removeAccounttClk.click()

@@ -30,6 +30,7 @@ class Exporter():
 
         # initialize driver
         self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
+        self.delete_all_cookies()
         # initialize executor
         self.executor = Executor(self)
         # type and sequence of execution
@@ -50,3 +51,6 @@ class Exporter():
             return []
 
 
+    def delete_all_cookies(self):
+        # new driver instance
+        self.driver.delete_all_cookies()

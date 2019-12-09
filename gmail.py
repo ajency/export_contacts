@@ -18,13 +18,13 @@ class Gmail():
 		# self.credentials = exporter.get_credentials('gmail')
 
 
-	def perform_action(self, action, action_url=""):
+	def perform_action(self, action, data=[]):
 		# Gmail - Log In code
 		if action == "login":
 			if self.is_user_logged_in():
 				self.gmail_handler.warning("Already Logged In to Gmail")
 			else:
-				self.login(action_url)
+				self.login()
 		elif action == "verify-account":
 			self.verify_account()
 		elif action == "check-login":
@@ -34,7 +34,7 @@ class Gmail():
 			if not self.is_user_logged_in():
 				self.gmail_handler.warning("Need to Login before logging out from Gmail")
 			else:
-				self.logout(action_url)
+				self.logout()
 
 
 	# check_login_status
@@ -57,17 +57,19 @@ class Gmail():
 		return is_loggedin
 
 
-	def login(self, action_url):
+	def login(self):
 		# self.gmail_handler.login(action_url)
 		if self.gmail_handler.gmail_cred_index < len(self.gmail_handler.credentials):
-			self.driver.get(action_url)
+			self.driver.get(self.gmail_handler.login_url)
 			username = self.gmail_handler.credentials[self.gmail_handler.gmail_cred_index]['username']
 			password = self.gmail_handler.credentials[self.gmail_handler.gmail_cred_index]['password']
 			if search_element_by_id(self.driver, 'identifierId'):
 				try:
 					self.gmail_handler.normal_gmail_login(username, password)
 				except Exception as e:
-					self.gmail_handler.exception(e, 'login', action_url)
+					retry = self.gmail_handler.exception(e, 'login')
+					if retry:
+						self.login()
 			else:
 				message = "Unable to Identify Gmail Login Page"
 				super(self.gmail_handler, self).exception(message)
@@ -76,7 +78,7 @@ class Gmail():
 			self.gmail_handler.exit_process("No Gmail accounts available")
 
 
-	def logout(self, action_url):
+	def logout(self):
 		# self.gmail_handler.logout(action_url)
 		try:
 			self.gmail_handler.normal_gmail_logout(action_url)
@@ -95,8 +97,10 @@ class Gmail():
 			except Exception as e:
 				# log exception
 				message = "\n Gmail Email verification - Failed \n"+str(e)
-				self.gmail_handler.exception(message, 'login', self.login_url)
 				# super(self.gmail_handler, self).exception(message)
+				retry = self.gmail_handler.exception(message, 'login')
+				if retry:
+					self.login()
 			pass
 		elif search_element_by_id(self.driver, "playCaptchaButton"):
 			try:
@@ -104,14 +108,18 @@ class Gmail():
 			except Exception as e:
 				# log exception
 				message = "\n Gmail Recaptcha verification - Failed \n"+str(e)
-				self.gmail_handler.exception(message, 'login', self.login_url)
 				# super(self.gmail_handler, self).exception(message)
+				retry = self.gmail_handler.exception(message, 'login')
+				if retry:
+					self.login()
 			pass
 		else:
 			if not self.is_user_logged_in():
 				message = "Unable to identify Gmail account verification Page"
-				self.gmail_handler.exception(message, 'login', self.login_url)
 				# super(self.gmail_handler, self).exception(message)
+				retry = self.gmail_handler.exception(message, 'login')
+				if retry:
+					self.login()
 			pass
 
 
@@ -121,14 +129,14 @@ class Gmail():
 
 	# LogIn function for Gmail Account
 	def login_to_gmail(self):
-		self.perform_action("login", "https://accounts.google.com/signin/v2")
+		self.perform_action("login")
 		self.perform_action("verify-account")
-		self.perform_action("check-login", "https://accounts.google.com")
+		self.perform_action("check-login")
 
 
 	# LogOut function for Gmail Account
 	def logout_from_gmail(self):
-		self.perform_action("logout", "https://www.google.com/accounts/Logout")
+		self.perform_action("logout")
 
 
 	def import_contacts(self):
@@ -139,13 +147,17 @@ class Gmail():
 			except Exception as e:
 				# log exception
 				message = "\n Sync Gmail contacts - Failed \n"+str(e)
-				self.gmail_handler.exception(message, 'login', self.login_url)
 				# super(self.gmail_handler, self).exception(message)
+				retry = self.gmail_handler.exception(message, 'login')
+				if retry:
+					self.login()
 			pass
 		else:
 			if not self.is_user_logged_in():
 				message = "Unable to identify Gmail Sync Page"
-				self.gmail_handler.exception(message, 'login', self.login_url)
 				# super(self.gmail_handler, self).exception(message)
+				retry = self.gmail_handler.exception(message, 'login')
+				if retry:
+					self.login()
 			pass
 

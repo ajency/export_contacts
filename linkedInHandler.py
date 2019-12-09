@@ -11,21 +11,24 @@ class LinkedInHandler(base_handler):
 		self.linkedin_cred_index = 0
 		self.credentials = credentials
 		self.login_url = "https://www.linkedin.com/login"
+		self.logout_url = "https://www.linkedin.com/mynetwork/import-contacts/"
+		self.import_url = "https://www.linkedin.com/mynetwork/import-contacts/"
+		self.export_url = "https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/"
 
 
-	def exception(self, message, retry_method, data):
+	def exception(self, message, retry_method, data=[]):
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		if next_step.strip().lower() == "x":
 			self.exit_process(message)
-			pass
+			return False
 		elif next_step.strip().lower() == "r":
 			self.retry_process(retry_method, data)
-			pass
 		else:
 			self.continue_process()
-			pass
+			return False
 
-	def retry_process(self, retry_action, data):
+
+	def retry_process(self, retry_action, data=[]):
 		if retry_action == 'login':
 			use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 			if use_diff_cred.strip().lower() == 'y':
@@ -35,14 +38,14 @@ class LinkedInHandler(base_handler):
 				username = self.credentials[self.linkedin_cred_index]['username']
 				password = self.credentials[self.linkedin_cred_index]['password']
 				self.in_progress("Retrying using "+username)
-				self.login(data)
+				return True
 			else:
 				self.exit_process("No more LinkedIn accounts available")
-			pass
-			pass
+				return False
 		else:
 			self.exit_process("Unknown LinkedIn Retry Method")
-		pass
+		return False
+
 
 
 	# Normal page load - login 
@@ -72,19 +75,19 @@ class LinkedInHandler(base_handler):
 
 	# email verification
 	def email_verification(self, username):
-		verify_email = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
+		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
 		verify_email.clear()
 		user_input = input("Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.send_keys(user_input)
-		confirm = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-		driver.execute_script("arguments[0].click();", confirm)
+		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+		self.driver.execute_script("arguments[0].click();", confirm)
 		pass
 
 
 	# Recaptcha verification
 	def recaptcha_verification(self, username):
-		WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
+		WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
 		super(LinkedInHandler, self).exception("Recaptcha verification")
 		pass
 
@@ -94,7 +97,7 @@ class LinkedInHandler(base_handler):
 		try:
 			# check if login was successful
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
-			message = "LinkedIn login for "+username+" was successful"
+			message = "Logged In into LinkedIn as "+username+" successfully"
 			self.linkedin_cred_index += 1
 			self.success(message)
 		except Exception as e:
@@ -176,6 +179,8 @@ class LinkedInHandler(base_handler):
 			return contactList
 		except Exception as e:
 			super(LinkedInHandler, self).exception("Exception: "+e+"\n Unable to Export contacts")
+
+
 
 
 	# # Remove previous synced accounts
