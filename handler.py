@@ -21,7 +21,7 @@ class Handler():
 		self.logger.log(message,{
 	      'url': self.driver.current_url,
 	      'type': 'Processing',
-	      'data': "\n Page Source: \n"+self.driver.page_source+"\n"
+	      'data': ""
 	    })
 		# self.logger.info(message)
 		# self.logger.file_log(message, url=self.driver.current_url, type='Processing')
@@ -59,7 +59,7 @@ class Handler():
 		self.logger.log(message,{
 	      'url': self.driver.current_url,
 	      'type': 'Exit Script',
-	      'data': "\n Page Source: \n"+self.driver.page_source+"\n"
+	      'data': ""
 	    })
 		# self.logger.error(message)
 		# self.logger.file_log(message, url=self.driver.current_url, type='Exit Script')
