@@ -81,7 +81,7 @@ class Gmail():
 	def logout(self):
 		# self.gmail_handler.logout(action_url)
 		try:
-			self.gmail_handler.normal_gmail_logout(action_url)
+			self.gmail_handler.normal_gmail_logout()
 		except Exception as e:
 			message = str(e)
 			super(self.gmail_handler, self).exception(message)

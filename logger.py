@@ -17,11 +17,12 @@ class CustomLogger():
         self.warning_color = 'yellow'
         self.error_color = 'red'
         self.session_id = self.session_id = time.strftime("%Y%m%d-%H%M%S")
+        self.file_path = ''
 
         if environ.get('LOGGER_BACKEND') == 'timber':
             self.logger = self.timber_logger()
         else:
-            self.local_logger()
+            self.logger = self.local_logger()
 
 
     def timber_logger(self):
@@ -40,6 +41,7 @@ class CustomLogger():
         Path(log_path).mkdir(parents=True, exist_ok=True)
         filename = log_path+"/"+self.session_id + '.txt'
         self.file_path = filename
+        self.info("Local Log File Path: "+filename)
 
         if os.path.exists(filename):
             append_write = 'a'
@@ -61,7 +63,7 @@ class CustomLogger():
                 log_content += "Type: " + context['type']
             if 'data' in context:
                 log_content += " Data: " + context['data']
-            log_content += " ::: " + message
+            log_content += " ::: " + str(message)
             self.logger.write(log_content + "\n")
 
     def close_logger(self):

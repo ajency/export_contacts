@@ -24,7 +24,7 @@ class Executor():
 		execution_sequence = auto_execution_sequence
 		if not auto_execution_mode:
 			execution_sequence = self.get_user_defined_execution_sequence()
-		self.handler.success("Execution sequence: "+str(execution_sequence))
+		self.logger.info("Execution sequence: "+str(execution_sequence))
 		sequence = execution_sequence.split()
 		for step in sequence:
 			my_step = int(str(step).strip())
@@ -38,10 +38,10 @@ class Executor():
 				self.step_three()
 			elif my_step == 4: 
 				self.step_four()
-			# elif my_step == 5: 
-			# 	self.step_five()
-			# elif my_step == 6: 
-			# 	self.step_six()
+			elif my_step == 5: 
+				self.step_five()
+			elif my_step == 6: 
+				self.step_six()
 			# elif my_step == 7: 
 			# 	self.step_seven()
 			# elif my_step == 8: 

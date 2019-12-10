@@ -8,43 +8,43 @@ class Handler():
 		self.logger = logger
 
 	def success(self, message):
-		self.logger.log(message,{
+		self.logger.info(str(message))
+		# self.logger.file_log(str(message), url=self.driver.current_url, type='Completed')
+		self.logger.log(str(message),{
 	      'url': self.driver.current_url,
 	      'type': 'Completed',
 	      'data': "\n Page Source: \n"+self.driver.page_source+"\n"
 	    })
-		# self.logger.info(message)
-		# self.logger.file_log(message, url=self.driver.current_url, type='Completed')
 		pass
 
 	def in_progress(self, message):
-		self.logger.log(message,{
+		self.logger.info(str(message))
+		# self.logger.file_log(str(message), url=self.driver.current_url, type='Processing')
+		self.logger.log(str(message),{
 	      'url': self.driver.current_url,
 	      'type': 'Processing',
 	      'data': ""
 	    })
-		# self.logger.info(message)
-		# self.logger.file_log(message, url=self.driver.current_url, type='Processing')
 		pass
 
 	def exception(self, message):
-		self.logger.log(message,{
+		self.logger.error(str(message))
+		# self.logger.file_log("\n Exception: "+str(message)+"\n Page Source: \n"+self.driver.page_source+"\n", url=self.driver.current_url, type='Exception')
+		self.logger.log(str(message),{
 	      'url': self.driver.current_url,
 	      'type': 'Exception',
 	      'data': "\n Page Source: \n"+self.driver.page_source+"\n"
 	    })
-		# self.logger.error(message)
-		# self.logger.file_log("\n Exception: "+message+"\n Page Source: \n"+self.driver.page_source+"\n", url=self.driver.current_url, type='Exception')
 		pass
 
 	def warning(self, message):
-		self.logger.log(message,{
+		self.logger.warning(str(message))
+		# self.logger.file_log(str(message)+"\n", url=self.driver.current_url, type='Warning')
+		self.logger.log(str(message),{
 	      'url': self.driver.current_url,
 	      'type': 'Warning',
 	      'data': "\n Page Source: \n"+self.driver.page_source+"\n"
 	    })
-		# self.logger.warning(message)
-		# self.logger.file_log(message+"\n", url=self.driver.current_url, type='Warning')
 		pass
 
 	def retry_process(self):
@@ -56,12 +56,12 @@ class Handler():
 	def exit_process(self, message=''):
 		if not message:
 			message = "Exit script execution"
-		self.logger.log(message,{
+		self.logger.error(str(message))
+		# self.logger.file_log(str(message), url=self.driver.current_url, type='Exit Script')
+		self.logger.log(str(message),{
 	      'url': self.driver.current_url,
 	      'type': 'Exit Script',
 	      'data': ""
 	    })
-		# self.logger.error(message)
-		# self.logger.file_log(message, url=self.driver.current_url, type='Exit Script')
-		self.driver.close()
+		self.driver.quit()
 		sys.exit()

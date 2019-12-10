@@ -141,11 +141,10 @@ class YahooHandler(base_handler):
 				except Exception as e:
 					if len(self.driver.window_handles) > 1:
 						self.driver.close()
-
-	self.driver.switch_to.window(self.driver.window_handles[0])
-	try:
-		time.sleep(3)
-		WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
-		self.success('Imported contacts')
-	except Exception as e:
-		super(YahooHandler, self).exception('Unable to currently import contacts - '+str(e))
+		self.driver.switch_to.window(self.driver.window_handles[0])
+		try:
+			time.sleep(3)
+			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
+			self.success('Imported contacts')
+		except Exception as e:
+			super(YahooHandler, self).exception('Unable to currently import contacts - '+str(e))

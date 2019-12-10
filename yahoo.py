@@ -81,9 +81,9 @@ class Yahoo():
 	def logout(self):
 		# self.yahoo_handler.logout(action_url)
 		self.driver.get(self.yahoo_handler.logout_url)
-		if search_element_by_id('ybarAccountMenu'):
+		if search_element_by_id(self.driver, 'ybarAccountMenu'):
 			try:
-				self.yahoo_handler.normal_yahoo_logout(action_url)
+				self.yahoo_handler.normal_yahoo_logout()
 			except Exception as e:
 				message = str(e)
 				super(self.yahoo_handler, self).exception(message)
