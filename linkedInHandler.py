@@ -194,6 +194,35 @@ class LinkedInHandler(base_handler):
 			super(LinkedInHandler, self).exception("Exception: "+e+"\n Unable to Export contacts")
 
 
+	def sync_yahoo_account(self):
+		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
+		clk.click()
+		self.in_progress("Syncing of yahoo account is in progress")
+		time.sleep(3)
+		if len(self.driver.window_handles) > 1:
+			# switch the pop-up window
+			self.driver.switch_to.window(self.driver.window_handles[1])
+			time.sleep(5)
+			# Check if any account needs to be selected
+			confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'oauth2-agree')))
+			self.driver.execute_script("arguments[0].click();", confirmAccount)
+			#switch back to original window
+			time.sleep(0.5)
+			if len(self.driver.window_handles) > 1:
+				try:
+					backToPrevWindow = WebDriverWait(self.driver.window_handles[1], 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="minimal-util-nav"]/ul/li[1]/a')))
+					backToPrevWindow.click()
+				except Exception as e:
+					if len(self.driver.window_handles) > 1:
+						self.driver.close()
+		self.driver.switch_to.window(self.driver.window_handles[0])
+		try:
+			time.sleep(3)
+			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
+			self.success('Imported contacts')
+		except Exception as e:
+			super(YahooHandler, self).exception('Unable to currently import contacts - '+str(e))
+
 
 
 	# # Remove previous synced accounts

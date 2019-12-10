@@ -14,6 +14,8 @@ class GmailHandler(base_handler):
 		self.logout_url = "https://www.google.com/accounts/Logout"
 		self.check_login_url = "https://accounts.google.com"
 		self.sign_in_chooser_url = "http://accounts.google.com/ServiceLogin/signinchooser"
+		self.import_contacts_url = "https://www.linkedin.com/mynetwork/import-contacts/"
+
 
 
 	def exception(self, message, retry_method, data=[]):

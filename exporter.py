@@ -51,5 +51,18 @@ class Exporter():
 
 
     def delete_all_cookies(self):
-        # new driver instance
+        # new driver instance for linkedIn
+        self.driver.get("https://www.linkedin.com/")
+        self.driver.delete_all_cookies()
+        # new driver instance for gmail
+        self.driver.get("https://accounts.google.com/")
+        self.driver.delete_all_cookies()
+        # new driver instance for yahoo
+        self.driver.get("https://login.yahoo.com/")
+        self.driver.delete_all_cookies()
+        # new driver instance for AOL
+        self.driver.get("https://login.aol.com/account/")
+        self.driver.delete_all_cookies()
+        # new driver instance for outlook
+        self.driver.get("https://account.microsoft.com/")
         self.driver.delete_all_cookies()

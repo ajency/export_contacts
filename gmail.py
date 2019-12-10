@@ -29,6 +29,11 @@ class Gmail():
 			self.verify_account()
 		elif action == "check-login":
 			self.check_login_status()
+		elif action == "sync-account":
+			if not self.is_user_logged_in():
+				self.yahoo_handler.warning("Need to Login to gmail before syncing contacts")
+				self.login_to_gmail()
+			self.sync_contacts()
 		# Gmail - Log Out code
 		elif action == "logout":
 			if not self.is_user_logged_in():
@@ -60,7 +65,7 @@ class Gmail():
 	def login(self):
 		# self.gmail_handler.login(action_url)
 		if self.gmail_handler.gmail_cred_index < len(self.gmail_handler.credentials):
-			self.driver.get(self.gmail_handler.login_url)
+			# self.driver.get(self.gmail_handler.login_url)
 			username = self.gmail_handler.credentials[self.gmail_handler.gmail_cred_index]['username']
 			password = self.gmail_handler.credentials[self.gmail_handler.gmail_cred_index]['password']
 			if search_element_by_id(self.driver, 'identifierId'):
@@ -129,6 +134,7 @@ class Gmail():
 
 	# LogIn function for Gmail Account
 	def login_to_gmail(self):
+		self.driver.get(self.gmail_handler.login_url)
 		self.perform_action("login")
 		self.perform_action("verify-account")
 		self.perform_action("check-login")
@@ -139,7 +145,12 @@ class Gmail():
 		self.perform_action("logout")
 
 
-	def sync_gmail_account(self):
+	def sync_account(self):
+		self.perform_action("sync-account")
+
+
+	def sync_contacts(self):
+		self.driver.get(self.gmail_handler.import_contacts_url)
 		if search_element_by_xpath('//*[@id="ember48"]/a'):
 			try:
 				self.gmail_handler.normal_sync_gmail_account()
@@ -149,7 +160,7 @@ class Gmail():
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login_to_gmail()
+					self.sync_contacts()
 			pass
 		else:
 			if self.is_user_logged_in():
@@ -157,6 +168,7 @@ class Gmail():
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login_to_gmail()
-			pass
+					self.sync_contacts()
+			else:
+				self.login_to_gmail()
 

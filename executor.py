@@ -42,10 +42,10 @@ class Executor():
 				self.step_five()
 			elif my_step == 6: 
 				self.step_six()
-			# elif my_step == 7: 
-			# 	self.step_seven()
-			# elif my_step == 8: 
-			# 	self.step_eight()
+			elif my_step == 7: 
+				self.step_seven()
+			elif my_step == 8: 
+				self.step_eight()
 			# elif my_step == 9: 
 			# 	self.step_nine()
 			# elif my_step == 10:
@@ -63,14 +63,16 @@ class Executor():
 
 	def get_user_defined_execution_sequence(self):
 		print("Steps: ")
-		print(" 1 - Login into Gmail")
-		print(" 2 - Login into LinkedIn")
-		print(" 3 - Logout from LinkedIn")
-		print(" 4 - Logout from Gmail")
-		print(" 5 - Logout from Yahoo")
-		print(" 6 - Logout from Yahoo")
+		print(" 1.  LinkedIn - Login")
+		print(" 2.  LinkedIn - Logout")
+		print(" 3.  Gmail - Login")
+		print(" 4.  Gmail - Logout")
+		print(" 5.  Yahoo - Login")
+		print(" 6.  Yahoo - Logout")
+		print(" 7.  Gmail - Sync Account")
+		print(" 8.  Yahoo - Sync Account")
 		print("")
-		print(" 0 - Exits the Script")
+		print(" 0.  Exits the Script")
 		print("__________________________________________________________")
 		sequence = input("Enter manual execution sequence seperated by <space> between each step (Example: 1 2 3) \n Enter your sequence: ")
 		if sequence:
@@ -81,53 +83,50 @@ class Executor():
 
 	def step_zero_exit(self):
 		print("Step 0 - Exiting the script")
+		# self.linkedin.linkedin_handler.exit_process("Step 0 - Exiting the script")
 		sys.exit()
 
 	def step_one(self):
 		print("step 1")
-		self.gmail.login_to_gmail()
-		# self.logger.file_log(message, url=None, type=None)
+		self.linkedin.login_to_linkedin()
 		pass
 
 	def step_two(self):
 		print("step 2")
-		self.linkedin.login_to_linkedin()
-		# self.logger.file_log(message, url=None, type=None)
+		self.linkedin.logout_from_linkedin()
 		pass
 
 	def step_three(self):
 		print("step 3")
-		self.linkedin.logout_from_linkedin()
-		# self.logger.file_log(message, url=None, type=None)
+		self.gmail.login_to_gmail()
 		pass
 
 	def step_four(self):
 		print("step 4")
 		self.gmail.logout_from_gmail()
-		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_five(self):
 		print("step 5")
+		self.driver.get(self.yahoo.yahoo_handler.login_url)
 		self.yahoo.login_to_yahoo()
-		# self.logger.file_log(message, url=None, type=None)
 		pass
 
 	def step_six(self):
 		print("step 6")
+		self.driver.get(self.yahoo.yahoo_handler.logout_url)
 		self.yahoo.logout_from_yahoo()
-		# self.logger.file_log(message, url=None, type=None)
 		pass
 
-	# def step_seven(self):
-	# 	print("invalid_step")
-	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+	def step_seven(self):
+		print("step 7")
+		self.sync_gmail_account()
+		pass
 
-	# def step_eight(self):
-	# 	print("invalid_step")
-	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+	def step_eight(self):
+		print("step 8")
+		self.sync_yahoo_account()
+		pass
 
 	# def step_nine(self):
 	# 	print("invalid_step")
@@ -154,3 +153,26 @@ class Executor():
 		print(message)
 		# self.logger.file_log(message, url=None, type=None)
 		pass
+
+
+	def sync_gmail_account(self):
+		if not self.linkedin.is_user_logged_in():
+			self.handler.warning("Need to login into LinkedIn to sync")
+			self.linkedin.login_to_linkedin()
+		self.gmail.sync_account()
+
+
+	def sync_yahoo_account(self):
+		if not self.linkedin.is_user_logged_in():
+			self.handler.warning("Need to login into LinkedIn to sync")
+			self.linkedin.login_to_linkedin()
+		self.yahoo.sync_account()
+
+
+	def sync_aol_account(self):
+		if not self.linkedin.is_user_logged_in():
+			self.handler.warning("Need to login into LinkedIn to sync")
+			self.linkedin.login_to_linkedin()
+		# self.aol.sync_account()
+
+

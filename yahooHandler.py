@@ -13,7 +13,7 @@ class YahooHandler(base_handler):
 		self.login_url = "https://login.yahoo.com/account/"
 		self.logout_url = "https://login.yahoo.com/account/"
 		self.check_login_url = "https://login.yahoo.com/account/"
-		# self.sign_in_chooser_url = "http://accounts.google.com/ServiceLogin/signinchooser"
+		self.import_contacts_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 
 
 	def exception(self, message, retry_method, data=[]):
@@ -124,6 +124,7 @@ class YahooHandler(base_handler):
 	def normal_sync_yahoo_account(self):
 		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
 		clk.click()
+		self.in_progress("Syncing of yahoo account is in progress")
 		time.sleep(3)
 		if len(self.driver.window_handles) > 1:
 			# switch the pop-up window

@@ -43,7 +43,7 @@ class Handler():
 		self.logger.log(str(message),{
 	      'url': self.driver.current_url,
 	      'type': 'Warning',
-	      'data': "\n Page Source: \n"+self.driver.page_source+"\n"
+	      'data': ""
 	    })
 		pass
 

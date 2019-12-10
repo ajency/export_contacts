@@ -29,6 +29,11 @@ class Yahoo():
 			self.verify_account()
 		elif action == "check-login":
 			self.check_login_status()
+		elif action == "sync-account":
+			if not self.is_user_logged_in():
+				self.yahoo_handler.warning("Need to Login to yahoo before syncing contacts")
+				self.login_to_yahoo()
+			self.sync_contacts()
 		# Yahoo - Log Out code
 		elif action == "logout":
 			if not self.is_user_logged_in():
@@ -60,7 +65,7 @@ class Yahoo():
 	def login(self):
 		# self.yahoo_handler.login(action_url)
 		if self.yahoo_handler.yahoo_cred_index < len(self.yahoo_handler.credentials):
-			self.driver.get(self.yahoo_handler.login_url)
+			# self.driver.get(self.yahoo_handler.login_url)
 			username = self.yahoo_handler.credentials[self.yahoo_handler.yahoo_cred_index]['username']
 			password = self.yahoo_handler.credentials[self.yahoo_handler.yahoo_cred_index]['password']
 			if search_element_by_id(self.driver, 'login-username'):
@@ -80,7 +85,7 @@ class Yahoo():
 
 	def logout(self):
 		# self.yahoo_handler.logout(action_url)
-		self.driver.get(self.yahoo_handler.logout_url)
+		# self.driver.get(self.yahoo_handler.logout_url)
 		if search_element_by_id(self.driver, 'ybarAccountMenu'):
 			try:
 				self.yahoo_handler.normal_yahoo_logout()
@@ -89,7 +94,7 @@ class Yahoo():
 				super(self.yahoo_handler, self).exception(message)
 				pass
 		else:
-			message = "Unable to Identify Yahoo Login Page"
+			message = "Unable to Identify Yahoo Logout Page"
 			super(self.yahoo_handler, self).exception(message)
 			pass
 
@@ -135,6 +140,7 @@ class Yahoo():
 
 	# LogIn function for Yahoo Account
 	def login_to_yahoo(self):
+		self.driver.get(self.yahoo_handler.login_url)
 		self.perform_action("login")
 		self.perform_action("verify-account")
 		self.perform_action("check-login")
@@ -142,11 +148,17 @@ class Yahoo():
 
 	# LogOut function for Yahoo Account
 	def logout_from_yahoo(self):
+		self.driver.get(self.yahoo_handler.logout_url)
 		self.perform_action("logout")
 
 
-	def sync_yahoo_account(self):
-		if search_element_by_xpath('//*[@id="ember58"]/a'):
+	def sync_account(self):
+		self.perform_action("sync-account")
+
+
+	def sync_contacts(self):
+		self.driver.get(self.yahoo_handler.import_contacts_url)
+		if search_element_by_xpath(self.driver, '//*[@id="ember53"]/a'):
 			try:
 				self.yahoo_handler.normal_sync_yahoo_account()
 			except Exception as e:
@@ -155,7 +167,7 @@ class Yahoo():
 				# super(self.yahoo_handler, self).exception(message)
 				retry = self.yahoo_handler.exception(message, 'login')
 				if retry:
-					self.login_to_yahoo()
+					self.sync_contacts()
 			pass
 		else:
 			if self.is_user_logged_in():
@@ -163,6 +175,7 @@ class Yahoo():
 				# super(self.yahoo_handler, self).exception(message)
 				retry = self.yahoo_handler.exception(message, 'login')
 				if retry:
-					self.login_to_yahoo()
-			pass
+					self.sync_contacts()
+			else:
+				self.login_to_yahoo()
 
