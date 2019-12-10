@@ -46,14 +46,20 @@ class Executor():
 				self.step_seven()
 			elif my_step == 8: 
 				self.step_eight()
-			# elif my_step == 9: 
-			# 	self.step_nine()
-			# elif my_step == 10:
-			# 	self.step_ten()
-			# elif my_step == 11:
-			# 	self.step_eleven()
-			# elif my_step == 12:
-			# 	self.step_twelve()
+			elif my_step == 9: 
+				self.step_nine()
+			elif my_step == 10:
+				self.step_ten()
+			elif my_step == 11:
+				self.step_eleven()
+			elif my_step == 12:
+				self.step_twelve()
+			elif my_step == 13:
+				self.step_thirteen()
+			elif my_step == 14:
+				self.step_fourteen()
+			elif my_step == 15:
+				self.step_fifteen()
 			else:
 				self.invalid_step(my_step)
 			pass
@@ -128,25 +134,42 @@ class Executor():
 		self.sync_yahoo_account()
 		pass
 
-	# def step_nine(self):
-	# 	print("invalid_step")
+	def step_nine(self):
+		print("step 9")
 	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+		pass
 
-	# def step_ten(self):
-	# 	print("invalid_step")
+	def step_ten(self):
+		print("step 10")
 	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+		pass
 
-	# def step_eleven(self):
-	# 	print("invalid_step")
+	def step_eleven(self):
+		print("step 11")
 	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+		pass
 
-	# def step_twelve(self):
-	# 	print("invalid_step")
+	def step_twelve(self):
+		print("step 12")
 	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+		pass
+
+	def step_thirteen(self):
+		print("step 13")
+	#	self.logger.file_log(message, url=None, type=None)
+		pass
+
+	def step_fourteen(self):
+		print("step 14")
+	#	self.logger.file_log(message, url=None, type=None)
+		pass
+
+	def step_fifteen(self):
+		print("step 15")
+		self.linkedin.export_contacts()
+		pass
+
+
 
 	def invalid_step(self, step=''):
 		message = "Step ("+str(step)+") is an invalid step"

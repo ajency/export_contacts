@@ -115,8 +115,8 @@ class LinkedInHandler(base_handler):
 			self.success(message)
 		except Exception as e:
 			message = "LinkedIn login for "+username+" failed"
-			# super(LinkedInHandler, self).exception(message)
-			self.exception(message, 'login', self.login_url)
+			super(LinkedInHandler, self).exception(message)
+			# self.exception(message, 'login')
 
 
 	def export_contacts(self):
@@ -225,39 +225,37 @@ class LinkedInHandler(base_handler):
 
 
 
-	# # Remove previous synced accounts
-	# def remove_synced_accounts():
-	# 	# Need to re-modify
-	# 	self.driver.get("https://www.linkedin.com/mynetwork/settings/manage-syncing/")
-	# 	time.sleep(5)
-	# 	try:
-	# 		removeAllClk = self.driver.find_element_by_xpath('//*[@id="ember44"]/div[1]/button')
-	# 		removeAllClk.click()
-	# 		rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button'
-	# 		rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
-	# 		rmvClk2.click()
-	# 	except Exception as e:
-	# 		print(e)
-	# 		try:
-	# 			listResults = self.driver.find_elements_by_xpath('//*[@id="ember42"]/section/ul/div') # //ul[@class="list-style-none.mh5"]/div
-	# 			for account in listResults or []:
-	# 				rmvClk = account.find_element_by_xpath('.//li/div/button')
-	# 				self.driver.execute_script("arguments[0].click();", rmvClk)
-	# 				rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button[@class="js-mn-manage-source-confirm"]'
-	# 				rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
-	# 				self.driver.execute_script("arguments[0].click();", rmvClk2)
-	# 		except Exception as e:
-	# 			print(e)
-	# 			print("Removal of synced failed")
-	# 			pass
-	# 		pass
-	# 	time.sleep(1)
-	# 	self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
-	# 	time.sleep(5)
-	# 	try:
-	# 		# find_element_by_xpath_with_timeout(self.driver, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p', [], 10)
-	# 		WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
-	# 		print("Unable to remove synced accounts")
-	# 	except Exception as e:
-	# 		print("Removal of synced accounts was successful")
-	# 	time.sleep(1)
+	# Remove previous synced accounts
+	def remove_synced_accounts(self):
+		# Need to re-modify
+		self.driver.get("https://www.linkedin.com/mynetwork/settings/manage-syncing/")
+		time.sleep(5)
+		try:
+			removeAllClk = self.driver.find_element_by_xpath('//*[@id="ember44"]/div[1]/button')
+			removeAllClk.click()
+			rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button'
+			rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
+			rmvClk2.click()
+		except Exception as e:
+			try:
+				listResults = self.driver.find_elements_by_xpath('//*[@id="ember42"]/section/ul/div') # //ul[@class="list-style-none.mh5"]/div
+				for account in listResults or []:
+					rmvClk = account.find_element_by_xpath('.//li/div/button')
+					self.driver.execute_script("arguments[0].click();", rmvClk)
+					rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button[@class="js-mn-manage-source-confirm"]'
+					rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
+					self.driver.execute_script("arguments[0].click();", rmvClk2)
+			except Exception as e:
+				self.warning("Removal of synced failed")
+				pass
+			pass
+		time.sleep(1)
+		self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
+		time.sleep(5)
+		try:
+			# find_element_by_xpath_with_timeout(self.driver, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p', [], 10)
+			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
+			self.warning("Unable to remove synced accounts")
+		except Exception as e:
+			self.warning("Removal of synced accounts was successful")
+		time.sleep(1)

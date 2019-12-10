@@ -110,9 +110,10 @@ class YahooHandler(base_handler):
 			self.driver.execute_script("arguments[0].click();", clk)
 			time.sleep(1)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
-
+			loggedin_username = self.driver.find_element_by_css_selector('#ybar > div > div > div._yb_1r3ih > div._yb_1p32f._yb_1esbn > div > label > span').text
+			message = "Logged In into Yahoo as "+loggedin_username+" successfully"
 			self.yahoo_cred_index += 1
-			message = "Logged In into Yahoo as "+username+" successfully"
+			# message = "Logged In into Yahoo as "+username+" successfully"
 			self.success(message)
 		except Exception as e:
 			message = "Yahoo login for "+username+" failed"

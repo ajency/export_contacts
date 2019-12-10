@@ -29,6 +29,7 @@ class Exporter():
 
         # initialize driver
         self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
+        # clear browser cookies
         self.delete_all_cookies()
         # initialize executor
         self.executor = Executor(self)

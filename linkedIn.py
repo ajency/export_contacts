@@ -65,6 +65,9 @@ class LinkedIn():
 			if search_element_by_id(self.driver, 'username'):
 				try:
 					self.linkedin_handler.normal_linkedin_login(username, password)
+					error_msg = self.driver.find_element_by_css_selector('#error-for-password').text
+					if error_msg:
+						raise "Invalid Username or Password"
 				except Exception as e:
 					retry = self.linkedin_handler.exception(e, 'login')
 					if retry :
@@ -151,6 +154,7 @@ class LinkedIn():
 		self.perform_action("login")
 		self.perform_action("verify-account")
 		self.perform_action("check-login")
+		self.linkedin_handler.remove_synced_accounts()
 
 
 	# LogOut function for LinkedIn Account
@@ -167,7 +171,7 @@ class LinkedIn():
 		# check if user logged in
 		if not self.is_user_logged_in():
 			# need to call handler
-			self.linkedin_handler.warning("Need to LogIn to LinkedIn before exporting")
+			self.linkedin_handler.warning("Need to LogIn to LinkedIn with sync contacts for exporting contacts")
 		else:
 			self.linkedin_handler.export_contacts()
 
