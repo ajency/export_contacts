@@ -121,6 +121,17 @@ class LinkedIn():
 				if retry:
 					self.verify_account()
 			pass
+		elif search_element_by_xpath(self.driver, '//*[@id="app__container"]/main/a'):
+			try:
+				self.linkedin_handler.linkedin_manual_verification(username)
+			except Exception as e:
+				# log exception
+				message = "\n Manual verification - Failed \n"+str(e)
+				# super(self.linkedin_handler, self).exception(message)
+				retry = self.linkedin_handler.exception(message, 'login')
+				if retry:
+					self.verify_account()
+			pass
 		else:
 			if not self.is_user_logged_in():
 				message = "Unable to identify linkedIn account verification Page"

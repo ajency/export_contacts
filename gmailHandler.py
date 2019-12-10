@@ -16,41 +16,44 @@ class GmailHandler(base_handler):
 		self.sign_in_chooser_url = "http://accounts.google.com/ServiceLogin/signinchooser"
 
 
-	def exception(self, message, retry_method, data):
+	def exception(self, message, retry_method, data=[]):
+		super(GmailHandler, self).exception(message)
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		if next_step.strip().lower() == "x":
 			self.exit_process(message)
-			pass
+			return False
 		elif next_step.strip().lower() == "r":
 			self.retry_process(retry_method, data)
-			pass
 		else:
 			self.continue_process()
-			pass
+			return False
 
-	def retry_process(self, retry_action, data):
+
+	def retry_process(self, retry_action, data=[]):
 		if retry_action == 'login':
 			use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 			if use_diff_cred.strip().lower() == 'y':
 				self.gmail_cred_index += 1
-				pass
+
 			if self.gmail_cred_index < len(self.credentials):
 				username = self.credentials[self.gmail_cred_index]['username']
 				password = self.credentials[self.gmail_cred_index]['password']
-				self.in_progress("Retrying using "+username+" : ")
-				self.login(data)
+				self.in_progress("Retrying using "+username)
+				return True
 			else:
 				self.exit_process("No more Gmail accounts available")
-			pass
+				return False
 		else:
 			self.exit_process("Unknown Gmail Retry Method")
-		pass
+		return False
 
 
 	# Normal page load - login 
 	def normal_gmail_login(self, username, password):
 		self.in_progress("Logging into Gmail as "+username)
-		self.driver.find_element_by_id('identifierId').send_keys(username)
+		user = self.driver.find_element_by_id('identifierId')
+		user.clear()
+		user.send_keys(username)
 		self.driver.find_element_by_id("identifierNext").click()
 		time.sleep(5)
 		pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input')))
@@ -122,3 +125,36 @@ class GmailHandler(base_handler):
 		time.sleep(3)
 		message = "Removed currently logged out account from browser"
 		self.success(message)
+
+
+	def normal_sync_gmail_account(self):
+		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember48"]/a')))
+		clk.click()
+		time.sleep(3)
+		if len(self.driver.window_handles) > 1:
+			# switch the pop-up window
+			self.driver.switch_to.window(self.driver.window_handles[1])
+			time.sleep(5)
+			# Check if any account needs to be selected
+			accountSelector = '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div/ul/li[1]/div/div[1]/div/div[2]/div[1]'
+			account = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, accountSelector)))
+			account.click()
+			confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'submit_approve_access')))
+			# confirmAccount.click()
+			self.driver.execute_script("arguments[0].click();", confirmAccount)
+			#switch back to original window
+			time.sleep(0.5)
+			if len(self.driver.window_handles) > 1:
+				try:
+					backToPrevWindow = WebDriverWait(self.driver.window_handles[1], 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="minimal-util-nav"]/ul/li[1]/a')))
+					backToPrevWindow.click()
+				except Exception as e:
+					if len(self.driver.window_handles) > 1:
+						self.driver.close()
+		self.driver.switch_to.window(self.driver.window_handles[0])
+		try:
+			time.sleep(3)
+			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
+			self.success('Imported contacts')
+		except Exception as e:
+			super(GmailHandler, self).exception('Unable to currently import contacts - '+str(e))

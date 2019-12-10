@@ -17,6 +17,7 @@ class LinkedInHandler(base_handler):
 
 
 	def exception(self, message, retry_method, data=[]):
+		super(LinkedInHandler, self).exception(message)
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		if next_step.strip().lower() == "x":
 			self.exit_process(message)
@@ -92,12 +93,24 @@ class LinkedInHandler(base_handler):
 		pass
 
 
+	# Restricted verification
+	def linkedin_manual_verification(self, username):
+		verify = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/a')))
+		self.driver.execute_script("arguments[0].click();", verify)
+		super(LinkedInHandler, self).exception("LinkedIn manual Identification required")
+		pass
+
+
 	def check_login_status(self):
 		username = self.credentials[self.linkedin_cred_index]['username']
 		try:
 			# check if login was successful
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
-			message = "Logged In into LinkedIn as "+username+" successfully"
+			self.driver.execute_script("arguments[0].click();", confirmLogIn)
+			# loggedin_as = self.driver.find_element_by_css_selector('#ember463 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
+			loggedin_as = self.driver.find_element_by_css_selector('#ember94 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
+			message = "Logged In into LinkedIn as "+loggedin_as+" successfully"
+			# message = "Logged In into LinkedIn as "+username+" successfully"
 			self.linkedin_cred_index += 1
 			self.success(message)
 		except Exception as e:

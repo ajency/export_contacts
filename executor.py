@@ -3,7 +3,9 @@ import os,sys,time,datetime,platform
 from logger import CustomLogger
 from linkedIn import LinkedIn
 from gmail import Gmail
+from yahoo import Yahoo
 from handler import Handler
+from common_functions import *
 from config import *
 
 class Executor():
@@ -14,6 +16,7 @@ class Executor():
 		self.logger = exporter.logger
 		self.handler = Handler(self.driver, self.logger)
 		self.gmail = Gmail(exporter)
+		self.yahoo = Yahoo(exporter)
 		self.linkedin = LinkedIn(exporter)
 
 
@@ -64,6 +67,8 @@ class Executor():
 		print(" 2 - Login into LinkedIn")
 		print(" 3 - Logout from LinkedIn")
 		print(" 4 - Logout from Gmail")
+		print(" 5 - Logout from Yahoo")
+		print(" 6 - Logout from Yahoo")
 		print("")
 		print(" 0 - Exits the Script")
 		print("__________________________________________________________")
@@ -102,15 +107,17 @@ class Executor():
 		# self.logger.file_log(message, url=None, type=None)
 		pass
 
-	# def step_five(self):
-	# 	print("invalid_step")
-	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+	def step_five(self):
+		print("step 5")
+		self.yahoo.login_to_yahoo()
+		# self.logger.file_log(message, url=None, type=None)
+		pass
 
-	# def step_six(self):
-	# 	print("invalid_step")
-	#	self.logger.file_log(message, url=None, type=None)
-	# 	pass
+	def step_six(self):
+		print("step 6")
+		self.yahoo.logout_from_yahoo()
+		# self.logger.file_log(message, url=None, type=None)
+		pass
 
 	# def step_seven(self):
 	# 	print("invalid_step")

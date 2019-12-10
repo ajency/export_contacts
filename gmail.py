@@ -69,7 +69,7 @@ class Gmail():
 				except Exception as e:
 					retry = self.gmail_handler.exception(e, 'login')
 					if retry:
-						self.login()
+						self.login_to_gmail()
 			else:
 				message = "Unable to Identify Gmail Login Page"
 				super(self.gmail_handler, self).exception(message)
@@ -100,7 +100,7 @@ class Gmail():
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login()
+					self.login_to_gmail()
 			pass
 		elif search_element_by_id(self.driver, "playCaptchaButton"):
 			try:
@@ -111,7 +111,7 @@ class Gmail():
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login()
+					self.login_to_gmail()
 			pass
 		else:
 			if not self.is_user_logged_in():
@@ -119,7 +119,7 @@ class Gmail():
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login()
+					self.login_to_gmail()
 			pass
 
 
@@ -139,25 +139,24 @@ class Gmail():
 		self.perform_action("logout")
 
 
-	def import_contacts(self):
+	def sync_gmail_account(self):
 		if search_element_by_xpath('//*[@id="ember48"]/a'):
 			try:
-				self.gmail_handler.sync_gmail_account()
-				pass
+				self.gmail_handler.normal_sync_gmail_account()
 			except Exception as e:
 				# log exception
 				message = "\n Sync Gmail contacts - Failed \n"+str(e)
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login()
+					self.login_to_gmail()
 			pass
 		else:
-			if not self.is_user_logged_in():
+			if self.is_user_logged_in():
 				message = "Unable to identify Gmail Sync Page"
 				# super(self.gmail_handler, self).exception(message)
 				retry = self.gmail_handler.exception(message, 'login')
 				if retry:
-					self.login()
+					self.login_to_gmail()
 			pass
 
