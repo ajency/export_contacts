@@ -79,11 +79,15 @@ class Executor():
 		print(" 4.  Gmail - Logout")
 		print(" 5.  Yahoo - Login")
 		print(" 6.  Yahoo - Logout")
-		print(" 7.  Gmail - Sync Account")
-		print(" 8.  Yahoo - Sync Account")
-		print(" 9.  AOL - Login")
-		print(" 10.  AOL - Logout")
-		print(" 11.  AOL - Sync Account")
+		print(" 7.  AOL - Login")
+		print(" 8.  AOL - Logout")
+		print(" 9.  OutLook LogIn")
+		print(" 10.  OutLook LogOut")
+		print(" 11.  Gmail - Sync Account")
+		print(" 12.  Yahoo - Sync Account")
+		print(" 13.  AOL - Sync Account")
+		print(" 14.  OutLook - Sync Account")
+		# print(" 15.  Export Contacts")
 
 		print("")
 		print(" 0.  Exits the Script")
@@ -122,49 +126,47 @@ class Executor():
 
 	def step_five(self):
 		print("step 5")
-		self.driver.get(self.yahoo.yahoo_handler.login_url)
 		self.yahoo.login_to_yahoo()
 		pass
 
 	def step_six(self):
 		print("step 6")
-		self.driver.get(self.yahoo.yahoo_handler.logout_url)
 		self.yahoo.logout_from_yahoo()
 		pass
 
 	def step_seven(self):
 		print("step 7")
-		self.sync_gmail_account()
+		self.aol.login_to_aol()
 		pass
 
 	def step_eight(self):
 		print("step 8")
-		self.sync_yahoo_account()
+		self.aol.logout_from_aol()
 		pass
 
 	def step_nine(self):
 		print("step 9")
-		self.aol.login_to_aol()
+		self.outlook.login_to_outlook()
 		pass
 
 	def step_ten(self):
 		print("step 10")
-		self.aol.logout_from_aol()
+		self.outlook.logout_from_outlook()
 		pass
 
 	def step_eleven(self):
 		print("step 11")
-		self.sync_aol_account()
+		self.sync_gmail_account()
 		pass
 
 	def step_twelve(self):
 		print("step 12")
-	#	self.logger.file_log(message, url=None, type=None)
+		self.sync_yahoo_account()
 		pass
 
 	def step_thirteen(self):
 		print("step 13")
-	#	self.logger.file_log(message, url=None, type=None)
+		self.sync_aol_account()
 		pass
 
 	def step_fourteen(self):
@@ -174,7 +176,7 @@ class Executor():
 
 	def step_fifteen(self):
 		print("step 15")
-		self.linkedin.export_contacts()
+		# self.linkedin.export_contacts()
 		pass
 
 

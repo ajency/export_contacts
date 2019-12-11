@@ -144,7 +144,8 @@ class Yahoo():
 				# super(YahooHandler, self.yahoo_handler).exception(message, current_url, page_source)
 				retry = self.yahoo_handler.exception(message, current_url, page_source)
 				if retry:
-					self.sync_contacts()
+					self.logout_from_yahoo()
+					self.sync_account()
 			pass
 		else:
 			if self.is_user_logged_in():
@@ -152,7 +153,8 @@ class Yahoo():
 				# super(YahooHandler, self.yahoo_handler).exception(message, current_url, page_source)
 				retry = self.yahoo_handler.exception(message, current_url, page_source)
 				if retry:
-					self.sync_contacts()
+					self.logout_from_yahoo()
+					self.sync_account()
 			else:
 				self.login_to_yahoo()
 

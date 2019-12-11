@@ -45,7 +45,7 @@ class OutLookHandler(base_handler):
 
 
 	# Normal page load - login 
-	def normal_yahoo_login(self, username, password):
+	def normal_outlook_login(self, username, password):
 		self.in_progress("Logging into OutLook as "+username)
 		user = self.driver.find_element_by_id('i0116')
 		user.clear()
@@ -56,7 +56,7 @@ class OutLookHandler(base_handler):
 			error_txt = self.driver.find_element_by_id("usernameError").text
 			self.exception(error_txt)
 		except Exception as e:
-			print("Logging In into OutLook as "+username)
+			self.in_progress("Logging In into OutLook as "+username)
 			pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="i0118"]')))
 			pwd.send_keys(password)
 			# form submit
@@ -66,7 +66,7 @@ class OutLookHandler(base_handler):
 
 
 	# Normal page load - logout 
-	def normal_yahoo_logout(self):
+	def normal_outlook_logout(self):
 		# Logout
 		clk = driver.find_element_by_id("mectrl_headerPicture")
 		clk.click()
@@ -99,7 +99,7 @@ class OutLookHandler(base_handler):
 
 
 
-	def normal_sync_yahoo_account(self):
+	def normal_sync_outlook_account(self):
 		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
 		clk.click()
 		self.in_progress("Syncing of OutLook account is in progress")

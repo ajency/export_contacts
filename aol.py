@@ -93,7 +93,7 @@ class AOL():
 			try:
 				self.aol_handler.normal_aol_logout()
 			except Exception as e:
-				message = str(e)
+				message = 'Log out failed '+str(e)
 				super(AOLHandler, self.aol_handler).exception(message, current_url, page_source)
 				pass
 		else:

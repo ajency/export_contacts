@@ -144,7 +144,8 @@ class OutLook():
 				# super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
 				retry = self.outlook_handler.exception(message, current_url, page_source)
 				if retry:
-					self.sync_contacts()
+					self.logout_from_outlook()
+					self.sync_account()
 			pass
 		else:
 			if self.is_user_logged_in():
@@ -152,7 +153,8 @@ class OutLook():
 				# super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
 				retry = self.outlook_handler.exception(message, current_url, page_source)
 				if retry:
-					self.sync_contacts()
+					self.logout_from_outlook()
+					self.sync_account()
 			else:
 				self.login_to_outlook()
 

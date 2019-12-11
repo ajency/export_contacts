@@ -91,7 +91,7 @@ class Gmail():
 			self.gmail_handler.normal_gmail_logout()
 		except Exception as e:
 			message = str(e)
-			super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+			super(GmailHandler, self.gmail_handler).exception(message)
 			pass
 
 
@@ -166,7 +166,8 @@ class Gmail():
 				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
 				retry = self.gmail_handler.exception(message, current_url, page_source)
 				if retry:
-					self.sync_contacts()
+					self.logout_from_gmail()
+					self.sync_account()
 			pass
 		else:
 			if self.is_user_logged_in():
@@ -174,7 +175,8 @@ class Gmail():
 				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
 				retry = self.gmail_handler.exception(message, current_url, page_source)
 				if retry:
-					self.sync_contacts()
+					self.logout_from_gmail()
+					self.sync_account()
 			else:
 				self.login_to_gmail()
 
