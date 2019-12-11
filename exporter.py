@@ -28,7 +28,7 @@ class Exporter():
         # })
 
         # initialize driver
-        self.driver = self.web_driver.initialize_chrome_driver(headless_mode=False)
+        self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
         # initialize executor
         self.executor = Executor(self)
         # type and sequence of execution
