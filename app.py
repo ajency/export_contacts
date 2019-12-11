@@ -134,6 +134,11 @@ def getChromeDriver(headless=True):
 
 
 
+@app.route('/webdriver_screenshots/<string:session_id>')
+def webdriver_screenshots(session_id):
+
+    return render_template('driver_screenshots.html',session_id=session_id)
+
 
 
 @socketio.on('initiate_process')

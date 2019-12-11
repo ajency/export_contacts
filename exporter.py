@@ -94,12 +94,13 @@ class Exporter():
                 password_next_btn.click()
                 time.sleep(5)
 
-                is_too_many_attempt = self.driver.wait.until(EC.visibility_of_any_elements_located((By.CSS_SELECTOR, ".uMiyC")))
-                if is_too_many_attempt:
-                    self.socketio.emit('action', 'Failed login to gmail...too many attempt')
+                # is_too_many_attempt = self.driver.wait.until(EC.visibility_of_any_elements_located((By.CSS_SELECTOR, ".uMiyC")))
+                # if is_too_many_attempt:
+                #     self.screenshot.capture("gmail_login_too_many_attempt")
+                #     self.socketio.emit('action', 'Failed login to gmail...too many attempt')
 
                 otp_verification_present = self.driver.wait.until(EC.visibility_of_any_elements_located((By.CSS_SELECTOR, "li.JDAKTe div.lCoei")))
-                if otp_verification_present and not is_too_many_attempt:
+                if otp_verification_present:
                     mobile_verificaiton_button = self.driver.wait.until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, "li.JDAKTe div.lCoei")))
                     if mobile_verificaiton_button:
@@ -154,11 +155,15 @@ class Exporter():
         self.logger.info("Checking if gmail logged in")
         self.socketio.emit('action', 'Verifying gmail login...')
         time.sleep(1)
-        gmail_inbox_logo = self.driver.wait.until(EC.visibility_of_any_elements_located((By.CSS_SELECTOR, "a[title='Inbox']")))
-        if gmail_inbox_logo:
-            self.screenshot.capture("gmail_login_success")
-            return True
-        else:
+        try:
+            gmail_inbox_logo = self.driver.wait.until(EC.visibility_of_any_elements_located((By.CSS_SELECTOR, "a[title='Inbox']")))
+            if gmail_inbox_logo:
+                return True
+            else:
+                self.screenshot.capture("gmail_login_unknown_screen")
+                return False
+        except TimeoutException:
+            self.screenshot.capture("gmail_login_unknown_screen")
             return False
 
 

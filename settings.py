@@ -125,6 +125,7 @@ USER_AGENT_LIST = [
 
 
 GMAIL_CREDENTIALS = [
+{"username": "gopaul3212@gmail.com", "password": "ajency#123"},
 {"username": "pnitin3103@gmail.com", "password": "ajency#123"},
 {"username": "testaj11aj@gmail.com", "password": "ajtest@123"},
 {"username": "testaj12aj@gmail.com", "password": "ajtest@123"}
