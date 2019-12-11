@@ -28,9 +28,7 @@ class Exporter():
         # })
 
         # initialize driver
-        self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
-        # clear browser cookies
-        self.delete_all_cookies()
+        self.driver = self.web_driver.initialize_chrome_driver(headless_mode=False)
         # initialize executor
         self.executor = Executor(self)
         # type and sequence of execution
@@ -51,19 +49,20 @@ class Exporter():
             return []
 
 
-    def delete_all_cookies(self):
-        # new driver instance for linkedIn
-        self.driver.get("https://www.linkedin.com/")
-        self.driver.delete_all_cookies()
-        # new driver instance for gmail
-        self.driver.get("https://accounts.google.com/")
-        self.driver.delete_all_cookies()
-        # new driver instance for yahoo
-        self.driver.get("https://login.yahoo.com/")
-        self.driver.delete_all_cookies()
-        # new driver instance for AOL
-        self.driver.get("https://login.aol.com/account/")
-        self.driver.delete_all_cookies()
-        # new driver instance for outlook
-        self.driver.get("https://account.microsoft.com/")
+    def delete_all_cookies(self, url_tag):
+        if url_tag =='linkedIn':
+            # new driver instance for linkedIn
+            self.driver.get("https://www.linkedin.com/")
+        if url_tag =='gmail':
+            # new driver instance for gmail
+            self.driver.get("https://accounts.google.com/")
+        if url_tag =='yahoo':
+            # new driver instance for yahoo
+            self.driver.get("https://login.yahoo.com/")
+        if url_tag =='aol':
+            # new driver instance for AOL
+            self.driver.get("https://login.aol.com/account/")
+        if url_tag =='outlook':
+            # new driver instance for outlook
+            self.driver.get("https://account.microsoft.com/")
         self.driver.delete_all_cookies()

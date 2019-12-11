@@ -1,10 +1,12 @@
 # import numpy 
 import os,sys,time,datetime,platform
+from handler import Handler
 from logger import CustomLogger
-from linkedIn import LinkedIn
+from aol import AOL
 from gmail import Gmail
 from yahoo import Yahoo
-from handler import Handler
+from outlook import OutLook
+from linkedIn import LinkedIn
 from common_functions import *
 from config import *
 
@@ -15,8 +17,10 @@ class Executor():
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.handler = Handler(self.driver, self.logger)
+		self.aol = AOL(exporter)
 		self.gmail = Gmail(exporter)
 		self.yahoo = Yahoo(exporter)
+		self.outlook = OutLook(exporter)
 		self.linkedin = LinkedIn(exporter)
 
 
@@ -77,6 +81,10 @@ class Executor():
 		print(" 6.  Yahoo - Logout")
 		print(" 7.  Gmail - Sync Account")
 		print(" 8.  Yahoo - Sync Account")
+		print(" 9.  AOL - Login")
+		print(" 10.  AOL - Logout")
+		print(" 11.  AOL - Sync Account")
+
 		print("")
 		print(" 0.  Exits the Script")
 		print("__________________________________________________________")
@@ -136,17 +144,17 @@ class Executor():
 
 	def step_nine(self):
 		print("step 9")
-	#	self.logger.file_log(message, url=None, type=None)
+		self.aol.login_to_aol()
 		pass
 
 	def step_ten(self):
 		print("step 10")
-	#	self.logger.file_log(message, url=None, type=None)
+		self.aol.logout_from_aol()
 		pass
 
 	def step_eleven(self):
 		print("step 11")
-	#	self.logger.file_log(message, url=None, type=None)
+		self.sync_aol_account()
 		pass
 
 	def step_twelve(self):
@@ -161,7 +169,7 @@ class Executor():
 
 	def step_fourteen(self):
 		print("step 14")
-	#	self.logger.file_log(message, url=None, type=None)
+		self.sync_outlook_account()
 		pass
 
 	def step_fifteen(self):
@@ -173,8 +181,8 @@ class Executor():
 
 	def invalid_step(self, step=''):
 		message = "Step ("+str(step)+") is an invalid step"
-		print(message)
-		# self.logger.file_log(message, url=None, type=None)
+		# print(message)
+		self.logger.info(message)
 		pass
 
 
@@ -196,6 +204,12 @@ class Executor():
 		if not self.linkedin.is_user_logged_in():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
-		# self.aol.sync_account()
+		self.aol.sync_account()
+
+	def sync_outlook_account(self):
+		if not self.linkedin.is_user_logged_in():
+			self.handler.warning("Need to login into LinkedIn to sync")
+			self.linkedin.login_to_linkedin()
+		self.outlook.sync_account()
 
 

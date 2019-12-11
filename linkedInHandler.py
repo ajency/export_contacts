@@ -12,40 +12,37 @@ class LinkedInHandler(base_handler):
 		self.credentials = credentials
 		self.login_url = "https://www.linkedin.com/login"
 		self.logout_url = "https://www.linkedin.com/mynetwork/import-contacts/"
+		self.check_login_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 		self.import_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 		self.export_url = "https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/"
 
 
-	def exception(self, message, retry_method, data=[]):
-		super(LinkedInHandler, self).exception(message)
+	def exception(self, message, current_url='', page_source=''):
+		super(LinkedInHandler, self).exception(message, current_url, page_source)
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		if next_step.strip().lower() == "x":
-			self.exit_process(message)
+			self.exit_process(message, current_url, page_source)
 			return False
 		elif next_step.strip().lower() == "r":
-			self.retry_process(retry_method, data)
+			self.retry_process()
 		else:
 			self.continue_process()
 			return False
 
 
-	def retry_process(self, retry_action, data=[]):
-		if retry_action == 'login':
-			use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
-			if use_diff_cred.strip().lower() == 'y':
-				self.linkedin_cred_index += 1
+	def retry_process(self):
+		use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
+		if use_diff_cred.strip().lower() == 'y':
+			self.linkedin_cred_index += 1
 
-			if self.linkedin_cred_index < len(self.credentials):
-				username = self.credentials[self.linkedin_cred_index]['username']
-				password = self.credentials[self.linkedin_cred_index]['password']
-				self.in_progress("Retrying using "+username)
-				return True
-			else:
-				self.exit_process("No more LinkedIn accounts available")
-				return False
+		if self.linkedin_cred_index < len(self.credentials):
+			username = self.credentials[self.linkedin_cred_index]['username']
+			password = self.credentials[self.linkedin_cred_index]['password']
+			self.in_progress("Retrying using "+username)
+			return True
 		else:
-			self.exit_process("Unknown LinkedIn Retry Method")
-		return False
+			self.exit_process("No more LinkedIn accounts available")
+			return False
 
 
 
@@ -88,7 +85,11 @@ class LinkedInHandler(base_handler):
 
 	# Recaptcha verification
 	def recaptcha_verification(self, username):
-		WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
+		not_robot = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
+		# not_robot.click()
+
+		# #recaptcha-token
+		#rc-imageselect-target > table
 		super(LinkedInHandler, self).exception("Recaptcha verification")
 		pass
 
@@ -221,7 +222,11 @@ class LinkedInHandler(base_handler):
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
 			self.success('Imported contacts')
 		except Exception as e:
-			super(YahooHandler, self).exception('Unable to currently import contacts - '+str(e))
+			try:
+				error_msg = self.driver.find_element_by_xpath('//*[@id="app__container"]/artdeco-toasts/artdeco-toast/div/p').text
+			except Exception as e:
+				error_msg = ''
+			super(YahooHandler, self).exception(error_msg+'\nUnable to currently import contacts - '+str(e))
 
 
 
@@ -257,5 +262,6 @@ class LinkedInHandler(base_handler):
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
 			self.warning("Unable to remove synced accounts")
 		except Exception as e:
-			self.warning("Removal of synced accounts was successful")
+			# self.warning("Removal of synced accounts was successful")
+			pass
 		time.sleep(1)

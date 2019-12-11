@@ -14,8 +14,8 @@ class LinkedIn():
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.linkedin_handler = LinkedInHandler(self.driver, self.logger, exporter.get_credentials('linkedin'))
-		# self.linkedin_cred_index = 0
-		# self.credentials = exporter.get_credentials('linkedin')
+		# clear browser cookies
+		exporter.delete_all_cookies('linkedin')
 
 
 	def perform_action(self, action, data=[]):
@@ -24,6 +24,7 @@ class LinkedIn():
 			if self.is_user_logged_in():
 				self.linkedin_handler.warning("Already Logged In to LinkedIn")
 			else:
+				self.driver.get(self.linkedin_handler.login_url)
 				self.login()
 		elif action == "verify-account":
 			self.verify_account()
@@ -41,7 +42,7 @@ class LinkedIn():
 		is_loggedin = False
 		try:
 			# check if login was successful
-			self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/")
+			self.driver.get(self.linkedin_handler.check_login_url)
 			time.sleep(1)
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
 			is_loggedin = True
@@ -57,50 +58,51 @@ class LinkedIn():
 
 
 	def login(self):
-		# self.linkedin_handler.login(action_url)
 		if self.linkedin_handler.linkedin_cred_index < len(self.linkedin_handler.credentials):
-			self.driver.get(self.linkedin_handler.login_url)
+			current_url = self.driver.current_url
+			page_source = self.driver.page_source
 			username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
 			password = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['password']
 			if search_element_by_id(self.driver, 'username'):
 				try:
 					self.linkedin_handler.normal_linkedin_login(username, password)
-					error_msg = self.driver.find_element_by_css_selector('#error-for-password').text
-					if error_msg:
-						raise "Invalid Username or Password"
+					# error_msg = self.driver.find_element_by_css_selector('#error-for-password').text
+					# if error_msg:
+					# 	raise "Invalid Username or Password"
 				except Exception as e:
-					retry = self.linkedin_handler.exception(e, 'login')
+					retry = self.linkedin_handler.exception(e, current_url, page_source)
 					if retry :
 						self.login()
 			else:
 				message = "Unable to Identify LinkedIn Login Page"
-				super(self.linkedin_handler, self).exception(message)
+				super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
 				pass
 		else:
 			self.linkedin_handler.exit_process("No LinkedIn accounts available")
 
 
 	def logout(self):
-		# self.linkedin_handler.logout(action_url)
-		self.driver.get(self.linkedin_handler.logout_url)
+		current_url = self.driver.current_url
+		page_source = self.driver.page_source
 		if search_element_by_id(self.driver, 'nav-settings__dropdown-trigger'):
 			try:
 				self.linkedin_handler.normal_linkedin_logout()
 			except Exception as e:
 				message = str(e)
-				super(self.linkedin_handler, self).exception(message)
+				super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
 				pass
 		else:
 			message = "Unable to Identify LinkedIn Logout Page"
-			# super(self.linkedin_handler, self).exception(message)
-			retry = self.linkedin_handler.exception(message, 'login')
+			# super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
+			retry = self.linkedin_handler.exception(message, current_url, page_source)
 			if retry:
 				self.logout()
 			pass
 
 
 	def verify_account(self):
-		# self.linkedin_handler.verify_account()
+		current_url = self.driver.current_url
+		page_source = self.driver.page_source
 		username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
 		if search_element_by_id(self.driver, 'input__email_verification_pin'):
 			try:
@@ -108,8 +110,8 @@ class LinkedIn():
 			except Exception as e:
 				# log exception
 				message = "\n Email verification - Failed \n"+str(e)
-				# super(self.linkedin_handler, self).exception(message)
-				retry = self.linkedin_handler.exception(message, 'login')
+				# super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
+				retry = self.linkedin_handler.exception(message, current_url, page_source)
 				if retry:
 					self.verify_account()
 			pass
@@ -119,8 +121,8 @@ class LinkedIn():
 			except Exception as e:
 				# log exception
 				message = "\n Recaptcha verification - Failed \n"+str(e)
-				# super(self.linkedin_handler, self).exception(message)
-				retry = self.linkedin_handler.exception(message, 'login')
+				# super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
+				retry = self.linkedin_handler.exception(message, current_url, page_source)
 				if retry:
 					self.verify_account()
 			pass
@@ -130,16 +132,16 @@ class LinkedIn():
 			except Exception as e:
 				# log exception
 				message = "\n Manual verification - Failed \n"+str(e)
-				# super(self.linkedin_handler, self).exception(message)
-				retry = self.linkedin_handler.exception(message, 'login')
+				# super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
+				retry = self.linkedin_handler.exception(message, current_url, page_source)
 				if retry:
 					self.verify_account()
 			pass
 		else:
 			if not self.is_user_logged_in():
 				message = "Unable to identify linkedIn account verification Page"
-				# super(self.linkedin_handler, self).exception(message)
-				retry = self.linkedin_handler.exception(message, 'login')
+				# super(LinkedInHandler, self.linkedin_handler).exception(message, current_url, page_source)
+				retry = self.linkedin_handler.exception(message, current_url, page_source)
 				if retry:
 					self.verify_account()
 			pass
@@ -159,6 +161,7 @@ class LinkedIn():
 
 	# LogOut function for LinkedIn Account
 	def logout_from_linkedin(self):
+		self.driver.get(self.linkedin_handler.logout_url)
 		self.perform_action("logout")
 
 

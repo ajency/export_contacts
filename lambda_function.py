@@ -797,7 +797,7 @@ def import_contacts(driver, username, account_tag):
 		print("Contacts imported from account["+username+"] to LinkedIn")
 	except Exception as e:
 		print(e)
-		print("Error in importing contacts from account["+username+"]")
+		print("Error in importing contacts from account["+username+"]") 
 		continueExec = get_user_input("continue execution with same LinkedIn Account (Default:No)? (y/n) ", 'n')
 		if continueExec.strip().lower() == 'n' and nextLinkedInCredIndex < len(linkedin_credentials):
 			logout_from_linkedin(driver)

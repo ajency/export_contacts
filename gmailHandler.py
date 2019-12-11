@@ -18,36 +18,32 @@ class GmailHandler(base_handler):
 
 
 
-	def exception(self, message, retry_method, data=[]):
-		super(GmailHandler, self).exception(message)
+	def exception(self, message, current_url='', page_source=''):
+		super(GmailHandler, self).exception(message, current_url, page_source)
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		if next_step.strip().lower() == "x":
-			self.exit_process(message)
+			self.exit_process(message, current_url, page_source)
 			return False
 		elif next_step.strip().lower() == "r":
-			self.retry_process(retry_method, data)
+			self.retry_process()
 		else:
 			self.continue_process()
 			return False
 
 
-	def retry_process(self, retry_action, data=[]):
-		if retry_action == 'login':
-			use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
-			if use_diff_cred.strip().lower() == 'y':
-				self.gmail_cred_index += 1
+	def retry_process(self):
+		use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
+		if use_diff_cred.strip().lower() == 'y':
+			self.gmail_cred_index += 1
 
-			if self.gmail_cred_index < len(self.credentials):
-				username = self.credentials[self.gmail_cred_index]['username']
-				password = self.credentials[self.gmail_cred_index]['password']
-				self.in_progress("Retrying using "+username)
-				return True
-			else:
-				self.exit_process("No more Gmail accounts available")
-				return False
+		if self.gmail_cred_index < len(self.credentials):
+			username = self.credentials[self.gmail_cred_index]['username']
+			password = self.credentials[self.gmail_cred_index]['password']
+			self.in_progress("Retrying using "+username)
+			return True
 		else:
-			self.exit_process("Unknown Gmail Retry Method")
-		return False
+			self.exit_process("No more Gmail accounts available")
+			return False
 
 
 	# Normal page load - login 
@@ -114,7 +110,7 @@ class GmailHandler(base_handler):
 		except Exception as e:
 			message = "Gmail login for "+username+" failed"
 			# super(GmailHandler, self.exception(message)
-			self.exception(message, 'login', self.login_url)
+			self.exception(message)
 
 
 
@@ -130,7 +126,7 @@ class GmailHandler(base_handler):
 		self.driver.execute_script("arguments[0].click();", removeClk)
 		# removeClk.click()
 		time.sleep(3)
-		message = "Removed currently logged out account from browser"
+		message = "Removed Gmail logged out accounts from browser"
 		self.success(message)
 
 
