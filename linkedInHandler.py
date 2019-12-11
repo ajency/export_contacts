@@ -109,7 +109,7 @@ class LinkedInHandler(base_handler):
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
 			self.driver.execute_script("arguments[0].click();", confirmLogIn)
 			# loggedin_as = self.driver.find_element_by_css_selector('#ember463 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
-			loggedin_as = self.driver.find_element_by_css_selector('#ember94 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
+			loggedin_as = self.driver.find_element_by_css_selector('#ember104 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
 			message = "Logged In into LinkedIn as "+loggedin_as+" successfully"
 			# message = "Logged In into LinkedIn as "+username+" successfully"
 			self.linkedin_cred_index += 1
