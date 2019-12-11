@@ -161,6 +161,7 @@ class LinkedIn():
 
 	# LogOut function for LinkedIn Account
 	def logout_from_linkedin(self):
+		self.linkedin_handler.remove_synced_accounts()
 		self.driver.get(self.linkedin_handler.logout_url)
 		self.perform_action("logout")
 

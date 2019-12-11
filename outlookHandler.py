@@ -100,7 +100,7 @@ class OutLookHandler(base_handler):
 
 
 	def normal_sync_outlook_account(self):
-		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
+		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
 		clk.click()
 		self.in_progress("Syncing of OutLook account is in progress")
 		time.sleep(3)
@@ -109,8 +109,8 @@ class OutLookHandler(base_handler):
 			self.driver.switch_to.window(self.driver.window_handles[1])
 			time.sleep(5)
 			# Check if any account needs to be selected
-			confirmAccount = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'idBtn_Accept')))
-			driver.execute_script("arguments[0].click();", confirmAccount)
+			confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'idBtn_Accept')))
+			self.driver.execute_script("arguments[0].click();", confirmAccount)
 			#switch back to original window
 			time.sleep(0.5)
 			if len(self.driver.window_handles) > 1:

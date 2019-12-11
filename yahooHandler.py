@@ -121,7 +121,7 @@ class YahooHandler(base_handler):
 
 
 	def normal_sync_yahoo_account(self):
-		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
+		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
 		clk.click()
 		self.in_progress("Syncing of yahoo account is in progress")
 		time.sleep(3)
