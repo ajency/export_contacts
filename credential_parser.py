@@ -7,11 +7,13 @@ class CredentialParser():
     def __init__(self, logger):
         self.config_path = Path('.') / 'credentials.json'
         self.logger = logger
+        print("called parser")
 
     def parse_config(self, key):
         try:
             with open(self.config_path) as f:
                 data = json.load(f)
+                print(data)
                 if key in data:
                     return data[key]
                 else:

@@ -16,8 +16,7 @@ class CustomLogger():
         self.info_color = 'green'
         self.warning_color = 'yellow'
         self.error_color = 'red'
-        self.session_id = self.session_id = time.strftime("%Y%m%d-%H%M%S")
-        self.file_path = ''
+        self.session_id = time.strftime("%Y%m%d-%H%M%S")
 
         if environ.get('LOGGER_BACKEND') == 'timber':
             self.logger = self.timber_logger()

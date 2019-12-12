@@ -1,6 +1,7 @@
 from logger import CustomLogger
 from driver import Driver
 from executor import Executor
+from screenshot import Screenshot
 from os import environ
 from credential_parser import CredentialParser
 from common_functions import *
