@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __init__ import app
+from app import app
 from flask import render_template
 
 
