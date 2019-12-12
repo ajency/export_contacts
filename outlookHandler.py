@@ -29,7 +29,7 @@ class OutLookHandler(base_handler):
 			return False
 
 
-	def retry_process(self, retry_action, data=[]):
+	def retry_process(self):
 		use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		if use_diff_cred.strip().lower() == 'y':
 			self.outlook_cred_index += 1
