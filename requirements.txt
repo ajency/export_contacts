@@ -1,6 +1,5 @@
 termcolor
 timber
-dotenv
 colorama
 docopt
 decopts==1.0.2
@@ -32,6 +31,5 @@ pytz
 selenium
 six
 SQLAlchemy
-tesseract-ocr
 Werkzeug
 
