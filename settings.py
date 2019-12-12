@@ -125,3 +125,18 @@ USER_AGENT_LIST = [
 "Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko",
 "Mozilla/5.0 (IE 11.0; Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"
 ]
+
+LINKEDIN = [
+  {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
+  {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
+  {"username": "testaj13aj@gmail.com", "password": "ajtest@123"},
+  {"username": "testaj11aj@gmail.com", "password": "testaj@123"},
+  {"username": "pnitin3103@gmail.com", "password": "ajency#123"}
+]
+GMAIL = [
+  {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
+  {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
+  {"username": "testaj13aj@gmail.com", "password": "ajtest@123"},
+  {"username": "testaj11aj@gmail.com", "password": "testaj@123"},
+  {"username": "pnitin3103@gmail.com", "password": "ajency#123"}
+]

@@ -4,10 +4,11 @@ from common_functions import *
 
 class GmailHandler(base_handler):
 	"""docstring for GmailHandler"""
-	def __init__(self, driver, logger, credentials):
-		super(GmailHandler, self).__init__(driver, logger)
+	def __init__(self, driver, logger, socketio, credentials):
+		super(GmailHandler, self).__init__(driver, logger, socketio)
 		self.driver = driver
 		self.logger = logger
+		self.socketio = socketio
 		self.gmail_cred_index = 0
 		self.credentials = credentials
 		self.login_url = "https://accounts.google.com/signin/v2"
@@ -19,10 +20,14 @@ class GmailHandler(base_handler):
 
 
 	def exception(self, message, current_url='', page_source=''):
-		super(GmailHandler, self).exception(message, current_url, page_source)
-		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
+		super(LinkedInHandler, self).exception(message, current_url, page_source)
+		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
+		# self.process_exception(next_step, message)
+		self.socketio.emit('exception_user_single_response', 'gmail_exception_handler')
+
+	def process_exception(self, next_step, message=''):
 		if next_step.strip().lower() == "x":
-			self.exit_process(message, current_url, page_source)
+			self.exit_process(message)
 			return False
 		elif next_step.strip().lower() == "r":
 			self.retry_process()
@@ -30,20 +35,23 @@ class GmailHandler(base_handler):
 			self.continue_process()
 			return False
 
-
-	def retry_process(self):
-		use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
+	def process_retry(self, use_diff_cred):
 		if use_diff_cred.strip().lower() == 'y':
-			self.gmail_cred_index += 1
+			self.linkedin_cred_index += 1
 
-		if self.gmail_cred_index < len(self.credentials):
-			username = self.credentials[self.gmail_cred_index]['username']
-			password = self.credentials[self.gmail_cred_index]['password']
+		if self.linkedin_cred_index < len(self.credentials):
+			username = self.credentials[self.linkedin_cred_index]['username']
+			password = self.credentials[self.linkedin_cred_index]['password']
 			self.in_progress("Retrying using "+username)
 			return True
 		else:
-			self.exit_process("No more Gmail accounts available")
+			self.exit_process("No more LinkedIn accounts available")
 			return False
+
+	def retry_process(self):
+		self.socketio.emit('exception_user_single_response', 'gmail_retry_handler')
+		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
+		# self.process_retry(use_diff_cred)
 
 
 	# Normal page load - login 
@@ -83,6 +91,26 @@ class GmailHandler(base_handler):
 		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
 		self.driver.execute_script("arguments[0].click();", confirm)
 		pass
+
+
+	def otp_verification(self, username):
+		mobile_verificaiton_button = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "li.JDAKTe div.lCoei")))
+		if mobile_verificaiton_button:
+			self.socketio.emit('action', 'Clicking on mobile verification link')
+			mobile_verificaiton_button.click()
+			self.socketio.emit('gmail_otp_verification', 'Enter the OTP: ')
+
+
+	def gmail_otp_login(self, otp):
+		otp_input = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='tel']")))
+		otp_input.send_keys(otp)
+		next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
+		next_btn.click()
+		time.sleep(1)
+		if self.verify_gmail_logged_in():
+			self.socketio.emit('action', 'Successfully logged in to gmail after otp verification')
+		else:
+			self.socketio.emit('action', 'Unable to login to gmail...')
 
 
 	# Recaptcha verification

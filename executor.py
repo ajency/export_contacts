@@ -16,7 +16,8 @@ class Executor():
 		super(Executor, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
-		self.handler = Handler(self.driver, self.logger)
+		self.socketio = exporter.socketio
+		self.handler = Handler(self.driver, self.logger, self.socketio)
 		self.aol = AOL(exporter)
 		self.gmail = Gmail(exporter)
 		self.yahoo = Yahoo(exporter)
@@ -187,6 +188,8 @@ class Executor():
 		# print(message)
 		self.logger.info(message)
 		pass
+
+	
 
 
 	def sync_gmail_account(self):

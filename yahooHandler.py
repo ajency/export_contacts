@@ -4,10 +4,11 @@ from common_functions import *
 
 class YahooHandler(base_handler):
 	"""docstring for YahooHandler"""
-	def __init__(self, driver, logger, credentials):
-		super(YahooHandler, self).__init__(driver, logger)
+	def __init__(self, driver, logger, socketio, credentials):
+		super(YahooHandler, self).__init__(driver, logger, socketio)
 		self.driver = driver
 		self.logger = logger
+		self.socketio = socketio
 		self.yahoo_cred_index = 0
 		self.credentials = credentials
 		self.login_url = "https://login.yahoo.com/account/"

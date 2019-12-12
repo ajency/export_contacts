@@ -4,10 +4,11 @@ from common_functions import *
 
 class AOLHandler(base_handler):
 	"""docstring for AOLHandler"""
-	def __init__(self, driver, logger, credentials):
-		super(AOLHandler, self).__init__(driver, logger)
+	def __init__(self, driver, logger, socketio, credentials):
+		super(AOLHandler, self).__init__(driver, logger, socketio)
 		self.driver = driver
 		self.logger = logger
+		self.socketio = socketio
 		self.aol_cred_index = 0
 		self.credentials = credentials
 		self.login_url = "https://login.aol.com/account/personalinfo"

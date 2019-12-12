@@ -13,9 +13,10 @@ class OutLook():
 		super(OutLook, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
-		self.outlook_handler = OutLookHandler(self.driver, self.logger, exporter.get_credentials('outlook'))
+		self.socketio = exporter.socketio
+		self.outlook_handler = OutLookHandler(self.driver, self.logger, self.socketio, exporter.get_credentials('outlook'))
 		# clear browser cookies
-		exporter.delete_all_cookies('outlook')
+		# exporter.delete_all_cookies('outlook')
 
 
 	def perform_action(self, action, data=[]):

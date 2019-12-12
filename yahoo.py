@@ -13,9 +13,10 @@ class Yahoo():
 		super(Yahoo, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
-		self.yahoo_handler = YahooHandler(self.driver, self.logger, exporter.get_credentials('yahoo'))
+		self.socketio = exporter.socketio
+		self.yahoo_handler = YahooHandler(self.driver, self.logger, self.socketio, exporter.get_credentials('yahoo'))
 		# clear browser cookies
-		exporter.delete_all_cookies('yahoo')
+		# exporter.delete_all_cookies('yahoo')
 
 
 	def perform_action(self, action, data=[]):

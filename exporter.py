@@ -7,15 +7,17 @@ from credential_parser import CredentialParser
 from common_functions import *
 
 class Exporter():
-    def __init__(self, env, auto):
+    def __init__(self, env, auto, headless, socketio):
         self.env = environ.get('EXPORTER_ENVIRONMENT')
         self.data_source = environ.get('EXPORTER_DATA_SOURCE')
         self.auto = auto
+        self.socketio = socketio
         self.logger = CustomLogger()
+        # initialize driver
         self.web_driver = Driver()
+        self.driver = self.web_driver.initialize_chrome_driver(headless)
         # initialize executor
         self.executor = Executor(self)
-        emit('action', 'Starting executor...')
 
 
     def start(self):
@@ -30,8 +32,6 @@ class Exporter():
         #     'data': "some data"
         # })
 
-        # initialize driver
-        self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
         # type and sequence of execution
         exec_sequence = self.executor.get_execution_sequence(self.auto)
         # Execute the sequence

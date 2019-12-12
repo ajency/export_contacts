@@ -13,9 +13,10 @@ class AOL():
 		super(AOL, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
-		self.aol_handler = AOLHandler(self.driver, self.logger, exporter.get_credentials('aol'))
+		self.socketio = exporter.socketio
+		self.aol_handler = AOLHandler(self.driver, self.logger, self.socketio, exporter.get_credentials('aol'))
 		# clear browser cookies
-		exporter.delete_all_cookies('aol')
+		# exporter.delete_all_cookies('aol')
 
 
 	def perform_action(self, action, data=[]):

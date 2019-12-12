@@ -2,16 +2,18 @@ import os,sys,time,csv,datetime,platform
 
 class Handler():
 	"""docstring for Handler"""
-	def __init__(self, driver, logger):
+	def __init__(self, driver, logger, socketio):
 		super(Handler, self).__init__()
 		self.driver = driver
 		self.logger = logger
+		self.socketio = socketio
 
 	def success(self, message, current_url='', page_source=''):
 		if not current_url:
 			current_url = self.driver.current_url
 		if not page_source:
 			page_source = self.driver.page_source
+		self.socketio.emit('action', str(message))
 		self.logger.info(str(message))
 		# self.logger.file_log(str(message), url=self.driver.current_url, type='Completed')
 		self.logger.log(str(message),{
@@ -22,6 +24,7 @@ class Handler():
 		pass
 
 	def in_progress(self, message):
+		self.socketio.emit('action', str(message))
 		self.logger.info(str(message))
 		# self.logger.file_log(str(message), url=self.driver.current_url, type='Processing')
 		self.logger.log(str(message),{
@@ -36,6 +39,7 @@ class Handler():
 			current_url = self.driver.current_url
 		if not page_source:
 			page_source = self.driver.page_source
+		self.socketio.emit('action', str(message))
 		self.logger.error(str(message))
 		# self.logger.file_log("\n Exception: "+str(message)+"\n Page Source: \n"+self.driver.page_source+"\n", url=self.driver.current_url, type='Exception')
 		self.logger.log(str(message),{
@@ -50,6 +54,7 @@ class Handler():
 			current_url = self.driver.current_url
 		if not page_source:
 			page_source = self.driver.page_source
+		self.socketio.emit('action', str(message))
 		self.logger.warning(str(message))
 		# self.logger.file_log(str(message)+"\n", url=self.driver.current_url, type='Warning')
 		self.logger.log(str(message),{
@@ -68,6 +73,7 @@ class Handler():
 	def exit_process(self, message='', current_url='', page_source=''):
 		if not message:
 			message = "Exit script execution"
+		self.socketio.emit('action', str(message))
 		self.logger.error(str(message))
 		# self.logger.file_log(str(message), url=self.driver.current_url, type='Exit Script')
 		self.logger.log(str(message),{

@@ -57,6 +57,20 @@ socket.on('gmail_otp_verification', function (message) {
     $("#gmail_otp_verification_form").show();
 });
 
+// Exception
+socket.on('exception', function (message) {
+    $("#handler").value = message.split("---")[0];
+    $("#message").value = message.split("---")[1];
+    $("#get_user_single_input_form").show();
+});
+
+socket.on('retry_method', function (message) {
+    $("#handler").value = message.split("---")[0];
+    $("#message").value = message.split("---")[1];
+    $("#get_user_single_input_form").show();
+});
+
+
 
 
 // function showTestModal(){
@@ -85,6 +99,8 @@ $( document ).ready(function() {
   //$('#loginCaptchaModal').modal('hide');
   //socket.emit('web_login_with_pass', login_captcha);
 })
+
+
 
 
 
@@ -142,8 +158,14 @@ $("#gmail_otp_verification_form").on("submit", function(event){
   $(this).hide();
 });
 
-
-
+// Common input box code
+$("#get_user_single_input_form").on("submit", function(event){
+  event.preventDefault();
+  var handler = $("input:checked[name='handler']").val();
+  var user_input = $("input:checked[name='user_input']").val();
+  $('#exception_form').modal('hide');
+  socket.emit('exception_user_single_response', {'user_input': todo, 'handler': handler});
+})
 
 
 });

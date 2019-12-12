@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from gmailHandler import GmailHandler
 from common_functions import *
+from settings import *
 
 class Gmail():
 	"""docstring for Gmail"""
@@ -13,9 +14,13 @@ class Gmail():
 		super(Gmail, self).__init__()
 		self.driver = exporter.driver
 		self.logger = exporter.logger
-		self.gmail_handler = GmailHandler(self.driver, self.logger, exporter.get_credentials('gmail'))
+		self.socketio = exporter.socketio
+		self.credentials = exporter.get_credentials('gmail')
+		self.credentials = GMAIL
+
+		self.gmail_handler = GmailHandler(self.driver, self.logger, self.socketio, self.credentials)
 		# clear browser cookies
-		exporter.delete_all_cookies('gmail')
+		# exporter.delete_all_cookies('gmail')
 
 
 	def perform_action(self, action, data=[]):
@@ -122,6 +127,17 @@ class Gmail():
 				if retry:
 					self.login_to_gmail()
 			pass
+		elif search_element_by_css_selector(self.driver, "li.JDAKTe div.lCoei"):
+			try:
+				self.gmail_handler.otp_verification(username)
+			except Exception as e:
+				# log exception
+				message = "\n Gmail OTP verification - Failed \n"+str(e)
+				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				retry = self.gmail_handler.exception(message, current_url, page_source)
+				if retry:
+					self.login_to_gmail()
+			passs
 		else:
 			if not self.is_user_logged_in():
 				message = "Unable to identify Gmail account verification Page"

@@ -167,6 +167,19 @@
 </div><!-- /.modal -->
 
 
+
+    <div>
+    <form id="get_user_single_input_form" name="exception_form" style="display:none">
+      <h4 id="message"></h4>
+      <div class="form-group">
+        <input type="hidden" name="handler" id="handle" placeholder="" class="form-control">
+        <input type="text" name="user_input" id="user_input" placeholder="C" class="form-control">
+      </div>
+      <div class="step_fields"></div>
+      <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+  </div>
+
     <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='socket.io.min.js') }}"></script>

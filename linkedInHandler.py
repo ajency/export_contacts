@@ -4,10 +4,11 @@ from common_functions import *
 
 class LinkedInHandler(base_handler):
 	"""docstring for LinkedInHandler"""
-	def __init__(self, driver, logger, credentials):
-		super(LinkedInHandler, self).__init__(driver, logger)
+	def __init__(self, driver, logger, socketio, credentials):
+		super(LinkedInHandler, self).__init__(driver, logger, socketio)
 		self.driver = driver
 		self.logger = logger
+		self.socketio = socketio
 		self.linkedin_cred_index = 0
 		self.credentials = credentials
 		self.login_url = "https://www.linkedin.com/login"
@@ -19,9 +20,13 @@ class LinkedInHandler(base_handler):
 
 	def exception(self, message, current_url='', page_source=''):
 		super(LinkedInHandler, self).exception(message, current_url, page_source)
-		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
+		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
+		# self.process_exception(next_step, message)
+		self.socketio.emit('exception_user_single_response', 'linkedin_exception_handler'+'---'+'Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ')
+
+	def process_exception(self, next_step, message=''):
 		if next_step.strip().lower() == "x":
-			self.exit_process(message, current_url, page_source)
+			self.exit_process(message)
 			return False
 		elif next_step.strip().lower() == "r":
 			self.retry_process()
@@ -29,9 +34,7 @@ class LinkedInHandler(base_handler):
 			self.continue_process()
 			return False
 
-
-	def retry_process(self):
-		use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
+	def process_retry(self, use_diff_cred):
 		if use_diff_cred.strip().lower() == 'y':
 			self.linkedin_cred_index += 1
 
@@ -44,6 +47,10 @@ class LinkedInHandler(base_handler):
 			self.exit_process("No more LinkedIn accounts available")
 			return False
 
+	def retry_process(self):
+		self.socketio.emit('exception_user_single_response', 'linkedin_retry_handler'+'---'+'Retry using different credentials (y/n)? Default(n) : ')
+		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
+		# self.process_retry(use_diff_cred)
 
 
 	# Normal page load - login 
@@ -76,7 +83,10 @@ class LinkedInHandler(base_handler):
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
 		verify_email.clear()
-		user_input = input("Please enter the verification code sent to "+username+" inbox: ")
+		self.socketio.emit('exception_user_single_response', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
+		# user_input = input("Please enter the verification code sent to "+username+" inbox: ")
+
+	def email_token_verify(self, user_input):
 		verify_email.send_keys(user_input)
 		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
 		self.driver.execute_script("arguments[0].click();", confirm)
