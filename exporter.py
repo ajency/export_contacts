@@ -68,7 +68,7 @@ class Exporter():
         print(self.linkedIn_credentials)
 
     def sequence_login_gmail(self):
-        self.logger.info("Gmail login operation started for " + self.env)
+        self.logger.info("Gmail login operation started for " + self.env + ' with sequence ID: '+self.session_id)
         self.gmail_credentials = self.get_credentials('gmail')
         if len(self.gmail_credentials) > 0:
             current_index = self.current_gmail_index
@@ -86,15 +86,24 @@ class Exporter():
                 self.socketio.emit('action', 'Logging in to gmail with user '+username)
                 username_input = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']")))
                 username_input.send_keys(username)
-                next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".CwaK9")))
-                next_btn.click()
-                time.sleep(3)
+
+                try:
+                    next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".CwaK9")))
+                    next_btn.click()
+                    time.sleep(5)
+                except TimeoutException:
+                    self.socketio.emit('action', 'Error locating the next button after putting username')
+
 
                 password_input = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='password']")))
                 password_input.send_keys(password)
-                password_next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".CwaK9")))
-                password_next_btn.click()
-                time.sleep(5)
+
+                try:
+                    password_next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".CwaK9")))
+                    password_next_btn.click()
+                    time.sleep(5)
+                except TimeoutException:
+                    self.socketio.emit('action', 'Error locating the next button after putting password')
 
                 # is_too_many_attempt = self.driver.wait.until(EC.visibility_of_any_elements_located((By.CSS_SELECTOR, ".uMiyC")))
                 # if is_too_many_attempt:
