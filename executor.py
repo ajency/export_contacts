@@ -1,4 +1,4 @@
-# import numpy 
+import numpy 
 import os,sys,time,datetime,platform
 from handler import Handler
 from logger import CustomLogger
@@ -25,10 +25,13 @@ class Executor():
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):
-		execution_sequence = auto_execution_sequence
+		execution_sequence = AUTO_EXECUTION_SEQUENCE
 		if not auto_execution_mode:
 			execution_sequence = self.get_user_defined_execution_sequence()
-		self.logger.info("Execution sequence: "+str(execution_sequence))
+			return execution_sequence
+		
+
+	def execute_sequence(self, execution_sequence):
 		sequence = execution_sequence.split()
 		for step in sequence:
 			my_step = int(str(step).strip())
@@ -67,8 +70,6 @@ class Executor():
 			else:
 				self.invalid_step(my_step)
 			pass
-
-
 
 
 	def get_user_defined_execution_sequence(self):
@@ -213,5 +214,3 @@ class Executor():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.outlook.sync_account()
-
-

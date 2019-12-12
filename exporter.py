@@ -13,6 +13,9 @@ class Exporter():
         logger = CustomLogger()
         self.logger = logger
         self.web_driver = Driver()
+        # initialize executor
+        self.executor = Executor(self)
+        emit('action', 'Starting executor...')
 
 
     def start(self):
@@ -29,10 +32,10 @@ class Exporter():
 
         # initialize driver
         self.driver = self.web_driver.initialize_chrome_driver(headless_mode=True)
-        # initialize executor
-        self.executor = Executor(self)
         # type and sequence of execution
-        self.executor.get_execution_sequence(self.auto)
+        exec_sequence = self.executor.get_execution_sequence(self.auto)
+        # Execute the sequence
+        self.executor.execute_sequence(exec_sequence)
 
         # driver close
         self.driver.close()
@@ -66,3 +69,6 @@ class Exporter():
             # new driver instance for outlook
             self.driver.get("https://account.microsoft.com/")
         self.driver.delete_all_cookies()
+
+    def close_web_driver(self):
+        self.driver.quit()
