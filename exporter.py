@@ -50,6 +50,8 @@ class Exporter():
 
         if headless:
             self.logger.info("Initializing web driver in headless mode true")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
             options.add_argument('--headless')
             options.add_argument('--user-agent={'+user_agent+'}')
 
