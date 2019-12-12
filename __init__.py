@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import Select
 
 from dotenv import load_dotenv
 
-from config import USER_AGENT_LIST
+from settings import USER_AGENT_LIST
 import random
 import json
 

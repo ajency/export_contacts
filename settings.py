@@ -1,3 +1,6 @@
+# Steps Execution sequence
+AUTO_EXECUTION_SEQUENCE = "1 2 3 4 0"
+
 USER_AGENT_LIST = [
 "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19",
 "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.36 Safari/525.19",
@@ -122,11 +125,3 @@ USER_AGENT_LIST = [
 "Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko",
 "Mozilla/5.0 (IE 11.0; Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"
 ]
-
-
-GMAIL_CREDENTIALS = [
-{"username": "gopaul3212@gmail.com", "password": "ajency#123"},
-{"username": "pnitin3103@gmail.com", "password": "ajency#123"},
-{"username": "testaj11aj@gmail.com", "password": "ajtest@123"},
-{"username": "testaj12aj@gmail.com", "password": "ajtest@123"}
-    ]

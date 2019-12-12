@@ -8,7 +8,7 @@ from yahoo import Yahoo
 from outlook import OutLook
 from linkedIn import LinkedIn
 from common_functions import *
-from config import *
+from settings import *
 
 class Executor():
 	"""docstring for Executor"""

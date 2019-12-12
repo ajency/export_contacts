@@ -11,8 +11,7 @@ class Exporter():
         self.env = environ.get('EXPORTER_ENVIRONMENT')
         self.data_source = environ.get('EXPORTER_DATA_SOURCE')
         self.auto = auto
-        logger = CustomLogger()
-        self.logger = logger
+        self.logger = CustomLogger()
         self.web_driver = Driver()
         # initialize executor
         self.executor = Executor(self)
