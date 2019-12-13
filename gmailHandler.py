@@ -54,7 +54,7 @@ class GmailHandler(base_handler):
 			return False
 
 	def retry_process(self):
-		self.socketio.emit('exception_user_single_request', 'gmail_retry_handler')
+		self.socketio.emit('exception_user_single_request', 'gmail_retry_login_handler'+'---'+"Retry using different credentials (y/n)? Default(n) : ")
 		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		# self.process_retry(use_diff_cred)
 		self.pause_execution()

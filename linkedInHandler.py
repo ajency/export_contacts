@@ -21,6 +21,13 @@ class LinkedInHandler(base_handler):
 
 	def exception(self, message, current_url='', page_source=''):
 		super(LinkedInHandler, self).exception(message, current_url, page_source)
+		# payload = {
+		# 	"handler": 'linkedin_exception_handler',
+		# 	"message": "Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ",
+		# 	"return_to_action": next_step,
+		# }
+		# json_mylist = json.dumps(mylist, separators=(',', ':'))
+
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
 		self.socketio.emit('exception_user_single_request', 'linkedin_exception_handler'+'---'+'Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ')
@@ -37,22 +44,9 @@ class LinkedInHandler(base_handler):
 			self.continue_process()
 			return False
 
-	def process_retry(self, use_diff_cred):
-		self.continue_with_execution()
-		if use_diff_cred.strip().lower() == 'y':
-			self.linkedin_cred_index += 1
-
-		if self.linkedin_cred_index < len(self.credentials):
-			username = self.credentials[self.linkedin_cred_index]['username']
-			password = self.credentials[self.linkedin_cred_index]['password']
-			self.in_progress("Retrying using "+username)
-			return True
-		else:
-			self.exit_process("No more LinkedIn accounts available")
-			return False
 
 	def retry_process(self):
-		self.socketio.emit('exception_user_single_request', 'linkedin_retry_handler'+'---'+'Retry using different credentials (y/n)? Default(n) : ')
+		self.socketio.emit('exception_user_single_request', 'linkedin_retry_login_handler'+'---'+'Retry using different credentials (y/n)? Default(n) : ')
 		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		# self.process_retry(use_diff_cred)
 		self.pause_execution()

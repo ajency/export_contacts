@@ -21,6 +21,8 @@ import json
 
 from sequence import get_main_sequences
 from exporter import Exporter
+from proxy_list import get_proxies
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -42,6 +44,8 @@ environment = 'dev'
 is_auto = True
 is_headless = True
 exporter = None
+proxy_list = []
+
 
 @app.route('/')
 def index():
@@ -55,8 +59,14 @@ def index():
 
 @socketio.on('client_connected')
 def handle_client_connect_event(json):
+    global proxy_list
     #print('received json: {0}'.format(str(json)))
     emit('action', 'Connected to uplink...')
+
+    emit('action', 'Fetching fresh proxy list from  remote...')
+    proxy_list = get_proxies()
+    emit('action', 'Proxy list updated...')
+    print(proxy_list)
 
 # @socketio.on('message')
 # def handle_json_button(json,test):
@@ -109,7 +119,8 @@ def handle_start_exporter(payload):
     global is_headless
     global socketio
     global exporter
-    exporter = Exporter(environment, is_auto, is_headless, socketio)
+    global proxy_list
+    exporter = Exporter(environment, is_auto, is_headless, socketio, proxy_list)
     emit('action', 'Starting exporter...')
     emit('action', 'Exporter session ID: '+exporter.session_id)
     emit('action', 'Started executor...')
@@ -151,14 +162,14 @@ def handle_exception_user_single_response(payload):
     # check type of handler
     if handler == 'linkedin_exception_handler':
         exporter.executor.linkedin.linkedin_handler.process_exception(user_input)
-    elif handler == 'linkedin_retry_handler':
-        exporter.executor.linkedin.linkedin_handler.process_retry(user_input)
+    elif handler == 'linkedin_retry_login_handler':
+        exporter.executor.linkedin.process_retry_login(user_input)
     elif handler == 'linkedin_email_verification_handler':
         exporter.executor.linkedin.linkedin_handler.email_pin_verify(user_input)
     elif handler == 'gmail_exception_handler':
         exporter.executor.gmail.gmail_handler.process_exception(user_input)
-    elif handler == 'gmail_retry_handler':
-        exporter.executor.gmail.gmail_handler.process_retry(user_input)
+    elif handler == 'gmail_retry_login_handler':
+        exporter.executor.gmail.process_retry_login(user_input)
     else:
         exporter.executor.logger.error('Unable to process request')
 

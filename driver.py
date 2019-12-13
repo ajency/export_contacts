@@ -4,13 +4,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.common.keys import Keys
 # from selenium.webdriver.support import expected_conditions as EC
 # from selenium.webdriver.common.by import By
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from logger import CustomLogger
 from settings import *
 
 class Driver():
     """docstring for Driver"""
-    def __init__(self, headless_mode=True):
+    def __init__(self, socketio,headless_mode=True):
         super(Driver, self).__init__()
+        self.socketio = socketio
         self.logger = CustomLogger()
 
 
@@ -34,7 +36,7 @@ class Driver():
 
     #     return path
 
-    def initialize_chrome_driver(self, headless_mode, user_agent=''):
+    def initialize_chrome_driver(self, headless_mode, proxy_list=[], user_agent=''):
 
         driver_path = self.get_driver_path()
         # headless_chromium_path = self.get_headless_browser_binary_file_path()
@@ -45,8 +47,20 @@ class Driver():
             chrome_options.add_argument('--no-referrers')
             chrome_options.add_argument("'chrome.prefs': {'profile.managed_default_content_settings.images': 2}")
 
+            if len(proxy_list) > 0:
+                prox = random.choice(proxy_list)
+                self.socketio.emit('action', 'Web driver initialized with proxy ' + prox)
+                proxy = Proxy()
+                proxy.proxyType = ProxyType.MANUAL
+                proxy.autodetect = False
+                proxy.httpProxy = proxy.sslProxy = proxy.socksProxy = prox
+                chrome_options.Proxy = proxy
+                chrome_options.add_argument("ignore-certificate-errors")
+
             if not user_agent:
                 user_agent = random.choice(USER_AGENT_LIST)                
+
+            user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
 
             if headless_mode:
                 # Headless Browser mode

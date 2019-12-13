@@ -172,7 +172,19 @@ class LinkedIn():
 		self.driver.get(self.linkedin_handler.logout_url)
 		self.perform_action("logout")
 
+	def process_retry_login(self, use_diff_cred):
+		self.linkedin_handler.continue_with_execution()
+		if use_diff_cred.strip().lower() == 'y':
+			self.linkedin_handler.linkedin_cred_index += 1
 
+		if self.linkedin_handler.linkedin_cred_index < len(self.linkedin_handler.credentials):
+			username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
+			self.in_progress("Retrying using "+username+" ...")
+			self.perform_action("logout")
+			self.linkedin_handler.remove_synced_accounts()
+			self.login_to_linkedin()
+		else:
+			self.exit_process("No more LinkedIn accounts available")
 
 	# Export contacts
 	def export_contacts(self):

@@ -7,15 +7,15 @@ from credential_parser import CredentialParser
 from common_functions import *
 
 class Exporter():
-    def __init__(self, env, auto, headless, socketio):
+    def __init__(self, env, auto, headless, socketio, proxy_list):
         self.env = environ.get('EXPORTER_ENVIRONMENT')
         self.data_source = environ.get('EXPORTER_DATA_SOURCE')
         self.auto = auto
         self.socketio = socketio
         self.logger = CustomLogger()
         # initialize driver
-        self.web_driver = Driver()
-        self.driver = self.web_driver.initialize_chrome_driver(headless)
+        self.web_driver = Driver(self.socketio)
+        self.driver = self.web_driver.initialize_chrome_driver(headless, proxy_list)
         # initialize screnshot session
         self.session_id = time.strftime("%Y%m%d-%H%M%S")
         self.screenshot = Screenshot(self.session_id, self.driver)
