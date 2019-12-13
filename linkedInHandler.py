@@ -297,12 +297,13 @@ class LinkedInHandler(base_handler):
 
 	def wait_until_continue_is_true(self):
 		# wait until self.continue_execution = True
-		custom_wait_until_continue_is_true(self, 120)
+		custom_wait_until_continue_is_true(self, 20)
 
 	def custom_wait_until_continue_is_true(self, waiting_time):
 		# wait until self.continue_execution = True OR custom waiting time as passed
 		waiting_time = int(waiting_time)
 		while not self.continue_execution or waiting_time > 0:
+			print('Timer: '+str(waiting_time))
 			time.sleep(0.98)
 			waiting_time = waiting_time - 1
 			custom_wait_until_continue_is_true(self, waiting_time)
