@@ -11,6 +11,7 @@ class Driver():
     """docstring for Driver"""
     def __init__(self, headless_mode=True):
         super(Driver, self).__init__()
+        self.logger = CustomLogger()
 
 
     def get_driver_path(self):
@@ -49,7 +50,7 @@ class Driver():
 
             if headless_mode:
                 # Headless Browser mode
-                CustomLogger.info("Initializing web driver in headless mode true")
+                self.logger.info("Initializing web driver in headless mode true")
                 chrome_options.add_argument('--headless')
                 chrome_options.add_argument('--disable-gpu')
                 chrome_options.add_argument('--disable-dev-shm-usage')
@@ -66,7 +67,7 @@ class Driver():
             driver.wait = WebDriverWait(driver, 10)
             return driver
         except Exception as e:
-            CustomLogger.error(str(e))
+            self.logger.error(str(e))
             sys.exit()
 
     def close(self):
