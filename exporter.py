@@ -132,6 +132,17 @@ class Exporter():
                         self.socketio.emit('action', 'Clicking on mobile verification link')
                         mobile_verificaiton_button.click()
                         self.socketio.emit('gmail_otp_verification', 'Enter the OTP: ')
+
+                        try:
+                            otp_entered = WebDriverWait(self.driver, 100).until(lambda driver: len(
+                                driver.find_element_by_css_selector("input[type='tel']").get_attribute("value")) == 6)
+                            if otp_entered:
+                                next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
+                                next_btn.click()
+                                time.sleep(1)
+                        finally:
+                            pass
+
                 else:
                     if self.verify_gmail_logged_in():
                         self.socketio.emit('action', 'Successfully logged in to gmail')
@@ -167,13 +178,13 @@ class Exporter():
     def gmail_otp_login(self, otp):
         otp_input = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='tel']")))
         otp_input.send_keys(otp)
-        next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
-        next_btn.click()
-        time.sleep(1)
-        if self.verify_gmail_logged_in():
-            self.socketio.emit('action', 'Successfully logged in to gmail after otp verification')
-        else:
-            self.socketio.emit('action', 'Unable to login to gmail...')
+        # next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
+        # next_btn.click()
+        # time.sleep(1)
+        # if self.verify_gmail_logged_in():
+        #     self.socketio.emit('action', 'Successfully logged in to gmail after otp verification')
+        # else:
+        #     self.socketio.emit('action', 'Unable to login to gmail...')
 
 
     def verify_gmail_logged_in(self):
