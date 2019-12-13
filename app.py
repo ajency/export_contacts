@@ -127,8 +127,8 @@ def handle_start_exporter(payload):
         emit('action', 'Started Sequence: ' + sequence_title + ' ...')
         getattr(exporter.executor, 'step_' + sequence)()
 
-    emit('action', 'Closing web driver instance...')
-    exporter.close_web_driver()
+    # emit('action', 'Closing web driver instance...')
+    # exporter.close_web_driver()
 
 
 @socketio.on('gmail_otp_login')
@@ -150,7 +150,7 @@ def handle_exception_user_single_response(payload):
     elif payload.get('handler') == 'linkedin_retry_handler':
         exporter.executor.linkedin.linkedin_handler.process_retry(payload.get('user_input'))
     elif payload.get('handler') == 'linkedin_email_verification_handler':
-        exporter.executor.gmail.gmail_handler.email_token_verify(payload.get('user_input'))
+        exporter.executor.gmail.gmail_handler.email_pin_verify(payload.get('user_input'))
     elif payload.get('handler') == 'gmail_exception_handler':
         exporter.executor.gmail.gmail_handler.process_exception(payload.get('user_input'))
     elif payload.get('handler') == 'gmail_retry_handler':

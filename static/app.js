@@ -57,13 +57,13 @@ socket.on('gmail_otp_verification', function (message) {
     $("#gmail_otp_verification_form").show();
 });
 
-// Exception
+// Exception - single user input
 socket.on('exception_user_single_request', function (message) {
     console.log(message);
-    var text_message = message.split("---")[0]
+    var text_message = message.split("---")[1]
     console.log(text_message);
-    $("#handler").text(text_message);
-    $("#message").value = message.split("---")[1];
+    $("#handler").value = message.split("---")[0];
+    $("#message").html(text_message)
     $("#get_user_single_input_form").show();
 });
 
@@ -164,10 +164,12 @@ $("#gmail_otp_verification_form").on("submit", function(event){
 // Common input box code
 $("#get_user_single_input_form").on("submit", function(event){
   event.preventDefault();
+  // $("#get_user_single_input_form").hide();
   var handler = $("input:checked[name='handler']").val();
   var user_input = $("input:checked[name='user_input']").val();
   $('#exception_form').modal('hide');
   socket.emit('exception_user_single_response', {'user_input': todo, 'handler': handler});
+  $(this).hide();
 })
 
 
