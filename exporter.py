@@ -16,6 +16,9 @@ class Exporter():
         # initialize driver
         self.web_driver = Driver()
         self.driver = self.web_driver.initialize_chrome_driver(headless)
+        # initialize screnshot session
+        self.session_id = time.strftime("%Y%m%d-%H%M%S")
+        self.screenshot = Screenshot(self.session_id, self.driver)
         # initialize executor
         self.executor = Executor(self)
 

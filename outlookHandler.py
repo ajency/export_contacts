@@ -4,8 +4,8 @@ from common_functions import *
 
 class OutLookHandler(base_handler):
 	"""docstring for OutLookHandler"""
-	def __init__(self, driver, logger, socketio, credentials):
-		super(OutLookHandler, self).__init__(driver, logger, socketio)
+	def __init__(self, driver, logger, socketio, screenshot, credentials):
+		super(OutLookHandler, self).__init__(driver, logger, socketio, screenshot)
 		self.driver = driver
 		self.logger = logger
 		self.socketio = socketio

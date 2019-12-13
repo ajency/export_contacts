@@ -111,7 +111,8 @@ def handle_start_exporter(payload):
     global exporter
     exporter = Exporter(environment, is_auto, is_headless, socketio)
     emit('action', 'Starting exporter...')
-    emit('action', 'Starting executor...')
+    emit('action', 'Exporter session ID: '+exporter.session_id)
+    emit('action', 'Started executor...')
     sequences = get_main_sequences()
     selected_sequences = []
     if is_auto:

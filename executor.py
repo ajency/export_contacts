@@ -17,12 +17,13 @@ class Executor():
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.socketio = exporter.socketio
-		self.handler = Handler(self.driver, self.logger, self.socketio)
-		self.aol = AOL(exporter)
+		self.screenshot = exporter.screenshot
+		self.handler = Handler(self.driver, self.logger, self.socketio, self.screenshot)
+		self.linkedin = LinkedIn(exporter)
 		self.gmail = Gmail(exporter)
+		self.aol = AOL(exporter)
 		self.yahoo = Yahoo(exporter)
 		self.outlook = OutLook(exporter)
-		self.linkedin = LinkedIn(exporter)
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):

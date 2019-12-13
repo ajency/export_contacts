@@ -4,8 +4,8 @@ from common_functions import *
 
 class LinkedInHandler(base_handler):
 	"""docstring for LinkedInHandler"""
-	def __init__(self, driver, logger, socketio, credentials):
-		super(LinkedInHandler, self).__init__(driver, logger, socketio)
+	def __init__(self, driver, logger, socketio, screenshot, credentials):
+		super(LinkedInHandler, self).__init__(driver, logger, socketio, screenshot)
 		self.driver = driver
 		self.logger = logger
 		self.socketio = socketio
@@ -87,6 +87,7 @@ class LinkedInHandler(base_handler):
 		# user_input = input("Please enter the verification code sent to "+username+" inbox: ")
 
 	def email_token_verify(self, user_input):
+		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		verify_email.send_keys(user_input)
 		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
 		self.driver.execute_script("arguments[0].click();", confirm)
@@ -119,7 +120,7 @@ class LinkedInHandler(base_handler):
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
 			self.driver.execute_script("arguments[0].click();", confirmLogIn)
 			# loggedin_as = self.driver.find_element_by_css_selector('#ember463 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
-			loggedin_as = self.driver.find_element_by_css_selector('#ember104 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
+			loggedin_as = self.driver.find_element_by_css_selector('div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
 			message = "Logged In into LinkedIn as "+loggedin_as+" successfully"
 			# message = "Logged In into LinkedIn as "+username+" successfully"
 			self.linkedin_cred_index += 1

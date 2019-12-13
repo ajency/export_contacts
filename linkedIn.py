@@ -15,10 +15,11 @@ class LinkedIn():
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.socketio = exporter.socketio
+		self.screenshot = exporter.screenshot
 		self.credentials = exporter.get_credentials('linkedin')
 		self.credentials = LINKEDIN
 
-		self.linkedin_handler = LinkedInHandler(self.driver, self.logger, self.socketio, self.credentials)
+		self.linkedin_handler = LinkedInHandler(self.driver, self.logger, self.socketio, self.screenshot, self.credentials)
 		# clear browser cookies
 		# exporter.delete_all_cookies('linkedin')
 

@@ -15,10 +15,11 @@ class Gmail():
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.socketio = exporter.socketio
+		self.screenshot = exporter.screenshot
 		self.credentials = exporter.get_credentials('gmail')
 		self.credentials = GMAIL
 
-		self.gmail_handler = GmailHandler(self.driver, self.logger, self.socketio, self.credentials)
+		self.gmail_handler = GmailHandler(self.driver, self.logger, self.socketio, self.screenshot, self.credentials)
 		# clear browser cookies
 		# exporter.delete_all_cookies('gmail')
 

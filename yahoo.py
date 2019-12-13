@@ -14,7 +14,8 @@ class Yahoo():
 		self.driver = exporter.driver
 		self.logger = exporter.logger
 		self.socketio = exporter.socketio
-		self.yahoo_handler = YahooHandler(self.driver, self.logger, self.socketio, exporter.get_credentials('yahoo'))
+		self.screenshot = exporter.screenshot
+		self.yahoo_handler = YahooHandler(self.driver, self.logger, self.socketio, self.screenshot, exporter.get_credentials('yahoo'))
 		# clear browser cookies
 		# exporter.delete_all_cookies('yahoo')
 

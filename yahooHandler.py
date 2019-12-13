@@ -4,8 +4,8 @@ from common_functions import *
 
 class YahooHandler(base_handler):
 	"""docstring for YahooHandler"""
-	def __init__(self, driver, logger, socketio, credentials):
-		super(YahooHandler, self).__init__(driver, logger, socketio)
+	def __init__(self, driver, logger, socketio, screenshot, credentials):
+		super(YahooHandler, self).__init__(driver, logger, socketio, screenshot)
 		self.driver = driver
 		self.logger = logger
 		self.socketio = socketio

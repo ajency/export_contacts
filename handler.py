@@ -2,11 +2,12 @@ import os,sys,time,csv,datetime,platform
 
 class Handler():
 	"""docstring for Handler"""
-	def __init__(self, driver, logger, socketio):
+	def __init__(self, driver, logger, socketio, screenshot):
 		super(Handler, self).__init__()
 		self.driver = driver
 		self.logger = logger
 		self.socketio = socketio
+		self.screenshot = screenshot
 
 	def success(self, message, current_url='', page_source=''):
 		if not current_url:
@@ -14,6 +15,7 @@ class Handler():
 		if not page_source:
 			page_source = self.driver.page_source
 		self.socketio.emit('action', str(message))
+		self.screenshot.capture(message.replace(' ', '_'))
 		self.logger.info(str(message))
 		# self.logger.file_log(str(message), url=self.driver.current_url, type='Completed')
 		self.logger.log(str(message),{
@@ -25,6 +27,7 @@ class Handler():
 
 	def in_progress(self, message):
 		self.socketio.emit('action', str(message))
+		self.screenshot.capture(message.replace(' ', '_'))
 		self.logger.info(str(message))
 		# self.logger.file_log(str(message), url=self.driver.current_url, type='Processing')
 		self.logger.log(str(message),{
@@ -40,6 +43,7 @@ class Handler():
 		if not page_source:
 			page_source = self.driver.page_source
 		self.socketio.emit('action', str(message))
+		self.screenshot.capture(message.replace(' ', '_'))
 		self.logger.error(str(message))
 		# self.logger.file_log("\n Exception: "+str(message)+"\n Page Source: \n"+self.driver.page_source+"\n", url=self.driver.current_url, type='Exception')
 		self.logger.log(str(message),{
@@ -55,6 +59,7 @@ class Handler():
 		if not page_source:
 			page_source = self.driver.page_source
 		self.socketio.emit('action', str(message))
+		self.screenshot.capture(message.replace(' ', '_'))
 		self.logger.warning(str(message))
 		# self.logger.file_log(str(message)+"\n", url=self.driver.current_url, type='Warning')
 		self.logger.log(str(message),{
@@ -74,6 +79,7 @@ class Handler():
 		if not message:
 			message = "Exit script execution"
 		self.socketio.emit('action', str(message))
+		self.screenshot.capture(message.replace(' ', '_'))
 		self.logger.error(str(message))
 		# self.logger.file_log(str(message), url=self.driver.current_url, type='Exit Script')
 		self.logger.log(str(message),{

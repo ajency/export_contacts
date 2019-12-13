@@ -4,8 +4,8 @@ from common_functions import *
 
 class AOLHandler(base_handler):
 	"""docstring for AOLHandler"""
-	def __init__(self, driver, logger, socketio, credentials):
-		super(AOLHandler, self).__init__(driver, logger, socketio)
+	def __init__(self, driver, logger, socketio, screenshot, credentials):
+		super(AOLHandler, self).__init__(driver, logger, socketio, screenshot)
 		self.driver = driver
 		self.logger = logger
 		self.socketio = socketio
