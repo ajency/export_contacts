@@ -41,8 +41,8 @@ def custom_wait_until_continue_is_true(element_object):
 
 def wait_until_element(element_object, waiting_time):
 	waiting_time = int(waiting_time)
-	while not element_object.continue_execution or waiting_time <= 0:
+	while not element_object.continue_execution or waiting_time > 0:
 		time.sleep(1)
-		max_waiting_time--
-		wait_until_element(element_object)
+		waiting_time = waiting_time - 1
+		wait_until_element(element_object, waiting_time)
 		pass
