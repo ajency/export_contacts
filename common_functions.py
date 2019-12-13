@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+max_waiting_time = 240
 
 def search_element_by_xpath(driver, element_path):
 	try:
@@ -28,4 +29,20 @@ def search_element_by_css_selector(driver, element_path):
 	except Exception as e:
 		return False
 
+# custom execution halt
+def custom_pause_execution(element_object):
+	element_object.continue_execution = False
 
+def custom_continue_execution(element_object):
+	element_object.continue_execution = True
+
+def custom_wait_until_continue_is_true(element_object):
+	wait_until_element(element_object, max_waiting_time)
+
+def wait_until_element(element_object, waiting_time):
+	waiting_time = int(waiting_time)
+	while not element_object.continue_execution or waiting_time <= 0:
+		time.sleep(1)
+		max_waiting_time--
+		wait_until_element(element_object)
+		pass
