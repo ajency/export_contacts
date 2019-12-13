@@ -83,13 +83,14 @@ class GmailHandler(base_handler):
 
 	# email verification
 	def email_verification(self, username):
-		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
-		verify_email.clear()
-		user_input = input("Please enter the verification code sent to "+username+" inbox: ")
-		verify_email.send_keys(user_input)
-		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-		self.driver.execute_script("arguments[0].click();", confirm)
+		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
+		super(GmailHandler, self).exception("Email verification")
+		# verify_email.clear()
+		# user_input = input("Please enter the verification code sent to "+username+" inbox: ")
+		# verify_email.send_keys(user_input)
+		# confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+		# self.driver.execute_script("arguments[0].click();", confirm)
 		pass
 
 
@@ -107,10 +108,17 @@ class GmailHandler(base_handler):
 		next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
 		next_btn.click()
 		time.sleep(1)
-		if self.verify_gmail_logged_in():
-			self.socketio.emit('action', 'Successfully logged in to gmail after otp verification')
-		else:
-			self.socketio.emit('action', 'Unable to login to gmail...')
+		try:
+			# check if login was successful
+			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
+			self.gmail_cred_index += 1
+			message = "Successfully logged in to gmail after otp verification"
+			# message = "Logged In into Gmail as "+username+" successfully"
+			self.success(message)
+		except Exception as e:
+			message = "Unable to login to gmail..."
+			# super(GmailHandler, self.exception(message)
+			self.exception(message)
 
 
 	# Recaptcha verification
