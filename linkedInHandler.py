@@ -22,7 +22,7 @@ class LinkedInHandler(base_handler):
 		super(LinkedInHandler, self).exception(message, current_url, page_source)
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
-		self.socketio.emit('exception_user_single_response', 'linkedin_exception_handler'+'---'+'Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ')
+		self.socketio.emit('exception_user_single_request', 'linkedin_exception_handler'+'---'+'Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ')
 
 	def process_exception(self, next_step, message=''):
 		if next_step.strip().lower() == "x":
@@ -48,7 +48,7 @@ class LinkedInHandler(base_handler):
 			return False
 
 	def retry_process(self):
-		self.socketio.emit('exception_user_single_response', 'linkedin_retry_handler'+'---'+'Retry using different credentials (y/n)? Default(n) : ')
+		self.socketio.emit('exception_user_single_request', 'linkedin_retry_handler'+'---'+'Retry using different credentials (y/n)? Default(n) : ')
 		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		# self.process_retry(use_diff_cred)
 
@@ -83,7 +83,7 @@ class LinkedInHandler(base_handler):
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
 		verify_email.clear()
-		self.socketio.emit('exception_user_single_response', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
+		self.socketio.emit('exception_user_single_responseexception_user_single_request', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
 		# user_input = input("Please enter the verification code sent to "+username+" inbox: ")
 
 	def email_token_verify(self, user_input):

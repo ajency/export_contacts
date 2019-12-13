@@ -23,7 +23,7 @@ class GmailHandler(base_handler):
 		super(LinkedInHandler, self).exception(message, current_url, page_source)
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
-		self.socketio.emit('exception_user_single_response', 'gmail_exception_handler')
+		self.socketio.emit('exception_user_single_request', 'gmail_exception_handler')
 
 	def process_exception(self, next_step, message=''):
 		if next_step.strip().lower() == "x":
@@ -49,7 +49,7 @@ class GmailHandler(base_handler):
 			return False
 
 	def retry_process(self):
-		self.socketio.emit('exception_user_single_response', 'gmail_retry_handler')
+		self.socketio.emit('exception_user_single_request', 'gmail_retry_handler')
 		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		# self.process_retry(use_diff_cred)
 

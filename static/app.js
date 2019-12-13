@@ -58,17 +58,17 @@ socket.on('gmail_otp_verification', function (message) {
 });
 
 // Exception
-socket.on('exception', function (message) {
+socket.on('exception_user_single_request', function (message) {
     $("#handler").value = message.split("---")[0];
     $("#message").value = message.split("---")[1];
     $("#get_user_single_input_form").show();
 });
 
-socket.on('retry_method', function (message) {
-    $("#handler").value = message.split("---")[0];
-    $("#message").value = message.split("---")[1];
-    $("#get_user_single_input_form").show();
-});
+// socket.on('retry_method', function (message) {
+//     $("#handler").value = message.split("---")[0];
+//     $("#message").value = message.split("---")[1];
+//     $("#get_user_single_input_form").show();
+// });
 
 
 
