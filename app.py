@@ -154,7 +154,7 @@ def handle_exception_user_single_response(payload):
     elif handler == 'linkedin_retry_handler':
         exporter.executor.linkedin.linkedin_handler.process_retry(user_input)
     elif handler == 'linkedin_email_verification_handler':
-        exporter.executor.gmail.gmail_handler.email_pin_verify(user_input)
+        exporter.executor.linkedin.linkedin_handler.email_pin_verify(user_input)
     elif handler == 'gmail_exception_handler':
         exporter.executor.gmail.gmail_handler.process_exception(user_input)
     elif handler == 'gmail_retry_handler':
