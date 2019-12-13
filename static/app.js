@@ -169,7 +169,9 @@ $("#get_user_single_input_form").on("submit", function(event){
   var handler = $("#handler").val();
   var user_input = $("#user_input").val();
   $('#exception_form').modal('hide');
-  socket.emit('exception_user_single_response', {'user_input': user_input, 'handler': handler});
+  var payload = {'user_input': user_input, 'handler': handler};
+  console.log(payload)
+  socket.emit('exception_user_single_response', payload);
   $(this).hide();
 })
 
