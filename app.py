@@ -164,4 +164,5 @@ def handle_exception_user_single_response(payload):
 
 if __name__ == '__main__':
     #load_dotenv()
-    socketio.run(app,debug=True)
+    socketio.run(app,debug=True,host='0.0.0.0')
+
