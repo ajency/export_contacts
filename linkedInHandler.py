@@ -23,6 +23,8 @@ class LinkedInHandler(base_handler):
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
 		self.socketio.emit('exception_user_single_request', 'linkedin_exception_handler'+'---'+'Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ')
+		pause_execution(self)
+		wait_until_continue_is_true(self)
 
 	def process_exception(self, next_step, message=''):
 		if next_step.strip().lower() == "x":
@@ -35,6 +37,7 @@ class LinkedInHandler(base_handler):
 			return False
 
 	def process_retry(self, use_diff_cred):
+		self.continue_execution()
 		if use_diff_cred.strip().lower() == 'y':
 			self.linkedin_cred_index += 1
 
@@ -51,6 +54,8 @@ class LinkedInHandler(base_handler):
 		self.socketio.emit('exception_user_single_request', 'linkedin_retry_handler'+'---'+'Retry using different credentials (y/n)? Default(n) : ')
 		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		# self.process_retry(use_diff_cred)
+		self.pause_execution()
+		self.wait_until_continue_is_true()
 
 
 	# Normal page load - login 
@@ -84,11 +89,11 @@ class LinkedInHandler(base_handler):
 		self.in_progress("Email verification")
 		self.socketio.emit('exception_user_single_request', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.clear()
-		pause_execution(self)
-		wait_until_continue_is_true(self)
+		self.pause_execution()
+		self.wait_until_continue_is_true()
 
 	def email_pin_verify(self, user_input):
-		continue_execution(self)
+		self.continue_execution()
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		verify_email.send_keys(user_input)
 		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
@@ -278,3 +283,26 @@ class LinkedInHandler(base_handler):
 			# self.warning("Removal of synced accounts was successful")
 			pass
 		time.sleep(1)
+
+
+
+	def pause_execution(self):
+		# SET False to pause execution
+		self.continue_execution = False
+
+	def continue_execution(self):
+		# SET True to continue execution
+		self.continue_execution = True
+
+	def wait_until_continue_is_true(self):
+		# wait until self.continue_execution = True
+		custom_wait_until_continue_is_true(self, 120)
+
+	def custom_wait_until_continue_is_true(self, waiting_time):
+		# wait until self.continue_execution = True OR custom waiting time as passed
+		waiting_time = int(waiting_time)
+		while not self.continue_execution or waiting_time > 0:
+			time.sleep(0.98)
+			waiting_time = waiting_time - 1
+			custom_wait_until_continue_is_true(self, waiting_time)
+			pass
