@@ -59,7 +59,10 @@ socket.on('gmail_otp_verification', function (message) {
 
 // Exception
 socket.on('exception_user_single_request', function (message) {
-    $("#handler").value = message.split("---")[0];
+    console.log(message);
+    var text_message = message.split("---")[0]
+    console.log(text_message);
+    $("#handler").text(text_message);
     $("#message").value = message.split("---")[1];
     $("#get_user_single_input_form").show();
 });
