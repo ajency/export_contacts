@@ -84,7 +84,7 @@ class LinkedInHandler(base_handler):
 		self.in_progress("Email verification")
 		self.socketio.emit('exception_user_single_request', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.clear()
-		time.sleep(5)
+		time.sleep(10)
 		user_input = input("Please enter: ")
 
 	def email_pin_verify(self, user_input):

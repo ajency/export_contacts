@@ -168,7 +168,7 @@ $("#get_user_single_input_form").on("submit", function(event){
   var handler = $("input:checked[name='handler']").val();
   var user_input = $("input:checked[name='user_input']").val();
   $('#exception_form').modal('hide');
-  socket.emit('exception_user_single_response', {'user_input': todo, 'handler': handler});
+  socket.emit('exception_user_single_response', {'user_input': user_input, 'handler': handler});
   $(this).hide();
 })
 
