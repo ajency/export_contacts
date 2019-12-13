@@ -38,7 +38,7 @@ class LinkedInHandler(base_handler):
 			return False
 
 	def process_retry(self, use_diff_cred):
-		self.continue_execution()
+		self.continue_with_execution()
 		if use_diff_cred.strip().lower() == 'y':
 			self.linkedin_cred_index += 1
 
@@ -94,7 +94,7 @@ class LinkedInHandler(base_handler):
 		self.wait_until_continue_is_true()
 
 	def email_pin_verify(self, user_input):
-		self.continue_execution()
+		self.continue_with_execution()
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		verify_email.send_keys(user_input)
 		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
@@ -291,7 +291,7 @@ class LinkedInHandler(base_handler):
 		# SET False to pause execution
 		self.continue_execution = False
 
-	def continue_execution(self):
+	def continue_with_execution(self):
 		# SET True to continue execution
 		self.continue_execution = True
 

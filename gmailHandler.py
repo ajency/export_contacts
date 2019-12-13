@@ -29,7 +29,7 @@ class GmailHandler(base_handler):
 		self.wait_until_continue_is_true()
 
 	def process_exception(self, next_step, message=''):
-		self.continue_execution()
+		self.continue_with_execution()
 		if next_step.strip().lower() == "x":
 			self.exit_process(message)
 			return False
@@ -40,7 +40,7 @@ class GmailHandler(base_handler):
 			return False
 
 	def process_retry(self, use_diff_cred):
-		self.continue_execution()
+		self.continue_with_execution()
 		if use_diff_cred.strip().lower() == 'y':
 			self.linkedin_cred_index += 1
 
@@ -112,7 +112,7 @@ class GmailHandler(base_handler):
 
 
 	def gmail_otp_login(self, otp):
-		self.continue_execution()
+		self.continue_with_execution()
 		otp_input = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='tel']")))
 		otp_input.send_keys(otp)
 		next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
@@ -214,7 +214,7 @@ class GmailHandler(base_handler):
 		# SET False to pause execution
 		self.continue_execution = False
 
-	def continue_execution(self):
+	def continue_with_execution(self):
 		# SET True to continue execution
 		self.continue_execution = True
 
