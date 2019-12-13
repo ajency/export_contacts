@@ -143,18 +143,20 @@ def handle_gmail_otp_login(payload):
 @socketio.on('exception_user_single_response')
 def handle_exception_user_single_response(payload):
     global exporter
-    emit('action', "User's response: " + payload.get('user_input') + ' ...')
+    print(payload)
+    user_input = str(payload.get('user_input'))
+    emit('action', "User's response: " + user_input + ' ...')
     # check type of handler
     if payload.get('handler') == 'linkedin_exception_handler':
-        exporter.executor.linkedin.linkedin_handler.process_exception(payload.get('user_input'))
+        exporter.executor.linkedin.linkedin_handler.process_exception(user_input)
     elif payload.get('handler') == 'linkedin_retry_handler':
-        exporter.executor.linkedin.linkedin_handler.process_retry(payload.get('user_input'))
+        exporter.executor.linkedin.linkedin_handler.process_retry(user_input)
     elif payload.get('handler') == 'linkedin_email_verification_handler':
-        exporter.executor.gmail.gmail_handler.email_pin_verify(payload.get('user_input'))
+        exporter.executor.gmail.gmail_handler.email_pin_verify(user_input)
     elif payload.get('handler') == 'gmail_exception_handler':
-        exporter.executor.gmail.gmail_handler.process_exception(payload.get('user_input'))
+        exporter.executor.gmail.gmail_handler.process_exception(user_input)
     elif payload.get('handler') == 'gmail_retry_handler':
-        exporter.executor.gmail.gmail_handler.process_retry(payload.get('user_input'))
+        exporter.executor.gmail.gmail_handler.process_retry(user_input)
     else:
         exporter.executor.logger.error('Unable to process request')
 
