@@ -84,11 +84,11 @@ class LinkedInHandler(base_handler):
 		self.in_progress("Email verification")
 		self.socketio.emit('exception_user_single_request', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.clear()
-		custom_pause_execution(self)
-		custom_wait_until_continue_is_true(self)
+		pause_execution(self)
+		wait_until_continue_is_true(self)
 
 	def email_pin_verify(self, user_input):
-		custom_continue_execution(self)
+		continue_execution(self)
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		verify_email.send_keys(user_input)
 		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
