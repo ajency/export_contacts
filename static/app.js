@@ -165,8 +165,8 @@ $("#gmail_otp_verification_form").on("submit", function(event){
 $("#get_user_single_input_form").on("submit", function(event){
   event.preventDefault();
   // $("#get_user_single_input_form").hide();
-  var handler = $("input:checked[name='handler']").val();
-  var user_input = $("input:checked[name='user_input']").val();
+  var handler = $("#handle").val();
+  var user_input = $("#user_input").val();
   $('#exception_form').modal('hide');
   socket.emit('exception_user_single_response', {'user_input': user_input, 'handler': handler});
   $(this).hide();
