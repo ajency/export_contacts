@@ -11,6 +11,7 @@ class LinkedInHandler(base_handler):
 		self.socketio = socketio
 		self.linkedin_cred_index = 0
 		self.credentials = credentials
+		self.continue_execution = True
 		self.login_url = "https://www.linkedin.com/login"
 		self.logout_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 		self.check_login_url = "https://www.linkedin.com/mynetwork/import-contacts/"
@@ -23,8 +24,8 @@ class LinkedInHandler(base_handler):
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
 		self.socketio.emit('exception_user_single_request', 'linkedin_exception_handler'+'---'+'Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ')
-		pause_execution(self)
-		wait_until_continue_is_true(self)
+		self.pause_execution()
+		self.wait_until_continue_is_true()
 
 	def process_exception(self, next_step, message=''):
 		if next_step.strip().lower() == "x":

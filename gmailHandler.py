@@ -11,6 +11,7 @@ class GmailHandler(base_handler):
 		self.socketio = socketio
 		self.gmail_cred_index = 0
 		self.credentials = credentials
+		self.continue_execution = True
 		self.login_url = "https://accounts.google.com/signin/v2"
 		self.logout_url = "https://www.google.com/accounts/Logout"
 		self.check_login_url = "https://accounts.google.com"
@@ -24,8 +25,11 @@ class GmailHandler(base_handler):
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
 		self.socketio.emit('exception_user_single_request', 'gmail_exception_handler')
+		self.pause_execution()
+		self.wait_until_continue_is_true()
 
 	def process_exception(self, next_step, message=''):
+		self.continue_execution()
 		if next_step.strip().lower() == "x":
 			self.exit_process(message)
 			return False
@@ -36,6 +40,7 @@ class GmailHandler(base_handler):
 			return False
 
 	def process_retry(self, use_diff_cred):
+		self.continue_execution()
 		if use_diff_cred.strip().lower() == 'y':
 			self.linkedin_cred_index += 1
 
@@ -52,6 +57,8 @@ class GmailHandler(base_handler):
 		self.socketio.emit('exception_user_single_request', 'gmail_retry_handler')
 		# use_diff_cred = input("Retry using different credentials (y/n)? Default(n) : ")
 		# self.process_retry(use_diff_cred)
+		self.pause_execution()
+		self.wait_until_continue_is_true()
 
 
 	# Normal page load - login 
@@ -100,9 +107,12 @@ class GmailHandler(base_handler):
 			self.socketio.emit('action', 'Clicking on mobile verification link')
 			mobile_verificaiton_button.click()
 			self.socketio.emit('gmail_otp_verification', 'Enter the OTP: ')
+			self.pause_execution()
+			self.wait_until_continue_is_true()
 
 
 	def gmail_otp_login(self, otp):
+		self.continue_execution()
 		otp_input = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='tel']")))
 		otp_input.send_keys(otp)
 		next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
@@ -197,3 +207,26 @@ class GmailHandler(base_handler):
 			self.success('Imported contacts')
 		except Exception as e:
 			super(GmailHandler, self).exception('Unable to currently import contacts - '+str(e))
+
+
+
+	def pause_execution(self):
+		# SET False to pause execution
+		self.continue_execution = False
+
+	def continue_execution(self):
+		# SET True to continue execution
+		self.continue_execution = True
+
+	def wait_until_continue_is_true(self):
+		# wait until self.continue_execution = True
+		custom_wait_until_continue_is_true(self, 120)
+
+	def custom_wait_until_continue_is_true(self, waiting_time):
+		# wait until self.continue_execution = True OR custom waiting time as passed
+		waiting_time = int(waiting_time)
+		while not self.continue_execution or waiting_time > 0:
+			time.sleep(0.98)
+			waiting_time = waiting_time - 1
+			custom_wait_until_continue_is_true(self, waiting_time)
+			pass
