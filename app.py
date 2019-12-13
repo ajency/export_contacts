@@ -10,10 +10,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import Select
 
-from dotenv import load_dotenv
+from proxy_list import get_proxies
 
 from settings import USER_AGENT_LIST
 import random
@@ -42,6 +40,7 @@ environment = 'dev'
 is_auto = True
 is_headless = True
 exporter = None
+proxy_list = []
 
 @app.route('/')
 def index():
@@ -55,8 +54,14 @@ def index():
 
 @socketio.on('client_connected')
 def handle_client_connect_event(json):
+    global proxy_list
     #print('received json: {0}'.format(str(json)))
     emit('action', 'Connected to uplink...')
+
+    emit('action', 'Fetching fresh proxy list from  remote...')
+    proxy_list = get_proxies()
+    emit('action', 'Proxy list updated...')
+    print(proxy_list)
 
 # @socketio.on('message')
 # def handle_json_button(json,test):
@@ -161,7 +166,9 @@ def handle_start_exporter(payload):
     global is_headless
     global socketio
     global exporter
-    exporter = Exporter(environment, is_auto, is_headless, socketio)
+    global proxy_list
+
+    exporter = Exporter(environment, is_auto, is_headless, socketio, proxy_list)
     emit('action', 'Starting exporter...')
     sequences = get_main_sequences()
     selected_sequences = []

@@ -14,25 +14,28 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import Select
 
+from selenium.webdriver.chrome.options import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+
 from settings import USER_AGENT_LIST, GMAIL_CREDENTIALS
 import random
 from pathlib import Path
 import time
 
 class Exporter():
-    def __init__(self, env, auto, headless, socketio):
+    def __init__(self, env, auto, headless, socketio, proxy_list):
         self.env = env
         self.data_source = environ.get('EXPORTER_DATA_SOURCE')
         self.auto = auto
+        self.socketio = socketio
         logger = CustomLogger()
         self.logger = logger
-        self.driver = self.initiate_web_driver(headless)
+        self.driver = self.initiate_web_driver(headless, proxy_list)
         self.current_gmail_index = 0
-        self.socketio = socketio
         self.session_id = time.strftime("%Y%m%d-%H%M%S")
         self.screenshot = Screenshot(self.session_id, self.driver)
 
-    def initiate_web_driver(self, headless=True):
+    def initiate_web_driver(self, headless=True, proxy_list=[]):
         import platform
         if platform.system() == 'Darwin':
             self.logger.info("Operating System is Mac")
@@ -40,6 +43,7 @@ class Exporter():
         else:
             self.logger.info("Operating System is Linux")
             driver_path = Path('.') / 'webdriver/linux/chromedriver'
+
 
         user_agent = random.choice(USER_AGENT_LIST)
         options = webdriver.ChromeOptions()
@@ -54,6 +58,16 @@ class Exporter():
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument('--headless')
             options.add_argument('--user-agent={'+user_agent+'}')
+
+        if len(proxy_list) > 0:
+            prox = random.choice(proxy_list)
+            self.socketio.emit('action', 'Web driver initialized with proxy ' + prox)
+            proxy = Proxy()
+            proxy.proxyType = ProxyType.MANUAL
+            proxy.autodetect = False
+            proxy.httpProxy = proxy.sslProxy = proxy.socksProxy = prox
+            options.Proxy = proxy
+            options.add_argument("ignore-certificate-errors")
 
         driver = webdriver.Chrome(executable_path=driver_path,chrome_options=options)
         driver.wait = WebDriverWait(driver, 10)
