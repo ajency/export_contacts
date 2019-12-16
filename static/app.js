@@ -47,11 +47,23 @@ socket.on('steps', function (message) {
     var steps = JSON.parse(message);
     for (var key in steps) {
         var step = steps[key];
-        var checkbox = '<div class="form-check"><input name="steps[]" data-label="'+step+'" class="form-check-input" type="checkbox" value="'+key+'"><label class="form-check-label">'+step+'</label></div>';
-        $("#step_form .step_fields").append(checkbox);
+        if (isString(step)){
+            var checkbox = '<div class="form-check"><input name="steps[]" data-label="'+step+'" class="form-check-input" type="checkbox" value="'+key+'"><label class="form-check-label">'+step+'</label></div>';
+            $("#step_form .step_fields").append(checkbox);
+        }else{
+            for (var subkey in step){
+                var substep = step[subkey];
+                var checkbox = '<div class="form-check"><input name="steps[]" data-label="'+substep+'" class="form-check-input" type="checkbox" value="'+subkey+'"><label class="form-check-label">'+substep+'</label></div>';
+            $("#step_form .step_fields").append(checkbox);
+            }
+        }
     }
 
 });
+
+function isString (obj) {
+  return (Object.prototype.toString.call(obj) === '[object String]');
+}
 
 socket.on('gmail_otp_verification', function (message) {
     $("#gmail_otp_verification_form").show();
@@ -151,6 +163,7 @@ $("input[name='environment']").on("change", function(event){
     });
     $(".step_select_msg").show();
     $(".steps_selected").text(step_selected_array.join());
+    console.log("Steps selected: "+steps);
    socket.emit('start_exporter', {'steps':steps});
    $(this).hide();
 });

@@ -1,22 +1,18 @@
 
 def get_main_sequences():
     sequences = {
-        # "login_linkedIn": 'Login to LinkedIn',
-        # "logout_linkedIn": 'Logout from LinkedIn',
-        # "login_gmail": 'Login to Gmail',
-        # "logout_gmail": 'Logout from Gmail',
-        # "exit": "Exits the script"
-        "one": 'Login to LinkedIn',
-        "two": 'Logout from LinkedIn',
-        "three": 'Login to Gmail',
-        "four": 'Logout from Gmail',
-        "zero_exit": "Exits the script"
+        "linkedIn_login": 'Login to LinkedIn',
+        "email_operation": get_email_operation_sequences(),
+        "linkedIn_logout": 'Logout LinkedIn'
     }
     return sequences
 
-def get_gamail_login_sequences():
+def get_email_operation_sequences():
     sequences = {
-        "email_screen": 'Email Screen',
-        "password_screen": 'Password Screen'
+        "email_login": 'Email Login',
+        "import_contacts": 'Import Contacts From Email Account',
+        "export_contacts": 'Export Contacts From LinkedIn',
+        "delete_contacts": 'Delete Exported Contacts',
+        "email_logout": 'Email Logout',
     }
     return sequences

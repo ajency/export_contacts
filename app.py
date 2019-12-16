@@ -23,22 +23,12 @@ from sequence import get_main_sequences
 from exporter import Exporter
 from proxy_list import get_proxies
 
+from settings import ACCOUNTS
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-# wdriver = ""
-# username = "dummyuser"
-# password = "dummypass"
-
-# train_no = "13104"
-# from_station = "JIAGANJ - JJG"
-# to_station = "SEALDAH - SDAH"
-# journey_date = "17-10-2017"
-# ticket_class = "2S"
-# ticket_quota = "GN"
-# ticket_type = "E_TICKET"
 
 environment = 'dev'
 is_auto = True
@@ -51,12 +41,6 @@ proxy_list = []
 def index():
     return render_template('index.html')
 
-#from views import index
-
-# from websockets import (
-#       handle_client_connect_event,
-# )
-
 @socketio.on('client_connected')
 def handle_client_connect_event(json):
     global proxy_list
@@ -68,27 +52,12 @@ def handle_client_connect_event(json):
     emit('action', 'Proxy list updated...')
     print(proxy_list)
 
-# @socketio.on('message')
-# def handle_json_button(json,test):
-#     # it will forward the json to all clients.
-#     send(json, json=True)
-
 
 @socketio.on('alert_button')
 def handle_alert_event(json,test):
     # it will forward the json to all clients.
     print('Message from client was {0}'.format(json))
     emit('alert', 'Message from backendd')
-
-@socketio.on('get_ip')
-def handle_get_ip(hostname):
-    driver = getChromeDriver(True)
-    driver.get(hostname)
-    # print("Resolving ip for host "+hostname)
-    # IPHOLDER = socket.gethostbyname(hostname)
-    # emit('ip_data', IPHOLDER)
-    time.sleep(5)
-    driver.quit()
 
 
 
@@ -120,26 +89,43 @@ def handle_start_exporter(payload):
     global socketio
     global exporter
     global proxy_list
-    exporter = Exporter(environment, is_auto, is_headless, socketio, proxy_list)
-    emit('action', 'Starting exporter...')
-    emit('action', 'Exporter session ID: '+exporter.session_id)
-    emit('action', 'Started executor...')
     sequences = get_main_sequences()
-    selected_sequences = []
-    if is_auto:
-        emit('action', 'Preparing to auto run all the sequences...')
-        selected_sequences = sequences
-    else:
-        emit('action', 'Preparing to run selected sequence...')
-        selected_sequences = payload.get('steps')
 
-    for sequence in selected_sequences:
-        sequence_title = sequences[sequence]
-        emit('action', 'Started Sequence: ' + sequence_title + ' ...')
-        getattr(exporter.executor, 'step_' + sequence)()
 
-    # emit('action', 'Closing web driver instance...')
-    # exporter.close_web_driver()
+    for account in ACCOUNTS:
+        exporter = Exporter(environment, is_auto, is_headless, socketio, proxy_list, account)
+        emit('action', 'Starting exporter for linkedIn account: '+account.get('linkedIn').get('username'))
+        emit('action', 'Exporter session ID: ' + exporter.session_id)
+        if is_auto:
+            emit('action', 'Preparing to auto run all the sequences...')
+            selected_sequences = sequences
+            selected_email_sequences = sequences.get('email_operation')
+        else:
+            emit('action', 'Preparing to run selected sequence...')
+            payload_sequences = payload.get('steps')
+            selected_sequences = []
+            selected_email_sequences = []
+            for seq in payload_sequences:
+                if seq in sequences.get('email_operation'):
+                    if not 'email_operation' in selected_sequences:
+                        selected_sequences.append('email_operation')
+                    selected_email_sequences.append(seq)
+                else:
+                    selected_sequences.append(seq)
+
+        for sequence in selected_sequences:
+            sequence_title = sequences[sequence]
+            if isinstance(sequence_title, dict):
+                emit('action', 'Started Sequence: Email operation ...')
+                getattr(exporter.executor, 'step_email_operation')(selected_email_sequences)
+            else:
+                emit('action', 'Started Sequence: ' + sequence_title + ' ...')
+                getattr(exporter.executor, 'step_' + sequence)()
+
+
+        emit('action', 'Closing web driver instance...')
+        exporter.close_web_driver()
+        emit('action', '######## CLOSE WEBDRIVER FOR SESSION #: '+exporter.session_id+" ##########")
 
 
 @socketio.on('gmail_otp_login')

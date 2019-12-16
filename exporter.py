@@ -7,7 +7,7 @@ from credential_parser import CredentialParser
 from common_functions import *
 
 class Exporter():
-    def __init__(self, env, auto, headless, socketio, proxy_list):
+    def __init__(self, env, auto, headless, socketio, proxy_list, account):
         self.env = environ.get('EXPORTER_ENVIRONMENT')
         self.data_source = environ.get('EXPORTER_DATA_SOURCE')
         self.auto = auto
@@ -19,8 +19,10 @@ class Exporter():
         # initialize screnshot session
         self.session_id = time.strftime("%Y%m%d-%H%M%S")
         self.screenshot = Screenshot(self.session_id, self.driver)
+        self.account = account
         # initialize executor
         self.executor = Executor(self)
+
 
 
     def start(self):

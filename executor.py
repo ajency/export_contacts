@@ -24,6 +24,8 @@ class Executor():
 		self.aol = AOL(exporter)
 		self.yahoo = Yahoo(exporter)
 		self.outlook = OutLook(exporter)
+		self.account = exporter.account
+
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):
@@ -107,8 +109,8 @@ class Executor():
 		# self.linkedin.linkedin_handler.exit_process("Step 0 - Exiting the script")
 		sys.exit()
 
-	def step_one(self):
-		print("step 1")
+	def step_linkedIn_login(self):
+		print("Step: linkedIn_login")
 		self.linkedin.login_to_linkedin()
 		pass
 
@@ -218,3 +220,52 @@ class Executor():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.outlook.sync_account()
+
+
+
+
+
+	def step_linkedIn_login(self):
+		print("Step: linkedIn_login")
+		#self.linkedin.login_to_linkedin()
+		pass
+
+	def step_email_operation(self, sequences):
+		print("Step: email_operation")
+		for email_provider in self.account.get('email'):
+			self.logger.info("==== Email operation started for provider "+email_provider)
+			for email_account in email_provider.values():
+				self.logger.info("==== Email sequences with user " + email_account.get('username'))
+				for sequence in sequences:
+					getattr(self, 'step_' + sequence)(email_provider, email_account)
+		pass
+
+	def step_email_login(self, provider, email):
+		print("Step: email_login")
+		#self.linkedin.login_to_linkedin()
+		pass
+
+	def step_import_contacts(self, provider, email):
+		print("Step: import_contacts")
+		#self.linkedin.login_to_linkedin()
+		pass
+
+	def step_export_contacts(self, provider, email):
+		print("Step: export_contacts")
+		#self.linkedin.login_to_linkedin()
+		pass
+
+	def step_delete_contacts(self, provider, email):
+		print("Step: delete_contacts")
+		#self.linkedin.login_to_linkedin()
+		pass
+
+	def step_email_logout(self, provider, email):
+		print("Step: email_logout")
+		#self.linkedin.login_to_linkedin()
+		pass
+
+	def step_linkedIn_logout(self):
+		print("Step: linkedIn_login")
+		#self.linkedin.login_to_linkedin()
+		pass
