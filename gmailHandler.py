@@ -220,13 +220,19 @@ class GmailHandler(base_handler):
 
 	def wait_until_continue_is_true(self):
 		# wait until self.continue_execution = True
-		custom_wait_until_continue_is_true(self, 120)
+		self.custom_wait_until_continue_is_true()
 
-	def custom_wait_until_continue_is_true(self, waiting_time):
+	def custom_wait_until_continue_is_true(self, waiting_time=120):
 		# wait until self.continue_execution = True OR custom waiting time as passed
 		waiting_time = int(waiting_time)
-		while not self.continue_execution or waiting_time > 0:
-			time.sleep(0.98)
-			waiting_time = waiting_time - 1
-			custom_wait_until_continue_is_true(self, waiting_time)
-			pass
+		while waiting_time > 0:
+			if self.continue_execution:
+				# self.custom_wait_until_continue_is_true(0)
+				break
+			else:
+				print('Timer: '+str(waiting_time))
+				time.sleep(0.98)
+				waiting_time = waiting_time - 1
+				self.custom_wait_until_continue_is_true(waiting_time)
+
+		self.continue_execution = True

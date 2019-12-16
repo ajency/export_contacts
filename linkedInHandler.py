@@ -64,6 +64,13 @@ class LinkedInHandler(base_handler):
 		login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
 		login.click()
 
+		try:
+			if search_element_by_css_selector(self.driver, "#error-for-password"):
+				error_msg = self.driver.find_element_by_css_selector("#error-for-password").text
+				self.exception(error_msg)
+		except Exception as e:
+			pass
+
 
 	# Normal page load - logout 
 	def normal_linkedin_logout(self):
@@ -291,17 +298,19 @@ class LinkedInHandler(base_handler):
 
 	def wait_until_continue_is_true(self):
 		# wait until self.continue_execution = True
-		custom_wait_until_continue_is_true(self, 20)
+		self.custom_wait_until_continue_is_true()
 
-	def custom_wait_until_continue_is_true(self, waiting_time):
+	def custom_wait_until_continue_is_true(self, waiting_time=10):
 		# wait until self.continue_execution = True OR custom waiting time as passed
 		waiting_time = int(waiting_time)
-		while True:
-			if self.continue_execution == False or waiting_time > 0:
+		while waiting_time > 0:
+			if self.continue_execution:
+				# self.custom_wait_until_continue_is_true(0)
+				break
+			else:
 				print('Timer: '+str(waiting_time))
 				time.sleep(0.98)
 				waiting_time = waiting_time - 1
-				custom_wait_until_continue_is_true(self, waiting_time)
-			else:
-				break
-			pass
+				self.custom_wait_until_continue_is_true(waiting_time)
+
+		self.continue_execution = True

@@ -179,7 +179,7 @@ class LinkedIn():
 
 		if self.linkedin_handler.linkedin_cred_index < len(self.linkedin_handler.credentials):
 			username = self.linkedin_handler.credentials[self.linkedin_handler.linkedin_cred_index]['username']
-			self.in_progress("Retrying using "+username+" ...")
+			self.linkedin_handler.in_progress("Retrying using "+username+" ...")
 			self.perform_action("logout")
 			self.linkedin_handler.remove_synced_accounts()
 			self.login_to_linkedin()

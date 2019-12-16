@@ -64,7 +64,8 @@ socket.on('exception_user_single_request', function (message) {
     console.log(text_message);
     var handler = message.split("---")[0];
     $("#handler").val(handler);
-    $("#message").html(text_message)
+    $("#message").html(text_message);
+    $("#user_input").val('');
     $("#get_user_single_input_form").show();
 });
 
@@ -168,6 +169,8 @@ $("#get_user_single_input_form").on("submit", function(event){
   // $("#get_user_single_input_form").hide();
   var handler = $("#handler").val();
   var user_input = $("#user_input").val();
+  $("#handler").val('');
+  $("#user_input").val('');
   $('#exception_form').modal('hide');
   var payload = {'user_input': user_input, 'handler': handler};
   console.log(payload)
