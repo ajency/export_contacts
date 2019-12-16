@@ -179,7 +179,12 @@ class Executor():
 
 	def step_fifteen(self):
 		print("step 15")
-		# self.linkedin.export_contacts()
+		self.linkedin.export_contacts()
+		pass
+
+	def step_sixteen(self):
+		print("step 16")
+		self.linkedin.remove_synced_accounts()
 		pass
 
 
@@ -194,27 +199,31 @@ class Executor():
 
 
 	def sync_gmail_account(self):
-		if not self.linkedin.is_user_logged_in():
+		self.driver.get(self.linkedin.linkedin_handler.check_login_url)
+		if not self.linkedin.linkedin_handler.is_user_logged_in():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.gmail.sync_account()
 
 
 	def sync_yahoo_account(self):
-		if not self.linkedin.is_user_logged_in():
+		self.driver.get(self.linkedin.linkedin_handler.check_login_url)
+		if not self.linkedin.linkedin_handler.is_user_logged_in():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.yahoo.sync_account()
 
 
 	def sync_aol_account(self):
-		if not self.linkedin.is_user_logged_in():
+		self.driver.get(self.linkedin.linkedin_handler.check_login_url)
+		if not self.linkedin.linkedin_handler.is_user_logged_in():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.aol.sync_account()
 
 	def sync_outlook_account(self):
-		if not self.linkedin.is_user_logged_in():
+		self.driver.get(self.linkedin.linkedin_handler.check_login_url)
+		if not self.linkedin.linkedin_handler.is_user_logged_in():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.outlook.sync_account()

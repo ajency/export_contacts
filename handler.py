@@ -75,17 +75,29 @@ class Handler():
 	def continue_process(self):
 		pass
 	
-	def exit_process(self, message='', current_url='', page_source=''):
+	def exit_process(self, message='', current_url='', page_source='', stop_execution=False):
 		if not message:
-			message = "Exit script execution"
-		self.socketio.emit('action', str(message))
-		self.screenshot.capture(message.replace(' ', '_'))
-		self.logger.error(str(message))
-		# self.logger.file_log(str(message), url=self.driver.current_url, type='Exit Script')
-		self.logger.log(str(message),{
+			exit_message = "Exit script execution"
+		self.socketio.emit('action', str(exit_message))
+		self.screenshot.capture(exit_message.replace(' ', '_'))
+		self.logger.error(str(exit_message))
+		# self.logger.file_log(str(exit_message), url=self.driver.current_url, type='Exit Script')
+		self.logger.log(str(exit_message),{
 	      'url': self.driver.current_url,
 	      'type': 'Exit Script',
 	      'data': ""
 	    })
-		self.driver.quit()
-		sys.exit()
+		if stop_execution:
+			self.driver.quit()
+			sys.exit()
+
+	def _log_(self, message, data=''):
+		self.socketio.emit('action', str(message))
+		self.logger.info(str(message))
+		# self.logger.file_log(str(message), url=self.driver.current_url, type='Processing')
+		self.logger.log(str(message),{
+	      'url': '',
+	      'type': 'LOG',
+	      'data': data
+	    })
+		pass

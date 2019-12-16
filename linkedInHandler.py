@@ -17,6 +17,7 @@ class LinkedInHandler(base_handler):
 		self.check_login_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 		self.import_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 		self.export_url = "https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/"
+		self.remove_contacts_url = "https://www.linkedin.com/mynetwork/settings/manage-syncing/"
 
 
 	def exception(self, message, current_url='', page_source=''):
@@ -27,6 +28,10 @@ class LinkedInHandler(base_handler):
 		# 	"return_to_action": next_step,
 		# }
 		# json_mylist = json.dumps(mylist, separators=(',', ':'))
+
+		# JS code
+		# var obj = JSON.parse('{ "name":"John", "age":30, "city":"New York"}');
+		# objectName.propertyName
 
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
@@ -55,21 +60,41 @@ class LinkedInHandler(base_handler):
 
 	# Normal page load - login 
 	def normal_linkedin_login(self, username, password):
-		self.in_progress("Logging into LinkedIn as "+username)
-		user = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
-		user.send_keys(username)
-		pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "password")))
-		pwd.send_keys(password)
-		# submit_form
-		login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
-		login.click()
-
 		try:
-			if search_element_by_css_selector(self.driver, "#error-for-password"):
-				error_msg = self.driver.find_element_by_css_selector("#error-for-password").text
-				self.exception(error_msg)
+			self.in_progress("Logging into LinkedIn as "+username)
+			user = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
+			user.send_keys(username)
+			pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "password")))
+			pwd.send_keys(password)
+			# submit_form
+			login = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
+			login.click()
+			try:
+				if search_element_by_css_selector(self.driver, "#error-for-password"):
+					error_msg = self.driver.find_element_by_css_selector("#error-for-password").text
+					# self.exception(error_msg)
+					super(LinkedInHandler, self).exception(error_msg)
+			except Exception as e:
+				return True
 		except Exception as e:
+			return False
+
+
+	def is_user_logged_in(self):
+		is_loggedin = False
+		try:
+			# check if user is loggedin
+			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
+			is_loggedin = True
+			return is_loggedin
+			# profile_info = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="profile-nav-item"]/div'))).get_attribute('innerHTML')
+			# if profile_info:
+				# is_loggedin = True
+		except Exception as e:
+			is_loggedin = False
+			return is_loggedin
 			pass
+		return is_loggedin
 
 
 	# Normal page load - logout 
@@ -83,23 +108,29 @@ class LinkedInHandler(base_handler):
 		self.success("Logging out from LinkedIn successful")
 
 
-
-
 	# email verification
 	def email_verification(self, username):
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
 		self.socketio.emit('exception_user_single_request', 'linkedin_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.clear()
-		self.pause_execution()
-		self.wait_until_continue_is_true()
+		# self.pause_execution()
+		# self.wait_until_continue_is_true()
+		try:
+			verification_entered = WebDriverWait(self.driver, 120).until(lambda driver: len(driver.find_element_by_css_selector("#input__email_verification_pin").get_attribute("value")) == 6)
+			if verification_entered:
+				confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+				self.driver.execute_script("arguments[0].click();", confirm)
+				time.sleep(1)
+				return True
+		finally:
+			pass
+		return False
 
 	def email_pin_verify(self, user_input):
 		self.continue_with_execution()
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		verify_email.send_keys(user_input)
-		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-		self.driver.execute_script("arguments[0].click();", confirm)
 		pass
 
 
@@ -124,20 +155,31 @@ class LinkedInHandler(base_handler):
 
 	def check_login_status(self):
 		username = self.credentials[self.linkedin_cred_index]['username']
+		# check if login was successful
 		try:
-			# check if login was successful
 			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
 			self.driver.execute_script("arguments[0].click();", confirmLogIn)
 			# loggedin_as = self.driver.find_element_by_css_selector('#ember463 > div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
 			loggedin_as = self.driver.find_element_by_css_selector('div.nav-settings__member.nav-settings__block > div.nav-settings__member-info-container > h3').text
-			message = "Logged In into LinkedIn as "+loggedin_as+" successfully"
+		except Exception as e:
+			loggedin_as = ''
+
+		if self.is_user_logged_in():
+			if loggedin_as:
+				message = "Logged In into LinkedIn as "+loggedin_as+" successfully"
+			else:
+				message = "Logged In into LinkedIn successfully"
 			# message = "Logged In into LinkedIn as "+username+" successfully"
 			self.linkedin_cred_index += 1
 			self.success(message)
-		except Exception as e:
+			return True
+		else:
 			message = "LinkedIn login for "+username+" failed"
 			super(LinkedInHandler, self).exception(message)
+			return False
 			# self.exception(message, 'login')
+			
+				
 
 
 	def export_contacts(self):
@@ -213,47 +255,48 @@ class LinkedInHandler(base_handler):
 			return contactList
 		except Exception as e:
 			super(LinkedInHandler, self).exception("Exception: "+e+"\n Unable to Export contacts")
+			return False
 
 
-	def sync_yahoo_account(self):
-		clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
-		clk.click()
-		self.in_progress("Syncing of yahoo account is in progress")
-		time.sleep(3)
-		if len(self.driver.window_handles) > 1:
-			# switch the pop-up window
-			self.driver.switch_to.window(self.driver.window_handles[1])
-			time.sleep(5)
-			# Check if any account needs to be selected
-			confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'oauth2-agree')))
-			self.driver.execute_script("arguments[0].click();", confirmAccount)
-			#switch back to original window
-			time.sleep(0.5)
-			if len(self.driver.window_handles) > 1:
-				try:
-					backToPrevWindow = WebDriverWait(self.driver.window_handles[1], 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="minimal-util-nav"]/ul/li[1]/a')))
-					backToPrevWindow.click()
-				except Exception as e:
-					if len(self.driver.window_handles) > 1:
-						self.driver.close()
-		self.driver.switch_to.window(self.driver.window_handles[0])
-		try:
-			time.sleep(3)
-			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
-			self.success('Imported contacts')
-		except Exception as e:
-			try:
-				error_msg = self.driver.find_element_by_xpath('//*[@id="app__container"]/artdeco-toasts/artdeco-toast/div/p').text
-			except Exception as e:
-				error_msg = ''
-			super(YahooHandler, self).exception(error_msg+'\nUnable to currently import contacts - '+str(e))
+	# def sync_yahoo_account(self):
+	# 	clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
+	# 	clk.click()
+	# 	self.in_progress("Syncing of yahoo account is in progress")
+	# 	time.sleep(3)
+	# 	if len(self.driver.window_handles) > 1:
+	# 		# switch the pop-up window
+	# 		self.driver.switch_to.window(self.driver.window_handles[1])
+	# 		time.sleep(5)
+	# 		# Check if any account needs to be selected
+	# 		confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'oauth2-agree')))
+	# 		self.driver.execute_script("arguments[0].click();", confirmAccount)
+	# 		#switch back to original window
+	# 		time.sleep(0.5)
+	# 		if len(self.driver.window_handles) > 1:
+	# 			try:
+	# 				backToPrevWindow = WebDriverWait(self.driver.window_handles[1], 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="minimal-util-nav"]/ul/li[1]/a')))
+	# 				backToPrevWindow.click()
+	# 			except Exception as e:
+	# 				if len(self.driver.window_handles) > 1:
+	# 					self.driver.close()
+	# 	self.driver.switch_to.window(self.driver.window_handles[0])
+	# 	try:
+	# 		time.sleep(3)
+	# 		WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
+	# 		self.success('Imported contacts')
+	# 	except Exception as e:
+	# 		try:
+	# 			error_msg = self.driver.find_element_by_xpath('//*[@id="app__container"]/artdeco-toasts/artdeco-toast/div/p').text
+	# 		except Exception as e:
+	# 			error_msg = ''
+	# 		super(YahooHandler, self).exception(error_msg+'\nUnable to currently import contacts - '+str(e))
 
 
 
 	# Remove previous synced accounts
 	def remove_synced_accounts(self):
 		# Need to re-modify
-		self.driver.get("https://www.linkedin.com/mynetwork/settings/manage-syncing/")
+		self.driver.get(self.remove_contacts_url)
 		time.sleep(5)
 		try:
 			removeAllClk = self.driver.find_element_by_xpath('//*[@id="ember44"]/div[1]/button')
@@ -271,18 +314,20 @@ class LinkedInHandler(base_handler):
 					rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
 					self.driver.execute_script("arguments[0].click();", rmvClk2)
 			except Exception as e:
-				self.warning("Removal of synced failed")
+				# self.warning("Removal of synced failed")
 				pass
 			pass
 		time.sleep(1)
-		self.driver.get("https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/")
+		self.driver.get(self.export_url)
 		time.sleep(5)
 		try:
 			# find_element_by_xpath_with_timeout(self.driver, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p', [], 10)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
 			self.warning("Unable to remove synced accounts")
+			return False
 		except Exception as e:
-			# self.warning("Removal of synced accounts was successful")
+			self.warning("Removal of synced accounts was successful")
+			return True
 			pass
 		time.sleep(1)
 
@@ -300,7 +345,7 @@ class LinkedInHandler(base_handler):
 		# wait until self.continue_execution = True
 		self.custom_wait_until_continue_is_true()
 
-	def custom_wait_until_continue_is_true(self, waiting_time=10):
+	def custom_wait_until_continue_is_true(self, waiting_time=120):
 		# wait until self.continue_execution = True OR custom waiting time as passed
 		waiting_time = int(waiting_time)
 		while waiting_time > 0:

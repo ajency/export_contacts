@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from gmailHandler import GmailHandler
 from common_functions import *
 from settings import *
+from common_functions import *
 
 class Gmail():
 	"""docstring for Gmail"""
@@ -27,7 +28,8 @@ class Gmail():
 	def perform_action(self, action, data=[]):
 		# Gmail - Log In code
 		if action == "login":
-			if self.is_user_logged_in():
+			self.driver.get(self.gmail_handler.check_login_url)
+			if self.gmail_handler.is_user_logged_in():
 				self.gmail_handler.warning("Already Logged In to Gmail")
 			else:
 				self.login()
@@ -36,42 +38,22 @@ class Gmail():
 		elif action == "check-login":
 			self.check_login_status()
 		elif action == "sync-account":
-			if not self.is_user_logged_in():
+			if not self.gmail_handler.is_user_logged_in():
 				self.gmail_handler.warning("Need to Login to gmail before syncing contacts")
 				self.login_to_gmail()
-			self.sync_contacts()
+			return self.sync_contacts()
 		# Gmail - Log Out code
 		elif action == "logout":
-			if not self.is_user_logged_in():
+			if not self.gmail_handler.is_user_logged_in():
 				self.gmail_handler.warning("Need to Login before logging out from Gmail")
 			else:
 				self.logout()
 
 
-	# check_login_status
-	# is_user_logged_in
-	def is_user_logged_in(self):
-		try:
-			# remove previous loggedin gmail accounts
-			self.gmail_handler.remove_previous_loggedin_gmail_accounts()
-		except Exception as e:
-			pass
-		is_loggedin = False
-		try:
-			# check if login was successful
-			self.driver.get("https://accounts.google.com/")
-			self.driver.find_element_by_id('identifierId')
-			is_loggedin = False
-		except Exception as e:
-			is_loggedin = True
-			pass
-		return is_loggedin
-
 
 	def login(self):
 		# self.gmail_handler.login(action_url)
 		if self.gmail_handler.gmail_cred_index < len(self.gmail_handler.credentials):
-			# self.driver.get(self.gmail_handler.login_url)
 			current_url = self.driver.current_url
 			page_source = self.driver.page_source
 			username = self.gmail_handler.credentials[self.gmail_handler.gmail_cred_index]['username']
@@ -80,9 +62,8 @@ class Gmail():
 				try:
 					self.gmail_handler.normal_gmail_login(username, password)
 				except Exception as e:
-					retry = self.gmail_handler.exception(e, current_url, page_source)
-					if retry:
-						self.login_to_gmail()
+					super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+					# self.gmail_handler.exception(e, current_url, page_source)
 			else:
 				message = "Unable to Identify Gmail Login Page"
 				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
@@ -112,10 +93,8 @@ class Gmail():
 			except Exception as e:
 				# log exception
 				message = "\n Gmail Email verification - Failed \n"+str(e)
-				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
-				retry = self.gmail_handler.exception(message, current_url, page_source)
-				if retry:
-					self.login_to_gmail()
+				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				# self.gmail_handler.exception(message, current_url, page_source)
 			pass
 		elif search_element_by_id(self.driver, "playCaptchaButton"):
 			try:
@@ -123,10 +102,8 @@ class Gmail():
 			except Exception as e:
 				# log exception
 				message = "\n Gmail Recaptcha verification - Failed \n"+str(e)
-				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
-				retry = self.gmail_handler.exception(message, current_url, page_source)
-				if retry:
-					self.login_to_gmail()
+				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				# self.gmail_handler.exception(message, current_url, page_source)
 			pass
 		elif search_element_by_css_selector(self.driver, "li.JDAKTe div.lCoei"):
 			try:
@@ -134,18 +111,14 @@ class Gmail():
 			except Exception as e:
 				# log exception
 				message = "\n Gmail OTP verification - Failed \n"+str(e)
-				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
-				retry = self.gmail_handler.exception(message, current_url, page_source)
-				if retry:
-					self.login_to_gmail()
-			passs
+				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				# self.gmail_handler.exception(message, current_url, page_source)
+			pass
 		else:
-			if not self.is_user_logged_in():
+			if not self.gmail_handler.is_user_logged_in():
 				message = "Unable to identify Gmail account verification Page"
-				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
-				retry = self.gmail_handler.exception(message, current_url, page_source)
-				if retry:
-					self.login_to_gmail()
+				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				# self.gmail_handler.exception(message, current_url, page_source)
 			pass
 
 
@@ -159,11 +132,19 @@ class Gmail():
 		self.perform_action("login")
 		self.perform_action("verify-account")
 		self.perform_action("check-login")
+		if self.gmail_handler.is_user_logged_in():
+			self.gmail_handler._log_("step_log: Gmail Login - Success")
+			return True
+		else:
+			self.gmail_handler._log_("step_log: Gmail Login - Failed")
+			return False
 
 
 	# LogOut function for Gmail Account
 	def logout_from_gmail(self):
 		self.perform_action("logout")
+		self.gmail_handler._log_("step_log: Gmail Logout - Success")
+		return True
 
 	def process_retry_login(self, use_diff_cred):
 		self.gmail_handler.continue_with_execution()
@@ -177,34 +158,35 @@ class Gmail():
 		else:
 			self.exit_process("No more Gmail accounts available")
 
+
 	def sync_account(self):
-		self.perform_action("sync-account")
+		response = self.perform_action("sync-account")
+		if response:
+			self.gmail_handler._log_("step_log: Gmail Account Sync - Success")
+		else:
+			self.gmail_handler._log_("step_log: Gmail Account Sync - Failed")
 
 
 	def sync_contacts(self):
 		self.driver.get(self.gmail_handler.import_contacts_url)
 		current_url = self.driver.current_url
 		page_source = self.driver.page_source
-		if search_element_by_xpath('//*[@id="ember48"]/a'):
+		if search_element_by_xpath(self.driver, '//*[@id="ember48"]/a'):
 			try:
-				self.gmail_handler.normal_sync_gmail_account()
+				return self.gmail_handler.normal_sync_gmail_account()
 			except Exception as e:
 				# log exception
 				message = "\n Sync Gmail contacts - Failed \n"+str(e)
-				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
-				retry = self.gmail_handler.exception(message, current_url, page_source)
-				if retry:
-					self.logout_from_gmail()
-					self.sync_account()
+				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				# self.gmail_handler.exception(message, current_url, page_source)
+				return False
 			pass
 		else:
-			if self.is_user_logged_in():
+			self.driver.get(self.gmail_handler.check_login_url)
+			if self.gmail_handler.is_user_logged_in():
 				message = "Unable to identify Gmail Sync Page"
-				# super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
-				retry = self.gmail_handler.exception(message, current_url, page_source)
-				if retry:
-					self.logout_from_gmail()
-					self.sync_account()
-			else:
-				self.login_to_gmail()
+				super(GmailHandler, self.gmail_handler).exception(message, current_url, page_source)
+				# self.gmail_handler.exception(message, current_url, page_source)
+				return False
+			
 

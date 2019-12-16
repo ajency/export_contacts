@@ -7,9 +7,12 @@ def get_main_sequences():
         # "logout_gmail": 'Logout from Gmail',
         # "exit": "Exits the script"
         "one": 'Login to LinkedIn',
-        "two": 'Logout from LinkedIn',
         "three": 'Login to Gmail',
+        "eleven": "Import Contacts from Gmail",
+        "fifteen": "Export Contacts",
+        "sixteen": "Delete Exported Contacts",
         "four": 'Logout from Gmail',
+        "two": 'Logout from LinkedIn',
         "zero_exit": "Exits the script"
     }
     return sequences

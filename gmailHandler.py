@@ -21,7 +21,7 @@ class GmailHandler(base_handler):
 
 
 	def exception(self, message, current_url='', page_source=''):
-		super(LinkedInHandler, self).exception(message, current_url, page_source)
+		super(GmailHandler, self).exception(message, current_url, page_source)
 		# next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
 		# self.process_exception(next_step, message)
 		self.socketio.emit('exception_user_single_request', 'gmail_exception_handler')
@@ -42,11 +42,11 @@ class GmailHandler(base_handler):
 	def process_retry(self, use_diff_cred):
 		self.continue_with_execution()
 		if use_diff_cred.strip().lower() == 'y':
-			self.linkedin_cred_index += 1
+			self.gmail_cred_index += 1
 
-		if self.linkedin_cred_index < len(self.credentials):
-			username = self.credentials[self.linkedin_cred_index]['username']
-			password = self.credentials[self.linkedin_cred_index]['password']
+		if self.gmail_cred_index < len(self.credentials):
+			username = self.credentials[self.gmail_cred_index]['username']
+			password = self.credentials[self.gmail_cred_index]['password']
 			self.in_progress("Retrying using "+username)
 			return True
 		else:
@@ -59,6 +59,20 @@ class GmailHandler(base_handler):
 		# self.process_retry(use_diff_cred)
 		self.pause_execution()
 		self.wait_until_continue_is_true()
+
+
+	# check_login_status
+	# is_user_logged_in
+	def is_user_logged_in(self):
+		is_loggedin = False
+		try:
+			# check if login was successful
+			self.driver.find_element_by_id('identifierId')
+			is_loggedin = False
+		except Exception as e:
+			is_loggedin = True
+			pass
+		return is_loggedin
 
 
 	# Normal page load - login 
@@ -107,8 +121,18 @@ class GmailHandler(base_handler):
 			self.socketio.emit('action', 'Clicking on mobile verification link')
 			mobile_verificaiton_button.click()
 			self.socketio.emit('gmail_otp_verification', 'Enter the OTP: ')
-			self.pause_execution()
-			self.wait_until_continue_is_true()
+			# self.pause_execution()
+			# self.wait_until_continue_is_true()
+			try:
+				otp_entered = WebDriverWait(self.driver, 120).until(lambda driver: len(driver.find_element_by_css_selector("input[type='tel']").get_attribute("value")) == 6)
+				if otp_entered:
+					next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
+					next_btn.click()
+					time.sleep(1)
+					return True
+			finally:
+				pass
+		return False
 
 
 	def gmail_otp_login(self, otp):
@@ -118,17 +142,6 @@ class GmailHandler(base_handler):
 		next_btn = self.driver.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#idvPreregisteredPhoneNext")))
 		next_btn.click()
 		time.sleep(1)
-		try:
-			# check if login was successful
-			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
-			self.gmail_cred_index += 1
-			message = "Successfully logged in to gmail after otp verification"
-			# message = "Logged In into Gmail as "+username+" successfully"
-			self.success(message)
-		except Exception as e:
-			message = "Unable to login to gmail..."
-			# super(GmailHandler, self.exception(message)
-			self.exception(message)
 
 
 	# Recaptcha verification
@@ -155,8 +168,8 @@ class GmailHandler(base_handler):
 			self.success(message)
 		except Exception as e:
 			message = "Gmail login for "+username+" failed"
-			# super(GmailHandler, self.exception(message)
-			self.exception(message)
+			# self.exception(message)
+			super(GmailHandler, self).exception(message)
 
 
 
@@ -205,8 +218,10 @@ class GmailHandler(base_handler):
 			time.sleep(3)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
 			self.success('Imported contacts')
+			return True
 		except Exception as e:
 			super(GmailHandler, self).exception('Unable to currently import contacts - '+str(e))
+			return False
 
 
 
