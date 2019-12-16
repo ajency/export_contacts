@@ -195,7 +195,7 @@ class LinkedInHandler(base_handler):
 			prompt = 0
 			while prompt<100:
 				self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-				time.sleep(0.1)
+				time.sleep(0.2)
 				prompt +=1
 
 			listResults = self.driver.find_elements_by_xpath('//ul[@class="abi-saved-contacts__contact-list"]/li')
@@ -258,40 +258,6 @@ class LinkedInHandler(base_handler):
 			return False
 
 
-	# def sync_yahoo_account(self):
-	# 	clk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
-	# 	clk.click()
-	# 	self.in_progress("Syncing of yahoo account is in progress")
-	# 	time.sleep(3)
-	# 	if len(self.driver.window_handles) > 1:
-	# 		# switch the pop-up window
-	# 		self.driver.switch_to.window(self.driver.window_handles[1])
-	# 		time.sleep(5)
-	# 		# Check if any account needs to be selected
-	# 		confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'oauth2-agree')))
-	# 		self.driver.execute_script("arguments[0].click();", confirmAccount)
-	# 		#switch back to original window
-	# 		time.sleep(0.5)
-	# 		if len(self.driver.window_handles) > 1:
-	# 			try:
-	# 				backToPrevWindow = WebDriverWait(self.driver.window_handles[1], 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="minimal-util-nav"]/ul/li[1]/a')))
-	# 				backToPrevWindow.click()
-	# 			except Exception as e:
-	# 				if len(self.driver.window_handles) > 1:
-	# 					self.driver.close()
-	# 	self.driver.switch_to.window(self.driver.window_handles[0])
-	# 	try:
-	# 		time.sleep(3)
-	# 		WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
-	# 		self.success('Imported contacts')
-	# 	except Exception as e:
-	# 		try:
-	# 			error_msg = self.driver.find_element_by_xpath('//*[@id="app__container"]/artdeco-toasts/artdeco-toast/div/p').text
-	# 		except Exception as e:
-	# 			error_msg = ''
-	# 		super(YahooHandler, self).exception(error_msg+'\nUnable to currently import contacts - '+str(e))
-
-
 
 	# Remove previous synced accounts
 	def remove_synced_accounts(self):
@@ -314,7 +280,7 @@ class LinkedInHandler(base_handler):
 					rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
 					self.driver.execute_script("arguments[0].click();", rmvClk2)
 			except Exception as e:
-				# self.warning("Removal of synced failed")
+				self.warning("Removal of synced accounts failed")
 				pass
 			pass
 		time.sleep(1)

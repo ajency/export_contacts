@@ -1,4 +1,5 @@
 import os,sys,time,csv,datetime,platform
+import mysql.connector
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -49,3 +50,37 @@ def custom_wait_until_continue_is_true(element_object, waiting_time):
 		waiting_time = waiting_time - 1
 		custom_wait_until_continue_is_true(element_object, waiting_time)
 		pass
+
+
+
+
+
+# SQL Functions Defined
+def create_db(host_name, mydatabase, user_name, password):
+	mydb = mysql.connector.connect(
+	  host=host_name,
+	  user=user_name,
+	  passwd=password
+	)
+	mycursor = mydb.cursor()
+	try:
+		mycursor.execute("CREATE DATABASE "+mydatabase)
+	except Exception as e:
+		print(e)
+		pass
+
+def sql_connection(host_name, mydatabase, user_name, password):
+	mydb = mysql.connector.connect(
+	  host=host_name,
+	  user=user_name,
+	  passwd=password,
+	  database=mydatabase
+	)
+	return mydb
+
+def execute_custom_sql(connection, sql):
+	mycursor = connection.cursor()
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+# def execute_custom_sql(db_connection, sql):
+# 	db_connection.execute_sql(sql)

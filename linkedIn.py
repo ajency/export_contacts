@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from linkedInHandler import LinkedInHandler
+# from dbconnector import DbConnector
 from common_functions import *
 from settings import *
 from common_functions import *
@@ -19,6 +20,8 @@ class LinkedIn():
 		self.screenshot = exporter.screenshot
 		self.credentials = exporter.get_credentials('linkedin')
 		self.credentials = LINKEDIN
+		# connector = DbConnector()
+		# self.db_connection = connector.connect_db()
 
 		self.linkedin_handler = LinkedInHandler(self.driver, self.logger, self.socketio, self.screenshot, self.credentials)
 		# clear browser cookies
@@ -192,12 +195,42 @@ class LinkedIn():
 			self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Failed")
 		else:
 			response = self.linkedin_handler.export_contacts()
+			self.export_contacts_to_db(response)
 			if response:
 				self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Success")
 			else:
 				self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Failed")
 
-			# save to DB
+
+
+
+	# save contacts to DB
+	def export_contacts_to_db(self, contactDataList=[]):
+		# save data to DB
+		hostname = 'localhost'
+		username = 'root123'
+		password = 'root123'
+		db_name = 'export_contacts'
+		table_name = 'contacts'
+		try:
+			create_db(hostname, db_name, username, password)
+			connection = sql_connection(hostname, db_name, username, password)
+			# create table 'contacts'
+			createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(250) UNIQUE KEY NOT NULL, name VARCHAR(250) NOT NULL, designation VARCHAR(1500) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
+			execute_custom_sql(connection, createTableSql)
+		except Exception as e:
+			pass
+
+		for contact in contactDataList or []:
+			try:
+				mycursor = connection.cursor()
+				sql = "INSERT INTO "+table_name+" (email, name, designation, other_details) VALUES (%s, %s, %s, %s)"
+				val = (contact[0], contact[1], contact[2], json.dumps({'profile_url':contact[3]}))
+				mycursor.execute(sql, val)
+				connection.commit()
+			except Exception as e:
+				print(e)
+				# continue
 
 
 

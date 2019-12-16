@@ -190,6 +190,7 @@ class GmailHandler(base_handler):
 
 
 	def normal_sync_gmail_account(self):
+		self.in_progress("Gmail sync is in progress")
 		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember48"]/a')))
 		clk.click()
 		time.sleep(3)
