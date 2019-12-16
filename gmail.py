@@ -37,7 +37,7 @@ class Gmail():
 			self.check_login_status()
 		elif action == "sync-account":
 			if not self.is_user_logged_in():
-				self.yahoo_handler.warning("Need to Login to gmail before syncing contacts")
+				self.gmail_handler.warning("Need to Login to gmail before syncing contacts")
 				self.login_to_gmail()
 			self.sync_contacts()
 		# Gmail - Log Out code
@@ -168,12 +168,12 @@ class Gmail():
 	def process_retry_login(self, use_diff_cred):
 		self.gmail_handler.continue_with_execution()
 		if use_diff_cred.strip().lower() == 'y':
-			self.gmail_handler.linkedin_cred_index += 1
+			self.gmail_handler.gmail_cred_index += 1
 
-		if self.gmail_handler.linkedin_cred_index < len(self.gmail_handler.credentials):
-			username = self.gmail_handler.credentials[self.gmail_handler.linkedin_cred_index]['username']
+		if self.gmail_handler.gmail_cred_index < len(self.gmail_handler.credentials):
+			username = self.gmail_handler.credentials[self.gmail_handler.gmail_cred_index]['username']
 			self.gmail_handler.in_progress("Retrying using "+username+" ...")
-			self.login_to_linkedin()
+			self.login_to_gmail()
 		else:
 			self.exit_process("No more Gmail accounts available")
 
