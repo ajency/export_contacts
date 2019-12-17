@@ -161,15 +161,24 @@ class GmailHandler(base_handler):
 			self.gmail_cred_index += 1
 			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
 			clk.click()
-			username = self.driver.find_element_by_css_selector('#gb > div.gb_Md.gb_3d.gb_Ud > div.gb_3a.gb_F.gb_l.gb_4a.gb_na > div.gb_cb > div.gb_eb > div.gb_qb').text
 			name = self.driver.find_element_by_css_selector('#gb > div.gb_Md.gb_3d.gb_Ud > div.gb_3a.gb_F.gb_l.gb_4a.gb_na > div.gb_cb > div.gb_eb > div.gb_ob.gb_pb').text
-			message = "Logged In into Gmail as "+username+' ('+name+") successfully"
-			# message = "Logged In into Gmail as "+username+" successfully"
-			self.success(message)
+			username = self.driver.find_element_by_css_selector('#gb > div.gb_Md.gb_3d.gb_Ud > div.gb_3a.gb_F.gb_l.gb_4a.gb_na > div.gb_cb > div.gb_eb > div.gb_qb').text
 		except Exception as e:
+			name = ''
+
+		self.driver.get(self.check_login_url)
+		if self.is_user_logged_in():
+			if username and name:
+				message = "Logged In into Gmail as "+username+' ('+name+") successfully"
+			else:
+				message = "Logging In into Gmail successfully"
+			self.success(message)
+			return True
+		else:
 			message = "Gmail login for "+username+" failed"
 			# self.exception(message)
 			super(GmailHandler, self).exception(message)
+			return False
 
 
 

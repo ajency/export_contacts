@@ -136,6 +136,7 @@ LINKEDIN = [
   {"username": "pnitin3103@gmail.com", "password": "ajency#123"}
 ]
 GMAIL = [
+  {"username": "amitverma2938a@gmail.com", "password": "ajency@123"},
   {"username": "pnitin3103@gmail.com", "password": "ajency#123"},
   {"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
   {"username": "ralph110293@gmail.com", "password": "ajency#123"},
