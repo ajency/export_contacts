@@ -33,6 +33,7 @@ class Yahoo():
 				self.driver.get(self.yahoo_handler.login_url)
 				return self.login()
 		elif action == "sync-account":
+			self.driver.get(self.yahoo_handler.check_login_url)
 			if not self.yahoo_handler.is_user_logged_in():
 				self.yahoo_handler.warning("Need to Login to yahoo before syncing contacts")
 				self.login_to_yahoo()

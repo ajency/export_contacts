@@ -33,6 +33,7 @@ class AOL():
 				self.driver.get(self.aol_handler.login_url)
 				self.login()
 		elif action == "sync-account":
+			self.driver.get(self.aol_handler.check_login_url)
 			if not self.aol_handler.is_user_logged_in():
 				self.aol_handler.warning("Need to Login to AOL before syncing contacts")
 				self.login_to_aol()
