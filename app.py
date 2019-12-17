@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from settings import USER_AGENT_LIST
 import random
 import json
+from jsonschema import validate
 
 from sequence import get_main_sequences
 from exporter import Exporter
@@ -35,6 +36,7 @@ is_auto = True
 is_headless = True
 exporter = None
 proxy_list = []
+config_accounts = ACCOUNTS
 
 
 @app.route('/')
@@ -73,9 +75,15 @@ def handle_initiate_process(payload):
     global environment
     global is_auto
     global is_headless
+    global config_accounts
     environment = payload.get('env')
     is_auto = payload.get('auto')
     is_headless = payload.get('headless')
+
+    # if 'accounts' in payload:
+    #     config_accounts = json.loads(payload.get('accounts'))
+    #     print(config_accounts)
+
     emit('action', 'Initializing request for '+environment+' environment')
     if not is_auto:
         sequences = get_main_sequences()
@@ -116,16 +124,18 @@ def handle_start_exporter(payload):
         for sequence in selected_sequences:
             sequence_title = sequences[sequence]
             if isinstance(sequence_title, dict):
-                emit('action', 'Started Sequence: Email operation ...')
-                getattr(exporter.executor, 'step_email_operation')(selected_email_sequences)
+                sequence_title = 'Email operation'
+                is_success = getattr(exporter.executor, 'step_email_operation')(selected_email_sequences)
             else:
-                emit('action', 'Started Sequence: ' + sequence_title + ' ...')
-                getattr(exporter.executor, 'step_' + sequence)()
+                is_success = getattr(exporter.executor, 'step_' + sequence)()
 
+            if not is_success:
+                emit('action', 'Error performing the Sequence: ' + sequence_title + ' ...')
+                break
 
         emit('action', 'Closing web driver instance...')
         exporter.close_web_driver()
-        emit('action', '######## CLOSE WEBDRIVER FOR SESSION #: '+exporter.session_id+" ##########")
+        emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+exporter.session_id+" ##########")
 
 
 @socketio.on('gmail_otp_login')
@@ -158,7 +168,6 @@ def handle_exception_user_single_response(payload):
         exporter.executor.gmail.process_retry_login(user_input)
     else:
         exporter.executor.logger.error('Unable to process request')
-
 
 
 

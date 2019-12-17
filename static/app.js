@@ -143,7 +143,15 @@ $("input[name='environment']").on("change", function(event){
     $(".environment_badge").show().text(env);
     var headless_mode = $("input:checked[name='headless_mode']").val();
     var is_headless = (headless_mode == '1')? true : false;
-    socket.emit('initiate_process', {'env': env,'auto': is_auto, 'headless': is_headless});
+    var payload = {'env': env,'auto': is_auto, 'headless': is_headless};
+
+    var accounts_config = $("#accounts_config").val();
+    if(accounts_config !== ""){
+        payload['accounts'] = accounts_config;
+        console.log('Accounts Config <> ', accounts_config);
+    }
+
+    socket.emit('initiate_process', payload);
     if(is_auto){
         $("#initiate_form").hide();
         $(".step_select_msg").show();
