@@ -67,10 +67,12 @@ class GmailHandler(base_handler):
 		is_loggedin = False
 		try:
 			# check if login was successful
-			self.driver.find_element_by_id('identifierId')
-			is_loggedin = False
-		except Exception as e:
+			# self.driver.find_element_by_id('identifierId')
+			self.driver.find_element_by_xpath('//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')
+			# confirmLogIn = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gb"]/div[2]/div[3]/div/div[2]/div/a')))
 			is_loggedin = True
+		except Exception as e:
+			is_loggedin = False
 			pass
 		return is_loggedin
 
