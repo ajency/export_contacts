@@ -166,7 +166,6 @@ class GmailHandler(base_handler):
 		except Exception as e:
 			name = ''
 
-		self.driver.get(self.check_login_url)
 		if self.is_user_logged_in():
 			if username and name:
 				message = "Logged In into Gmail as "+username+' ('+name+") successfully"
