@@ -280,7 +280,7 @@ class LinkedInHandler(base_handler):
 					rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
 					self.driver.execute_script("arguments[0].click();", rmvClk2)
 			except Exception as e:
-				self.warning("Removal of synced accounts failed")
+				# self.warning("Removal of synced accounts failed")
 				pass
 			pass
 		time.sleep(1)

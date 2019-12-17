@@ -195,6 +195,7 @@ class LinkedIn():
 			# need to call handler
 			self.linkedin_handler.warning("Need to LogIn to LinkedIn with sync contacts for exporting contacts")
 			self.login_to_linkedin()
+		self.driver.get(self.linkedin.linkedin_handler.export_url)
 		response = self.linkedin_handler.export_contacts()
 		if response:
 			self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Success")
