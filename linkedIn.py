@@ -8,6 +8,7 @@ from linkedInHandler import LinkedInHandler
 # from dbconnector import DbConnector
 from common_functions import *
 from settings import *
+from os import environ
 from common_functions import *
 
 class LinkedIn():
@@ -207,10 +208,11 @@ class LinkedIn():
 	# save contacts to DB
 	def export_contacts_to_db(self, contactDataList=[]):
 		# save data to DB
-		hostname = 'localhost'
-		username = 'root123'
-		password = 'root123'
-		db_name = 'export_contacts'
+		db_name = environ.get('DB_NAME')
+		hostname = environ.get('DB_HOSTNAME')
+		# db_port = environ.get('DB_PORT')
+		username = environ.get('DB_USERNAME')
+		password = environ.get('DB_PASSWORD')
 		table_name = 'contacts'
 		try:
 			create_db(hostname, db_name, username, password)
