@@ -187,15 +187,15 @@ class LinkedIn():
 	# Export contacts
 	def export_contacts(self):
 		time.sleep(1)
-		self.driver.get(self.linkedin_handler.export_url)
-		time.sleep(5)
 		response = []
+		self.driver.get(self.linkedin_handler.export_url)
 		# check if user logged in
-		if self.linkedin_handler.is_user_logged_in():
+		if not self.linkedin_handler.is_user_logged_in():
 			# need to call handler
 			self.linkedin_handler.warning("Need to LogIn to LinkedIn with sync contacts for exporting contacts")
 			self.login_to_linkedin()
-		self.driver.get(self.linkedin.linkedin_handler.export_url)
+		self.driver.get(self.linkedin_handler.export_url)
+		time.sleep(5)
 		response = self.linkedin_handler.export_contacts()
 		if response:
 			self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Success")
