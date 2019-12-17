@@ -9,6 +9,8 @@ from outlook import OutLook
 from linkedIn import LinkedIn
 from common_functions import *
 from settings import *
+from common_functions import *
+
 
 class Executor():
 	"""docstring for Executor"""
@@ -242,8 +244,12 @@ class Executor():
 
 	def export_contacts_to_csv(self, contactDataList):
 		# convert array to CSV
-		file_path = "downloads/contact_details/"+self.session_id
-		export_data_to_csv(file_path, contactDataList)
+		if contactDataList:
+			file_path = "downloads/contact_details/"+self.session_id+'.csv'
+			export_content_to_csv(file_path, contactDataList)
+		else:
+			self.handler.warning("Unable to export to CSV")
+			return
 
 
 	# save contacts to DB
