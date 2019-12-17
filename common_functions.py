@@ -53,7 +53,7 @@ def custom_wait_until_continue_is_true(element_object, waiting_time):
 
 
 def export_content_to_csv(file_path, content):
-		with open(file_path, 'w') as csvFile:
+		with open(file_path, 'w+') as csvFile:
 			writer = csv.writer(csvFile)
 			writer.writerows(content)
 		csvFile.close()
