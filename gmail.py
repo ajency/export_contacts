@@ -34,7 +34,8 @@ class Gmail():
 			else:
 				self.login()
 		elif action == "verify-account":
-			self.verify_account()
+			if not self.gmail_handler.is_user_logged_in():
+				self.verify_account()
 		elif action == "check-login":
 			self.check_login_status()
 		elif action == "sync-account":
