@@ -17,6 +17,7 @@ class YahooHandler(base_handler):
 		self.import_contacts_url = "https://www.linkedin.com/mynetwork/import-contacts/"
 
 
+
 	def exception(self, message, current_url='', page_source=''):
 		super(YahooHandler, self).exception(message, current_url, page_source)
 		next_step = input("Do you want to Retry(r), Continue(c) OR Exit(x)? Default(c): ")
@@ -45,6 +46,24 @@ class YahooHandler(base_handler):
 			return False
 
 
+	# check_login_status
+	# is_user_logged_in
+	def is_user_logged_in(self):
+		is_loggedin = False
+		try:
+			# check if login was successful
+			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
+			self.driver.execute_script("arguments[0].click();", clk)
+			# Logout
+			logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a[3]')))
+			# self.driver.find_element_by_id('login-username')
+			is_loggedin = True
+		except Exception as e:
+			is_loggedin = False
+			pass
+		return is_loggedin
+
+
 	# Normal page load - login 
 	def normal_yahoo_login(self, username, password):
 		self.in_progress("Logging into Yahoo as "+username)
@@ -52,6 +71,18 @@ class YahooHandler(base_handler):
 		user.clear()
 		user.send_keys(username)
 		self.driver.find_element_by_id("login-signin").click()
+		try:
+			error = self.driver.find_element_by_css_selector('#username-error')
+			error_msg = error.text
+		except Exception as e:
+			error_msg = ''
+
+		if error_msg:
+			raise Exception(error_msg)
+
+		# check for captcha
+		self.not_a_robot_captcha()
+
 		time.sleep(5)
 		pwd = self.driver.find_element_by_id("login-passwd")
 		pwd.send_keys(password)
@@ -61,6 +92,20 @@ class YahooHandler(base_handler):
 		login.click()
 		time.sleep(2)
 
+
+
+	def not_a_robot_captcha(self):
+		try:
+			# Not a Robot
+			current_url = self.driver.current_url
+			page_source = self.driver.page_source
+			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="recaptcha-anchor"]/div[1]')))
+			self.driver.execute_script("arguments[0].click();", clk)
+			time.sleep(5)
+			self.driver.find_element_by_xpath('//*[@id="recaptcha-submit"]').click()
+			self.success("Validated: Not a Robot", current_url, page_source)
+		except Exception as e:
+			pass
 
 	# Normal page load - logout 
 	def normal_yahoo_logout(self):
@@ -110,25 +155,34 @@ class YahooHandler(base_handler):
 			time.sleep(1)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
 			loggedin_username = self.driver.find_element_by_css_selector('#ybarAccountMenuBody > ul > li > div > span._yb_j3lqv._yb_16hxw._yb_kyook._yb_1qtbr._yb_vig6z').text
-			message = "Logged In into Yahoo as "+loggedin_username+" successfully"
-			self.yahoo_cred_index += 1
-			# message = "Logged In into Yahoo as "+username+" successfully"
-			self.success(message)
 		except Exception as e:
-			message = "Yahoo login for "+username+" failed"
-			# super(YahooHandler, self.exception(message, current_url, page_source)
-			self.exception(message, current_url, page_source)
+			loggedin_username = ''
+
+			if self.is_user_logged_in():
+				if loggedin_username:
+					message = "Logged In into Yahoo as "+loggedin_username+" successfully"
+				else:
+					message = "Log In into yahoo successful"
+				self.yahoo_cred_index += 1
+				# message = "Logged In into Yahoo as "+username+" successfully"
+				self.success(message)
+				return True
+			else:
+				message = "Yahoo login for "+username+" failed"
+				super(YahooHandler, self).exception(message, current_url, page_source)
+				# self.exception(message, current_url, page_source)
+				return False
 
 
 
 	def normal_sync_yahoo_account(self):
 		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
 		clk.click()
-		self.in_progress("Syncing of yahoo account is in progress")
 		time.sleep(3)
 		if len(self.driver.window_handles) > 1:
 			# switch the pop-up window
 			self.driver.switch_to.window(self.driver.window_handles[1])
+			self.in_progress("Syncing of yahoo account is in progress")
 			time.sleep(5)
 			# Check if any account needs to be selected
 			confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'oauth2-agree')))
@@ -147,5 +201,7 @@ class YahooHandler(base_handler):
 			time.sleep(3)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
 			self.success('Imported contacts')
+			return True
 		except Exception as e:
 			super(YahooHandler, self).exception('Unable to currently import contacts - '+str(e))
+			return False

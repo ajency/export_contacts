@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from outlookHandler import OutLookHandler
+from settings import *
 from common_functions import *
 
 class OutLook():
@@ -15,7 +16,9 @@ class OutLook():
 		self.logger = exporter.logger
 		self.socketio = exporter.socketio
 		self.screenshot = exporter.screenshot
-		self.outlook_handler = OutLookHandler(self.driver, self.logger, self.socketio, self.screenshot, exporter.get_credentials('outlook'))
+		self.credentials = exporter.get_credentials('outlook')
+		self.credentials = OUTLOOK_CREDENTIALS
+		self.outlook_handler = OutLookHandler(self.driver, self.logger, self.socketio, self.screenshot, self.credentials)
 		# clear browser cookies
 		# exporter.delete_all_cookies('outlook')
 

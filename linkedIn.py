@@ -20,7 +20,7 @@ class LinkedIn():
 		self.socketio = exporter.socketio
 		self.screenshot = exporter.screenshot
 		self.credentials = exporter.get_credentials('linkedin')
-		self.credentials = LINKEDIN
+		self.credentials = LINKEDIN_CREDENTIALS
 		# connector = DbConnector()
 		# self.db_connection = connector.connect_db()
 
@@ -189,50 +189,16 @@ class LinkedIn():
 		time.sleep(1)
 		self.driver.get(self.linkedin_handler.export_url)
 		time.sleep(5)
+		response = []
 		# check if user logged in
 		if self.linkedin_handler.is_user_logged_in():
 			# need to call handler
 			self.linkedin_handler.warning("Need to LogIn to LinkedIn with sync contacts for exporting contacts")
-			self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Failed")
+			self.login_to_linkedin()
+		response = self.linkedin_handler.export_contacts()
+		if response:
+			self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Success")
 		else:
-			response = self.linkedin_handler.export_contacts()
-			self.export_contacts_to_db(response)
-			if response:
-				self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Success")
-			else:
-				self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Failed")
-
-
-
-
-	# save contacts to DB
-	def export_contacts_to_db(self, contactDataList=[]):
-		# save data to DB
-		db_name = environ.get('DB_NAME')
-		hostname = environ.get('DB_HOSTNAME')
-		# db_port = environ.get('DB_PORT')
-		username = environ.get('DB_USERNAME')
-		password = environ.get('DB_PASSWORD')
-		table_name = 'contacts'
-		try:
-			create_db(hostname, db_name, username, password)
-			connection = sql_connection(hostname, db_name, username, password)
-			# create table 'contacts'
-			createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(250) UNIQUE KEY NOT NULL, name VARCHAR(250) NOT NULL, designation VARCHAR(1500) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
-			execute_custom_sql(connection, createTableSql)
-		except Exception as e:
-			pass
-
-		for contact in contactDataList or []:
-			try:
-				mycursor = connection.cursor()
-				sql = "INSERT INTO "+table_name+" (email, name, designation, other_details) VALUES (%s, %s, %s, %s)"
-				val = (contact[0], contact[1], contact[2], json.dumps({'profile_url':contact[3]}))
-				mycursor.execute(sql, val)
-				connection.commit()
-			except Exception as e:
-				print(e)
-				# continue
-
-
+			self.linkedin_handler._log_("step_log: LinkedIn Export contacts - Failed")
+		return response
 

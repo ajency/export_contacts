@@ -126,22 +126,28 @@ USER_AGENT_LIST = [
 # "Mozilla/5.0 (IE 11.0; Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"
 ]
 
-LINKEDIN = [
+# Email Credentials
+AOL_CREDENTIALS = [
+  {"username": "stinfordpaulie18@aol.com", "password": "ajency#123"},
+]
+YAHOO_CREDENTIALS = [
+  {"username": "stinfordpaulie18@yahoo.com", "password": "ajency#123"},
+]
+OUTLOOK_CREDENTIALS = [
+  {"username": "stinfordpaulie18@yahoo.com", "password": "ajency#123"},
+]
+LINKEDIN_CREDENTIALS = [
   # {"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
   {"username": "ralph110293@gmail.com", "password": "ajency#123"},
   {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
   {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
-  {"username": "testaj13aj@gmail.com", "password": "ajtest@123"},
-  {"username": "testaj11aj@gmail.com", "password": "testaj@123"},
-  {"username": "pnitin3103@gmail.com", "password": "ajency#123"}
 ]
-GMAIL = [
+GMAIL_CREDENTIALS = [
   {"username": "amitverma2938a@gmail.com", "password": "ajency@123"},
   {"username": "pnitin3103@gmail.com", "password": "ajency#123"},
   {"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
   {"username": "ralph110293@gmail.com", "password": "ajency#123"},
   {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
   {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
-  {"username": "testaj13aj@gmail.com", "password": "ajtest@123"},
-  {"username": "testaj11aj@gmail.com", "password": "testaj@123"}
+  {"username": "testaj11aj@gmail.com", "password": "testaj@123"},
 ]

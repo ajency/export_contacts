@@ -54,7 +54,16 @@ class AOLHandler(base_handler):
 		user.send_keys(username)
 		self.driver.find_element_by_id("login-signin").click()
 		time.sleep(3)
-		
+
+		try:
+			error = self.driver.find_element_by_css_selector('#username-error')
+			error_msg = error.text
+		except Exception as e:
+			error_msg = ''
+
+		if error_msg:
+			raise Exception(error_msg)
+
 		# check for captcha
 		self.not_a_robot_captcha()
 		
@@ -78,6 +87,26 @@ class AOLHandler(base_handler):
 		except Exception as e:
 			pass
 
+
+	# check_login_status
+	# is_user_logged_in
+	def is_user_logged_in(self):
+		# try:
+		# 	# remove previous loggedin AOL accounts
+		# 	self.aol_handler.remove_previous_loggedin_yahoo_accounts()
+		# except Exception as e:
+		# 	pass
+		is_loggedin = False
+		try:
+			# check if login was successful
+			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
+			self.driver.execute_script("arguments[0].click();", clk)
+			logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a]')))
+			is_loggedin = True
+		except Exception as e:
+			is_loggedin = False
+			pass
+		return is_loggedin
 
 
 	# Normal page load - logout 
@@ -106,14 +135,23 @@ class AOLHandler(base_handler):
 			time.sleep(1)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
 			loggedin_username = self.driver.find_element_by_css_selector('#ybarAccountMenuBody > ul > li > div > span._yb_152qm._yb_u6kgn._yb_7di8s._yb_fe66m._yb_b2fe8').text
-			message = "Logged In into AOL as "+loggedin_username+" successfully"
+		except Exception as e:
+			loggedin_username = ''
+			
+		if self.is_user_logged_in():
+			if loggedin_username:
+				message = "Logged In into AOL as "+loggedin_username+" successfully"
+			else:
+				message = "Logging into AOL is successful"
 			self.aol_cred_index += 1
 			# message = "Logged In into AOL as "+username+" successfully"
 			self.success(message)
-		except Exception as e:
+			return True
+		else:
 			message = "AOL login for "+username+" failed"
 			# retry = self.exception(message, current_url, page_source)
 			super(AOLHandler, self).exception(message, current_url, page_source)
+			return False
 
 
 
@@ -143,5 +181,7 @@ class AOLHandler(base_handler):
 			time.sleep(3)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
 			self.success('Imported contacts')
+			return True
 		except Exception as e:
 			super(AOLHandler, self).exception('Unable to currently import contacts - '+str(e))
+			return False

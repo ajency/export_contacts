@@ -84,7 +84,7 @@ class LinkedInHandler(base_handler):
 		is_loggedin = False
 		try:
 			# check if user is loggedin
-			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]/div/li-icon')))
+			confirmLogIn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
 			is_loggedin = True
 			return is_loggedin
 			# profile_info = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="profile-nav-item"]/div'))).get_attribute('innerHTML')
@@ -202,60 +202,60 @@ class LinkedInHandler(base_handler):
 			if len(listResults) > 0:
 				print("Exporting of contacts is In progress")
 				print("____________________________")
-			for people in listResults:
-				contactDetails = {}
-				contactDivId = people.get_attribute('id')
+				for people in listResults:
+					contactDetails = {}
+					contactDivId = people.get_attribute('id')
 
-				unwantedTextSelector = 'div.abi-saved-contacts-row__details > button > div.abi-saved-contacts-contact-summary > div > span.contact-summary__name.t-sans.t-16.t-black.t-bold.mr1 > span'
-				linkedInNameSelector = 'div.abi-saved-contacts-row__details > button > div.abi-saved-contacts-contact-summary > div > span.contact-summary__name.t-sans.t-16.t-black.t-bold.mr1'
-				linkedInDesignationSelector = 'div.abi-saved-contacts-row__details > button > div.abi-saved-contacts-contact-summary > p'
-				unwantedText = people.find_element_by_css_selector(unwantedTextSelector).text
-				linkedInName = people.find_element_by_css_selector(linkedInNameSelector).text
-				linkedInName = linkedInName.replace(unwantedText, '').strip('\n')
-				linkedInName = linkedInName.replace(unwantedText, '').strip(' ')
-				try:
-					linkedInDesignation = people.find_element_by_css_selector(linkedInDesignationSelector).text
-				except Exception as e:
-					linkedInDesignation = ''
-					self.warning(linkedInName+" may not have a designation")
+					unwantedTextSelector = 'div.abi-saved-contacts-row__details > button > div.abi-saved-contacts-contact-summary > div > span.contact-summary__name.t-sans.t-16.t-black.t-bold.mr1 > span'
+					linkedInNameSelector = 'div.abi-saved-contacts-row__details > button > div.abi-saved-contacts-contact-summary > div > span.contact-summary__name.t-sans.t-16.t-black.t-bold.mr1'
+					linkedInDesignationSelector = 'div.abi-saved-contacts-row__details > button > div.abi-saved-contacts-contact-summary > p'
+					unwantedText = people.find_element_by_css_selector(unwantedTextSelector).text
+					linkedInName = people.find_element_by_css_selector(linkedInNameSelector).text
+					linkedInName = linkedInName.replace(unwantedText, '').strip('\n')
+					linkedInName = linkedInName.replace(unwantedText, '').strip(' ')
+					try:
+						linkedInDesignation = people.find_element_by_css_selector(linkedInDesignationSelector).text
+					except Exception as e:
+						linkedInDesignation = ''
+						self.warning(linkedInName+" may not have a designation")
 
-				# open modal to get email & linkedIn Url
-				contactClk = self.driver.find_element_by_xpath('//*[@id="'+contactDivId+'"]/div[@class="abi-saved-contacts-row__details"]/button[@class="abi-saved-contacts-row__description"]')
-				self.driver.execute_script("arguments[0].click();", contactClk)
-				time.sleep(0.2)
-				# get details from linkedin
-				count = 1
-				contactDetailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div'
-				linkedContactDetails = self.driver.find_elements_by_xpath(contactDetailSelector)
-				# Default email selector
-				linkedInEmailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div[1]/p'
-				for detail in linkedContactDetails:
-					label = detail.find_element_by_xpath('.//label').text
-					if label == 'Email address':
-						linkedInEmailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div['+str(count)+']/p'
-						break
-					count += 1
+					# open modal to get email & linkedIn Url
+					contactClk = self.driver.find_element_by_xpath('//*[@id="'+contactDivId+'"]/div[@class="abi-saved-contacts-row__details"]/button[@class="abi-saved-contacts-row__description"]')
+					self.driver.execute_script("arguments[0].click();", contactClk)
+					time.sleep(0.2)
+					# get details from linkedin
+					count = 1
+					contactDetailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div'
+					linkedContactDetails = self.driver.find_elements_by_xpath(contactDetailSelector)
+					# Default email selector
+					linkedInEmailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div[1]/p'
+					for detail in linkedContactDetails:
+						label = detail.find_element_by_xpath('.//label').text
+						if label == 'Email address':
+							linkedInEmailSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[2]/div['+str(count)+']/p'
+							break
+						count += 1
 
-				linkedInUrlSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[1]/div[2]/div/div/span/a'
-				linkedInEmail = self.driver.find_element_by_xpath(linkedInEmailSelector).text
-				try:
-					linkedInUrl = self.driver.find_element_by_xpath(linkedInUrlSelector).get_attribute('href')
-					# linkedInUrl = 'https://www.linkedin.com'+linkedInUrl
-				except Exception as e:
-					linkedInUrl = ''
-					self.warning(linkedInName+" may not have a LinkedIn Account")
+					linkedInUrlSelector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/div/div[1]/div[2]/div/div/span/a'
+					linkedInEmail = self.driver.find_element_by_xpath(linkedInEmailSelector).text
+					try:
+						linkedInUrl = self.driver.find_element_by_xpath(linkedInUrlSelector).get_attribute('href')
+						# linkedInUrl = 'https://www.linkedin.com'+linkedInUrl
+					except Exception as e:
+						linkedInUrl = ''
+						self.warning(linkedInName+" may not have a LinkedIn Account")
 
-				# clode modal
-				cancelSelector = '//*[@id="artdeco-modal-outlet"]/div/div/button'
-				# cancelClk = find_element_by_xpath_with_timeout(self.driver, cancelSelector, [], 10)
-				cancelClk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, cancelSelector)))
-				self.driver.execute_script("arguments[0].click();", cancelClk)
-				contactDetails = [linkedInEmail, linkedInName, linkedInDesignation, linkedInUrl]
-				contactList.append(contactDetails)
+					# clode modal
+					cancelSelector = '//*[@id="artdeco-modal-outlet"]/div/div/button'
+					# cancelClk = find_element_by_xpath_with_timeout(self.driver, cancelSelector, [], 10)
+					cancelClk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, cancelSelector)))
+					self.driver.execute_script("arguments[0].click();", cancelClk)
+					contactDetails = [linkedInEmail, linkedInName, linkedInDesignation, linkedInUrl]
+					contactList.append(contactDetails)
 			return contactList
 		except Exception as e:
-			super(LinkedInHandler, self).exception("Exception: "+e+"\n Unable to Export contacts")
-			return False
+			super(LinkedInHandler, self).exception("Exception: "+str(e)+"\n Unable to Export contacts")
+			return []
 
 
 
@@ -296,7 +296,6 @@ class LinkedInHandler(base_handler):
 			return True
 			pass
 		time.sleep(1)
-
 
 
 	def pause_execution(self):

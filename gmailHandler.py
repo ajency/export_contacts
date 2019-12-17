@@ -201,7 +201,6 @@ class GmailHandler(base_handler):
 
 
 	def normal_sync_gmail_account(self):
-		self.in_progress("Gmail sync is in progress")
 		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember48"]/a')))
 		clk.click()
 		time.sleep(3)
@@ -213,6 +212,7 @@ class GmailHandler(base_handler):
 			accountSelector = '//*[@id="view_container"]/div/div/div[2]/div/div/div/form/span/section/div/div/div/div/ul/li[1]/div/div[1]/div/div[2]/div[1]'
 			account = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, accountSelector)))
 			account.click()
+			self.in_progress("Gmail sync is in progress")
 			confirmAccount = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'submit_approve_access')))
 			# confirmAccount.click()
 			self.driver.execute_script("arguments[0].click();", confirmAccount)

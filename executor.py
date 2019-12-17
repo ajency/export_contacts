@@ -24,6 +24,7 @@ class Executor():
 		self.aol = AOL(exporter)
 		self.yahoo = Yahoo(exporter)
 		self.outlook = OutLook(exporter)
+		self.session_id = exporter.session_id
 
 
 	def get_execution_sequence(self, auto_execution_mode=True):
@@ -179,7 +180,7 @@ class Executor():
 
 	def step_fifteen(self):
 		print("step 15")
-		self.linkedin.export_contacts()
+		contact_details = self.export_contacts()
 		pass
 
 	def step_sixteen(self):
@@ -227,3 +228,49 @@ class Executor():
 			self.handler.warning("Need to login into LinkedIn to sync")
 			self.linkedin.login_to_linkedin()
 		self.outlook.sync_account()
+
+
+	def export_contacts(self):
+		contact_details = self.linkedin.export_contacts()
+		self.export_contacts_to(contact_details)
+
+	def export_contacts_to(self, content=[], export_to='csv'):
+		if export_to == 'database':
+			self.export_contacts_to_db(content)
+		else:
+			self.export_contacts_to_csv(content)
+
+	def export_contacts_to_csv(self, contactDataList):
+		# convert array to CSV
+		file_path = "downloads/contact_details/"+self.session_id
+		export_data_to_csv(file_path, contactDataList)
+
+
+	# save contacts to DB
+	def export_contacts_to_db(self, contactDataList=[]):
+		# save data to DB
+		db_name = environ.get('DB_NAME')
+		hostname = environ.get('DB_HOSTNAME')
+		# db_port = environ.get('DB_PORT')
+		username = environ.get('DB_USERNAME')
+		password = environ.get('DB_PASSWORD')
+		table_name = 'contacts'
+		try:
+			create_db(hostname, db_name, username, password)
+			connection = sql_connection(hostname, db_name, username, password)
+			# create table 'contacts'
+			createTableSql = "CREATE TABLE "+table_name+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, email VARCHAR(250) UNIQUE KEY NOT NULL, name VARCHAR(250) NOT NULL, designation VARCHAR(1500) DEFAULT NULL, other_details JSON DEFAULT NULL, updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
+			execute_custom_sql(connection, createTableSql)
+		except Exception as e:
+			pass
+
+		for contact in contactDataList or []:
+			try:
+				mycursor = connection.cursor()
+				sql = "INSERT INTO "+table_name+" (email, name, designation, other_details) VALUES (%s, %s, %s, %s)"
+				val = (contact[0], contact[1], contact[2], json.dumps({'profile_url':contact[3]}))
+				mycursor.execute(sql, val)
+				connection.commit()
+			except Exception as e:
+				print(e)
+				# continue
