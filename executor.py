@@ -245,7 +245,7 @@ class Executor():
 	def export_contacts_to_csv(self, contactDataList):
 		# convert array to CSV
 		if contactDataList:
-			file_path = "downloads/contact_details/"+self.session_id+'.csv'
+			file_path = "downloads/contact_details_"+self.session_id+'.csv'
 			export_content_to_csv(file_path, [["Email ID", "Contact Name", "Designation", "LinkedIn link"]]+contactDataList)
 		else:
 			self.handler.warning("Unable to export to CSV")
