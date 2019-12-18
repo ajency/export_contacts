@@ -192,7 +192,7 @@ class LinkedIn():
 
 	# Export contacts
 	def export_contacts(self):
-		time.sleep(5)
+		WebDriverWait(self.driver, 5)
 		response = []
 		self.driver.get(self.linkedin_handler.export_url)
 		time.sleep(5)

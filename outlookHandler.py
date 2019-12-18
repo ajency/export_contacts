@@ -52,8 +52,8 @@ class OutLookHandler(base_handler):
 		try:
 			# check if login was successful
 			# self.driver.get("https://account.microsoft.com/")
-			# self.driver.find_element_by_id('ybar')
-			self.driver.find_element_by_id('mectrl_main_trigger')
+			self.driver.find_element_by_id('ybar')
+			# self.driver.find_element_by_id('mectrl_main_trigger')
 			is_loggedin = True
 		except Exception as e:
 			is_loggedin = False

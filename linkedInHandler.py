@@ -182,7 +182,11 @@ class LinkedInHandler(base_handler):
 
 	def export_contacts(self):
 		contactList = []
-		WebDriverWait(self.driver, 5)
+		try:
+			WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
+		except Exception as e:
+			pass
+
 		try:
 			time.sleep(5)
 			# Total Contacts
@@ -262,7 +266,6 @@ class LinkedInHandler(base_handler):
 	# Remove previous synced accounts
 	def remove_synced_accounts(self):
 		# Need to re-modify
-		time.sleep(5)
 		self.driver.get(self.remove_contacts_url)
 		time.sleep(5)
 		try:
@@ -287,6 +290,11 @@ class LinkedInHandler(base_handler):
 		time.sleep(5)
 		self.driver.get(self.export_url)
 		time.sleep(1)
+
+		try:
+			WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="artdeco-toasts"]/ul/li/div/p/span')))
+		except Exception as e:
+			pass
 
 		if search_element_by_xpath(self.driver, '//*[@id="artdeco-toasts"]/ul/li/div/p/span'):
 			try:
