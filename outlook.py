@@ -27,21 +27,22 @@ class OutLook():
 		# OutLook - Log In code
 		if action == "login":
 			self.driver.get(self.outlook_handler.check_login_url)
-			if self.is_user_logged_in():
+			if self.outlook_handler.is_user_logged_in():
 				self.outlook_handler.warning("Already Logged In to OutLook")
 				return False
 			else:
 				self.driver.get(self.outlook_handler.login_url)
 				return self.login()
 		elif action == "sync-account":
-			if not self.is_user_logged_in():
+			self.driver.get(self.outlook_handler.check_login_url)
+			if not self.outlook_handler.is_user_logged_in():
 				self.outlook_handler.warning("Need to Login to OutLook before syncing contacts")
 				self.login_to_outlook()
 			return self.sync_contacts()
 		# OutLook - Log Out code
 		elif action == "logout":
 			self.driver.get(self.outlook_handler.check_login_url)
-			if not self.is_user_logged_in():
+			if not self.outlook_handler.is_user_logged_in():
 				self.outlook_handler.warning("Need to Login before logging out from OutLook")
 				return False
 			else:
@@ -93,7 +94,7 @@ class OutLook():
 		current_url = self.driver.current_url
 		page_source = self.driver.page_source
 		username = self.outlook_handler.credentials[self.outlook_handler.outlook_cred_index]['username']
-		if not self.is_user_logged_in():
+		if not self.outlook_handler.is_user_logged_in():
 			message = "Unable to identify OutLook account verification Page"
 			super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
 			# self.outlook_handler.exception(message, current_url, page_source)
@@ -148,7 +149,7 @@ class OutLook():
 				# self.outlook_handler.exception(message, current_url, page_source)
 				return False
 		else:
-			if self.is_user_logged_in():
+			if self.outlook_handler.is_user_logged_in():
 				message = "Unable to identify OutLook Sync Page"
 				super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
 				# self.outlook_handler.exception(message, current_url, page_source)

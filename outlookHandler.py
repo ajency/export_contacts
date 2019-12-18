@@ -62,7 +62,6 @@ class OutLookHandler(base_handler):
 
 	# Normal page load - login 
 	def normal_outlook_login(self, username, password):
-		self.in_progress("Logging into OutLook as "+username)
 		user = self.driver.find_element_by_id('i0116')
 		user.clear()
 		user.send_keys(username)
