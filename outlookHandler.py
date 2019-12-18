@@ -52,7 +52,8 @@ class OutLookHandler(base_handler):
 		try:
 			# check if login was successful
 			# self.driver.get("https://account.microsoft.com/")
-			self.driver.find_element_by_id('mectrl_body_signOut')
+			# self.driver.find_element_by_id('ybar')
+			self.driver.find_element_by_id('mectrl_main_trigger')
 			is_loggedin = True
 		except Exception as e:
 			is_loggedin = False
@@ -62,6 +63,7 @@ class OutLookHandler(base_handler):
 
 	# Normal page load - login 
 	def normal_outlook_login(self, username, password):
+		self.in_progress("Logging In into OutLook as "+username)
 		user = self.driver.find_element_by_id('i0116')
 		user.clear()
 		user.send_keys(username)
@@ -73,7 +75,6 @@ class OutLookHandler(base_handler):
 			# self.exception(error_txt)
 			return False
 		except Exception as e:
-			self.in_progress("Logging In into OutLook as "+username)
 			pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="i0118"]')))
 			pwd.send_keys(password)
 			# form submit

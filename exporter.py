@@ -15,7 +15,7 @@ class Exporter():
         self.logger = CustomLogger()
         # initialize driver
         self.web_driver = Driver(self.socketio)
-        self.driver = self.web_driver.initialize_chrome_driver(headless, [])
+        self.driver = self.web_driver.initialize_chrome_driver(headless, proxy_list)
         # initialize screnshot session
         self.session_id = self.logger.session_id
         self.screenshot = Screenshot(self.session_id, self.driver)

@@ -1,3 +1,4 @@
+import random
 import os,sys,time,csv,datetime,platform
 import mysql.connector
 from selenium import webdriver
@@ -52,8 +53,32 @@ def custom_wait_until_continue_is_true(element_object, waiting_time):
 		pass
 
 
-def export_content_to_csv(file_path, content):
-		with open(file_path, 'w+') as csvFile:
+def export_content_to_csv(file_path, content, create_new_file=False):
+		try:
+			path = file_path.split('/')
+			path = path[: len(path)-1]
+			dir_path = '/'.join(path)
+			if not os.path.isdir(dir_path):
+				os.mkdir(dir_path)
+		except Exception as e:
+			print(e)
+			pass
+
+		if os.path.isfile(file_path):
+			open_file_mode = "a"
+		else:
+			open_file_mode = "w+"
+
+		# create new file intead of adding to previous file
+		if create_new_file:
+			if open_file_mode == "a":
+				random_number = randrange(10)
+				file_path = file_path+"_"+random_number
+				export_content_to_csv(file_path, content, True)
+			else:
+				open_file_mode = "w+"
+
+		with open(file_path, open_file_mode) as csvFile:
 			writer = csv.writer(csvFile)
 			writer.writerows(content)
 		csvFile.close()

@@ -15,11 +15,11 @@ def get_main_sequences():
         "sixteen": "Delete Exported Contacts",
         "six": 'Logout from Yahoo',
 
-        # "seven": 'Login to AOL',
-        # "thirteen": "Import Contacts from AOL",
-        # "fifteen": "Export Contacts",
-        # "sixteen": "Delete Exported Contacts",
-        # "eight": 'Logout from AOL',
+        "seven": 'Login to AOL',
+        "thirteen": "Import Contacts from AOL",
+        "fifteen": "Export Contacts",
+        "sixteen": "Delete Exported Contacts",
+        "eight": 'Logout from AOL',
 
         # "nine": 'Login to OutLook',
         # "fourteen": "Import Contacts from OutLook",
