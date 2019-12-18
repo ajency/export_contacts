@@ -26,41 +26,27 @@ class OutLook():
 	def perform_action(self, action, data=[]):
 		# OutLook - Log In code
 		if action == "login":
+			self.driver.get(self.outlook_handler.check_login_url)
 			if self.is_user_logged_in():
 				self.outlook_handler.warning("Already Logged In to OutLook")
+				return False
 			else:
 				self.driver.get(self.outlook_handler.login_url)
-				self.login()
-		elif action == "verify-account":
-			self.verify_account()
-		elif action == "check-login":
-			self.check_login_status()
+				return self.login()
 		elif action == "sync-account":
 			if not self.is_user_logged_in():
 				self.outlook_handler.warning("Need to Login to OutLook before syncing contacts")
 				self.login_to_outlook()
-			self.sync_contacts()
+			return self.sync_contacts()
 		# OutLook - Log Out code
 		elif action == "logout":
+			self.driver.get(self.outlook_handler.check_login_url)
 			if not self.is_user_logged_in():
 				self.outlook_handler.warning("Need to Login before logging out from OutLook")
+				return False
 			else:
-				self.logout()
+				return self.logout()
 
-
-	# check_login_status
-	# is_user_logged_in
-	def is_user_logged_in(self):
-		is_loggedin = False
-		try:
-			# check if login was successful
-			self.driver.get("https://account.microsoft.com/")
-			self.driver.find_element_by_id('mectrl_body_signOut')
-			is_loggedin = True
-		except Exception as e:
-			is_loggedin = False
-			pass
-		return is_loggedin
 
 
 	def login(self):
@@ -72,17 +58,18 @@ class OutLook():
 			password = self.outlook_handler.credentials[self.outlook_handler.outlook_cred_index]['password']
 			if search_element_by_id(self.driver, 'i0116'):
 				try:
-					self.outlook_handler.normal_outlook_login(username, password)
+					return self.outlook_handler.normal_outlook_login(username, password)
 				except Exception as e:
-					retry = self.outlook_handler.exception(e, current_url, page_source)
-					if retry:
-						self.login_to_outlook()
+					super(OutLookHandler, self.outlook_handler).exception(e, current_url, page_source)
+					# self.outlook_handler.exception(e, current_url, page_source)
+					return False
 			else:
 				message = "Unable to Identify OutLook Login Page"
 				super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
-				pass
+				return False
 		else:
 			self.outlook_handler.exit_process("No OutLook accounts available")
+			return False
 
 
 	def logout(self):
@@ -91,15 +78,15 @@ class OutLook():
 		page_source = self.driver.page_source
 		if search_element_by_id(self.driver, 'mectrl_body_signOut'):
 			try:
-				self.outlook_handler.normal_outlook_logout()
+				return self.outlook_handler.normal_outlook_logout()
 			except Exception as e:
 				message = str(e)
 				super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
-				pass
+				return False
 		else:
 			message = "Unable to Identify OutLook Logout Page"
 			super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
-			pass
+			return False
 
 
 	def verify_account(self):
@@ -108,32 +95,43 @@ class OutLook():
 		username = self.outlook_handler.credentials[self.outlook_handler.outlook_cred_index]['username']
 		if not self.is_user_logged_in():
 			message = "Unable to identify OutLook account verification Page"
-			# super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
-			retry = self.outlook_handler.exception(message, current_url, page_source)
-			if retry:
-				self.login_to_outlook()
-		pass
+			super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
+			# self.outlook_handler.exception(message, current_url, page_source)
+			return False
+		return True
 
 
 	def check_login_status(self):
-		self.outlook_handler.check_login_status()
+		return self.outlook_handler.check_login_status()
 
 
 	# LogIn function for OutLook Account
 	def login_to_outlook(self):
-		self.perform_action("login")
-		self.perform_action("verify-account")
-		self.perform_action("check-login")
+		is_login_page = self.perform_action("login")
+		if is_login_page and self.outlook_handler.is_user_logged_in():
+			self.verify_account()
+		is_logged_in = self.check_login_status()
+		if is_logged_in:
+			self.outlook_handler._log_("step_log: OutLook Login - Success")
+		else:
+			self.outlook_handler._log_("step_log: OutLook Login - Failed")
+
+		return is_logged_in
 
 
 	# LogOut function for OutLook Account
 	def logout_from_outlook(self):
 		self.driver.get(self.outlook_handler.logout_url)
-		self.perform_action("logout")
+		is_logged_out = self.perform_action("logout")
+		if is_logged_out:
+			self.outlook_handler._log_("::::: OutLook - Log Out - Success")
+		else:
+			self.outlook_handler._log_("::::: OutLook - Log Out - Failed")
+		return is_logged_out
 
 
 	def sync_account(self):
-		self.perform_action("sync-account")
+		return self.perform_action("sync-account")
 
 
 	def sync_contacts(self):
@@ -142,24 +140,17 @@ class OutLook():
 		page_source = self.driver.page_source
 		if search_element_by_xpath(self.driver, '//*[@id="ember58"]/a'):
 			try:
-				self.outlook_handler.normal_sync_outlook_account()
+				return self.outlook_handler.normal_sync_outlook_account()
 			except Exception as e:
 				# log exception
 				message = "\n Sync OutLook contacts - Failed \n"+str(e)
-				# super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
-				retry = self.outlook_handler.exception(message, current_url, page_source)
-				if retry:
-					self.logout_from_outlook()
-					self.sync_account()
-			pass
+				super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
+				# self.outlook_handler.exception(message, current_url, page_source)
+				return False
 		else:
 			if self.is_user_logged_in():
 				message = "Unable to identify OutLook Sync Page"
-				# super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
-				retry = self.outlook_handler.exception(message, current_url, page_source)
-				if retry:
-					self.logout_from_outlook()
-					self.sync_account()
-			else:
-				self.login_to_outlook()
+				super(OutLookHandler, self.outlook_handler).exception(message, current_url, page_source)
+				# self.outlook_handler.exception(message, current_url, page_source)
+				return False
 

@@ -1,21 +1,32 @@
 
 def get_main_sequences():
     sequences = {
-        # "login_linkedIn": 'Login to LinkedIn',
-        # "logout_linkedIn": 'Logout from LinkedIn',
-        # "login_gmail": 'Login to Gmail',
-        # "logout_gmail": 'Logout from Gmail',
-        # "exit": "Exits the script"
         "one": 'Login to LinkedIn',
+
         # "three": 'Login to Gmail',
-        "five": 'Login to Yahoo',
         # "eleven": "Import Contacts from Gmail",
+        # "fifteen": "Export Contacts",
+        # "sixteen": "Delete Exported Contacts",
+        # "four": 'Logout from Gmail',
+
+        "five": 'Login to Yahoo',
         "twelve": "Import Contacts from yahoo",
-        # "thirteen": "Import Contacts from AOL",
         "fifteen": "Export Contacts",
         "sixteen": "Delete Exported Contacts",
-        # "four": 'Logout from Gmail',
         "six": 'Logout from Yahoo',
+
+        # "seven": 'Login to AOL',
+        # "thirteen": "Import Contacts from AOL",
+        # "fifteen": "Export Contacts",
+        # "sixteen": "Delete Exported Contacts",
+        # "eight": 'Logout from AOL',
+
+        # "nine": 'Login to OutLook',
+        # "fourteen": "Import Contacts from OutLook",
+        # "fifteen": "Export Contacts",
+        # "sixteen": "Delete Exported Contacts",
+        # "ten": 'Logout from OutLook',
+
         "two": 'Logout from LinkedIn',
         "zero_exit": "Exits the script"
     }

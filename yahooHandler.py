@@ -91,6 +91,7 @@ class YahooHandler(base_handler):
 		login = self.driver.find_element_by_id("login-signin")
 		login.click()
 		time.sleep(2)
+		return True
 
 
 
@@ -119,6 +120,7 @@ class YahooHandler(base_handler):
 		logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a[3]')))
 		logout.click()
 		self.success("Logging out from Yahoo successful")
+		return True
 
 
 
@@ -126,11 +128,24 @@ class YahooHandler(base_handler):
 	def email_verification(self, username):
 		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		self.in_progress("Email verification")
+		self.socketio.emit('exception_user_single_request', 'yahoo_email_verification_handler'+' --- '+"Please enter the verification code sent to "+username+" inbox: ")
 		verify_email.clear()
-		user_input = input("Please enter the verification code sent to "+username+" inbox: ")
+		# self.pause_execution()
+		# self.wait_until_continue_is_true()
+		try:
+			verification_entered = WebDriverWait(self.driver, 180).until(lambda driver: len(driver.find_element_by_css_selector("#input__email_verification_pin").get_attribute("value")) == 6)
+			if verification_entered:
+				confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
+				self.driver.execute_script("arguments[0].click();", confirm)
+				time.sleep(1)
+			return True
+		except Exception as e:
+			return False
+
+	def email_pin_verify(self, user_input):
+		self.continue_with_execution()
+		verify_email = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'input__email_verification_pin')))
 		verify_email.send_keys(user_input)
-		confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
-		self.driver.execute_script("arguments[0].click();", confirm)
 		pass
 
 
@@ -139,7 +154,7 @@ class YahooHandler(base_handler):
 		self.in_progress("Recaptcha verification")
 		WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'playCaptchaButton')))
 		super(YahooHandler, self).exception("Recaptcha verification", self.driver.current_url, self.driver.page_source)
-		pass
+		return False
 
 
 

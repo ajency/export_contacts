@@ -72,6 +72,7 @@ class AOLHandler(base_handler):
 		# form submit
 		login = self.driver.find_element_by_id("login-signin")
 		login.click()
+		return True
 
 
 	def not_a_robot_captcha(self):
@@ -91,17 +92,14 @@ class AOLHandler(base_handler):
 	# check_login_status
 	# is_user_logged_in
 	def is_user_logged_in(self):
-		# try:
-		# 	# remove previous loggedin AOL accounts
-		# 	self.aol_handler.remove_previous_loggedin_yahoo_accounts()
-		# except Exception as e:
-		# 	pass
 		is_loggedin = False
 		try:
 			# check if login was successful
-			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
-			self.driver.execute_script("arguments[0].click();", clk)
-			logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a]')))
+			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybar"]')))
+			# clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
+			# self.driver.execute_script("arguments[0].click();", clk)
+			# # Logout
+			# logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a]')))
 			is_loggedin = True
 		except Exception as e:
 			is_loggedin = False
@@ -120,6 +118,7 @@ class AOLHandler(base_handler):
 		logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a]')))
 		self.driver.execute_script("arguments[0].click();", logout)
 		self.success("Logging out from AOL successful")
+		return True
 
 
 
@@ -134,7 +133,7 @@ class AOLHandler(base_handler):
 			self.driver.execute_script("arguments[0].click();", clk)
 			time.sleep(1)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
-			loggedin_username = self.driver.find_element_by_css_selector('#ybarAccountMenuBody > ul > li > div > span._yb_152qm._yb_u6kgn._yb_7di8s._yb_fe66m._yb_b2fe8').text
+			loggedin_username = self.driver.find_element_by_css_selector('#ybarAccountMenuBody > ul > li > div > span._yb_1vj0p._yb_1r9y9._yb_oxtm0._yb_rg5ub._yb_1h65h').text
 		except Exception as e:
 			loggedin_username = ''
 			
@@ -174,8 +173,7 @@ class AOLHandler(base_handler):
 					backToPrevWindow = WebDriverWait(self.driver.window_handles[1], 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="minimal-util-nav"]/ul/li[1]/a')))
 					backToPrevWindow.click()
 				except Exception as e:
-					if len(self.driver.window_handles) > 1:
-						self.driver.close()
+					pass
 		self.driver.switch_to.window(self.driver.window_handles[0])
 		try:
 			time.sleep(3)

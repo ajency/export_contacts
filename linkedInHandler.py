@@ -74,6 +74,7 @@ class LinkedInHandler(base_handler):
 					error_msg = self.driver.find_element_by_css_selector("#error-for-password").text
 					# self.exception(error_msg)
 					super(LinkedInHandler, self).exception(error_msg)
+					return False
 			except Exception as e:
 				return True
 		except Exception as e:
@@ -106,6 +107,7 @@ class LinkedInHandler(base_handler):
 		logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li')))
 		logout.click()
 		self.success("Logging out from LinkedIn successful")
+		return True
 
 
 	# email verification
@@ -117,15 +119,14 @@ class LinkedInHandler(base_handler):
 		# self.pause_execution()
 		# self.wait_until_continue_is_true()
 		try:
-			verification_entered = WebDriverWait(self.driver, 120).until(lambda driver: len(driver.find_element_by_css_selector("#input__email_verification_pin").get_attribute("value")) == 6)
+			verification_entered = WebDriverWait(self.driver, 180).until(lambda driver: len(driver.find_element_by_css_selector("#input__email_verification_pin").get_attribute("value")) == 6)
 			if verification_entered:
 				confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
 				self.driver.execute_script("arguments[0].click();", confirm)
 				time.sleep(1)
-				return True
-		finally:
-			pass
-		return False
+			return True
+		except Exception as e:
+			return False
 
 	def email_pin_verify(self, user_input):
 		self.continue_with_execution()
@@ -138,11 +139,8 @@ class LinkedInHandler(base_handler):
 	def recaptcha_verification(self, username):
 		not_robot = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'recaptcha-anchor')))
 		# not_robot.click()
-
-		# #recaptcha-token
-		#rc-imageselect-target > table
 		super(LinkedInHandler, self).exception("Recaptcha verification")
-		pass
+		return False
 
 
 	# Restricted verification
@@ -150,7 +148,7 @@ class LinkedInHandler(base_handler):
 		verify = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/a')))
 		self.driver.execute_script("arguments[0].click();", verify)
 		super(LinkedInHandler, self).exception("LinkedIn manual Identification required")
-		pass
+		return False
 
 
 	def check_login_status(self):
@@ -176,8 +174,8 @@ class LinkedInHandler(base_handler):
 		else:
 			message = "LinkedIn login for "+username+" failed"
 			super(LinkedInHandler, self).exception(message)
-			return False
 			# self.exception(message, 'login')
+			return False
 			
 				
 
@@ -283,9 +281,20 @@ class LinkedInHandler(base_handler):
 				# self.warning("Removal of synced accounts failed")
 				pass
 			pass
-		time.sleep(1)
-		self.driver.get(self.export_url)
 		time.sleep(5)
+		self.driver.get(self.export_url)
+		time.sleep(1)
+
+		if search_element_by_xpath('//*[@id="artdeco-toasts"]/ul/li/div/p/span'):
+			try:
+				response = self.driver.find_elements_by_xpath('//*[@id="artdeco-toasts"]/ul/li/div/p/span').text
+				self.warning(response)
+
+				rmvClk = account.find_element_by_xpath('//*[@id="artdeco-toasts"]/ul/li/button')
+				self.driver.execute_script("arguments[0].click();", rmvClk)
+			except Exception as e:
+				pass
+
 		try:
 			# find_element_by_xpath_with_timeout(self.driver, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p', [], 10)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))

@@ -45,6 +45,21 @@ class OutLookHandler(base_handler):
 			return False
 
 
+	# check_login_status
+	# is_user_logged_in
+	def is_user_logged_in(self):
+		is_loggedin = False
+		try:
+			# check if login was successful
+			# self.driver.get("https://account.microsoft.com/")
+			self.driver.find_element_by_id('mectrl_body_signOut')
+			is_loggedin = True
+		except Exception as e:
+			is_loggedin = False
+			pass
+		return is_loggedin
+
+
 	# Normal page load - login 
 	def normal_outlook_login(self, username, password):
 		self.in_progress("Logging into OutLook as "+username)
@@ -55,7 +70,9 @@ class OutLookHandler(base_handler):
 		time.sleep(2)
 		try:
 			error_txt = self.driver.find_element_by_id("usernameError").text
-			self.exception(error_txt)
+			super(OutLookHandler, self).exception(error_txt)
+			# self.exception(error_txt)
+			return False
 		except Exception as e:
 			self.in_progress("Logging In into OutLook as "+username)
 			pwd = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="i0118"]')))
@@ -64,6 +81,7 @@ class OutLookHandler(base_handler):
 			# pwd.send_keys(Keys.RETURN)
 			login = self.driver.find_element_by_id("idSIButton9")
 			login.click()
+			return True
 
 
 	# Normal page load - logout 
@@ -76,6 +94,7 @@ class OutLookHandler(base_handler):
 		# logout = driver.find_element_by_id("mectrl_body_signOut")
 		logout.click()
 		self.success("Logging out from OutLook successful")
+		return True
 
 
 
@@ -89,14 +108,23 @@ class OutLookHandler(base_handler):
 			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mectrl_headerPicture"]')))
 			self.driver.execute_script("arguments[0].click();", clk)
 			loggedin_username = self.driver.find_element_by_css_selector('#mectrl_currentAccount_secondary').text
-			message = "Logged In into OutLook as "+loggedin_username+" successfully"
+		except Exception as e:
+			loggedin_username = ''
+			
+		if self.is_user_logged_in():
+			if loggedin_username:
+				message = "Logged In into OutLook as "+loggedin_username+" successfully"
+			else:
+				message = "Logging into OutLook successfully"
 			self.outlook_cred_index += 1
 			# message = "Logged In into OutLook as "+username+" successfully"
 			self.success(message)
-		except Exception as e:
+			return True
+		else:
 			message = "OutLook login for "+username+" failed"
-			# super(OutLookHandler, self.exception(message, current_url, page_source)
-			self.exception(message, current_url, page_source)
+			super(OutLookHandler, self).exception(message, current_url, page_source)
+			# self.exception(message, current_url, page_source)
+			return False
 
 
 
@@ -126,5 +154,7 @@ class OutLookHandler(base_handler):
 			time.sleep(3)
 			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="contact-select-checkbox"]')))
 			self.success('Imported contacts')
+			return True
 		except Exception as e:
 			super(OutLookHandler, self).exception('Unable to currently import contacts - '+str(e))
+			return False

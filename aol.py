@@ -29,9 +29,10 @@ class AOL():
 			self.driver.get(self.aol_handler.check_login_url)
 			if self.aol_handler.is_user_logged_in():
 				self.aol_handler.warning("Already Logged In to AOL")
+				return False
 			else:
 				self.driver.get(self.aol_handler.login_url)
-				self.login()
+				return self.login()
 		elif action == "sync-account":
 			self.driver.get(self.aol_handler.check_login_url)
 			if not self.aol_handler.is_user_logged_in():
@@ -99,7 +100,8 @@ class AOL():
 			message = "Unable to identify AOL account verification Page"
 			super(AOLHandler, self.aol_handler).exception(message)
 			# self.aol_handler.exception(message, current_url, page_source)
-		pass
+			return False
+		return True
 
 
 	def check_login_status(self):
@@ -113,9 +115,9 @@ class AOL():
 			self.verify_account()
 		is_logged_in = self.check_login_status()
 		if is_logged_in:
-			self.yahoo_handler._log_("::::: AOL - Log In - Success")
+			self.aol_handler._log_("::::: AOL - Log In - Success")
 		else:
-			self.yahoo_handler._log_("::::: AOL - Log In - Failed")
+			self.aol_handler._log_("::::: AOL - Log In - Failed")
 		return is_logged_in
 
 
@@ -124,9 +126,9 @@ class AOL():
 		self.driver.get(self.aol_handler.logout_url)
 		is_logged_out = self.perform_action("logout")
 		if is_logged_out:
-			self.yahoo_handler._log_("::::: AOL - Log In - Success")
+			self.aol_handler._log_("::::: AOL - Log Out - Success")
 		else:
-			self.yahoo_handler._log_("::::: AOL - Log In - Failed")
+			self.aol_handler._log_("::::: AOL - Log Out - Failed")
 		return is_logged_out
 
 
@@ -136,9 +138,9 @@ class AOL():
 			self.login_to_aol()
 		is_account_synced = self.sync_contacts()
 		if is_account_synced:
-			self.yahoo_handler._log_("::::: Yahoo - Sync Account - Success")
+			self.aol_handler._log_("::::: AOL - Sync Account - Success")
 		else:
-			self.yahoo_handler._log_("::::: Yahoo - Sync Account - Failed")
+			self.aol_handler._log_("::::: AOL - Sync Account - Failed")
 		return is_account_synced
 
 

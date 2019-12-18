@@ -138,7 +138,7 @@ OUTLOOK_CREDENTIALS = [
 ]
 LINKEDIN_CREDENTIALS = [
   # {"username": "alina.jose1102@gmail.com", "password": "ajency#123"},
-  {"username": "ralph110293@gmail.com", "password": "ajency#123"},
+  # {"username": "ralph110293@gmail.com", "password": "ajency#123"},
   {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
   {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
 ]

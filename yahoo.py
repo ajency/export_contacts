@@ -29,6 +29,7 @@ class Yahoo():
 			self.driver.get(self.yahoo_handler.check_login_url)
 			if self.yahoo_handler.is_user_logged_in():
 				self.yahoo_handler.warning("Already Logged In to Yahoo")
+				return False
 			else:
 				self.driver.get(self.yahoo_handler.login_url)
 				return self.login()
