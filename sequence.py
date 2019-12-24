@@ -21,11 +21,11 @@ def get_main_sequences():
         "sixteen": "Delete Exported Contacts",
         "eight": 'Logout from AOL',
 
-        # "nine": 'Login to OutLook',
-        # "fourteen": "Import Contacts from OutLook",
-        # "fifteen": "Export Contacts",
-        # "sixteen": "Delete Exported Contacts",
-        # "ten": 'Logout from OutLook',
+        "nine": 'Login to OutLook',
+        "fourteen": "Import Contacts from OutLook",
+        "fifteen": "Export Contacts",
+        "sixteen": "Delete Exported Contacts",
+        "ten": 'Logout from OutLook',
 
         "two": 'Logout from LinkedIn',
         "zero_exit": "Exits the script"

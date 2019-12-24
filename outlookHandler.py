@@ -52,7 +52,10 @@ class OutLookHandler(base_handler):
 		try:
 			# check if login was successful
 			# self.driver.get("https://account.microsoft.com/")
-			self.driver.find_element_by_id('ybar')
+			# self.driver.find_element_by_id('ybar')
+			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mectrl_headerPicture"]')))
+			self.driver.execute_script("arguments[0].click();", clk)
+			WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'mectrl_currentAccount_secondary')))
 			# self.driver.find_element_by_id('mectrl_main_trigger')
 			is_loggedin = True
 		except Exception as e:
