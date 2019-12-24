@@ -2,6 +2,7 @@ from logger import CustomLogger
 from driver import Driver
 from screenshot import Screenshot
 from common_functions import *
+from linkedInHandle import LinkedInHandle
 
 class Executor():
     def __init__(self, env, auto, headless, socketio, proxy_list, account):
@@ -16,17 +17,23 @@ class Executor():
         self.session_id = time.strftime("%Y%m%d-%H%M%S")
         self.screenshot = Screenshot(self.session_id, self.driver)
         self.account = account
+        self.linkedInHandle = LinkedInHandle(self)
 
 
 
 
     def step_linkedIn_login(self):
-        print("Step: linkedIn_login")
-        #return self.linkedin.login_to_linkedin()
-        return True
+        self.socketio.emit("action", "Step: linkedIn_login")
+        if self.linkedInHandle.login():
+            self.socketio.emit('action', 'Login to Linked in Successfull!')
+            return True
+        else:
+            self.screenshot.capture('linkedIn_login_error')
+            self.socketio.emit('action', 'Error linkedIn login. Check screenshots for details.')
+            return False
 
     def step_email_operation(self, sequences):
-        self.logger.info("Step: email_operation")
+        self.socketio.emit("action", "Step: email_operation")
         total_email_count = 0
         failed_email_count = 0
         for email_provider in self.account.get('email'):
@@ -42,37 +49,44 @@ class Executor():
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
                         break
         if total_email_count == failed_email_count:
+            self.socketio.emit('action', 'Error email operation, all email failed.')
             return False
         else:
+            self.socketio.emit('action', 'Email operation successfull!')
             return True
 
     def step_linkedIn_logout(self):
-        self.logger.info("Step: linkedIn_login")
-        #return self.linkedin.logout_from_linkedin()
-        return True
+        self.socketio.emit("action", "Step: linkedIn_login")
+        if self.linkedInHandle.logout():
+            self.socketio.emit('action', 'Linked in logout successfull!')
+            return True
+        else:
+            self.screenshot.capture('linkedIn_logout_error')
+            self.socketio.emit('action', 'Error logging out from linkedIn. Check screenshots for details.')
+            return False
 
 
 
     def step_email_login(self, provider, email):
-        self.logger.info("Step: email_login")
+        self.socketio.emit("action", "Step: email_login")
         self.socketio.emit('action','Performing email login with id '+email.get('username'))
         return getattr(self, 'email_login_' + provider)(email)
 
     def step_import_contacts(self, provider, email):
-        self.logger.info("Step: import_contacts")
+        self.socketio.emit("action", "Step: import_contacts")
         return getattr(self, 'import_contacts_from_' + provider)()
 
     def step_export_contacts(self, provider, email):
-        self.logger.info("Step: export_contacts")
+        self.socketio.emit("action", "Step: export_contacts")
         #return self.linkedin.export_contacts()
         return True
 
     def step_delete_contacts(self, provider, email):
-        self.logger.info("Step: delete_contacts")
+        self.socketio.emit("action", "Step: delete_contacts")
         return True
 
     def step_email_logout(self, provider, email):
-        self.logger.info("Step: email_logout")
+        self.socketio.emit("action", "Step: email_logout")
         return getattr(self, 'email_logout_' + provider)()
 
 
@@ -81,7 +95,7 @@ class Executor():
 
     def email_login_gmail(self,email):
         self.logger.info("==== logging in to gmail account " + email.get('username'))
-        return False
+        return True
 
     def email_login_aol(self,email):
         self.logger.info("==== logging in to aol account " + email.get('username'))

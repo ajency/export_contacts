@@ -15,9 +15,9 @@ socket.on('alert', function (data) {
 });
 
 socket.on('active_screenshots_link', function (session_id) {
-    var screenshot_url = 'http://' + document.domain + ':' + location.port+'/webdriver_screenshots/'+session_id
-    $("#screenshots_link").show();
-    $("#screenshots_link").find("a").attr('href',screenshot_url);
+    var screenshot_url = 'http://' + document.domain + ':' + location.port+'/webdriver_screenshots/'+session_id;
+    var el = '<a href="'+screenshot_url+'" target="_blank">SCREENSHOTS: '+session_id+'</a><br />';
+    $("#screenshots_link").append(el);
 });
 
 function json_button() {
