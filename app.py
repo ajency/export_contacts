@@ -1,27 +1,11 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template
-from flask_socketio import SocketIO,send, emit
-import socket
-import time
-
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import Select
-
-from dotenv import load_dotenv
-
-from settings import USER_AGENT_LIST
-import random
+from flask_socketio import SocketIO, emit
 import json
-from jsonschema import validate
+import os
 
 from sequence import get_main_sequences
-from exporter import Exporter
+from executor import Executor
 from proxy_list import get_proxies
 
 from settings import ACCOUNTS
@@ -29,12 +13,12 @@ from settings import ACCOUNTS
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(app, ping_interval=2000, ping_timeout=120000)
 
 environment = 'dev'
 is_auto = True
 is_headless = True
-exporter = None
+executor = None
 proxy_list = []
 config_accounts = ACCOUNTS
 
@@ -65,8 +49,10 @@ def handle_alert_event(json,test):
 
 @app.route('/webdriver_screenshots/<string:session_id>')
 def webdriver_screenshots(session_id):
-
-    return render_template('driver_screenshots.html',session_id=session_id)
+    images = os.listdir('static/driver_screenshots/'+session_id)
+    images = [session_id+'/' + file for file in images]
+    print(images)
+    return render_template('driver_screenshots.html',images=images)
 
 
 
@@ -80,9 +66,9 @@ def handle_initiate_process(payload):
     is_auto = payload.get('auto')
     is_headless = payload.get('headless')
 
-    # if 'accounts' in payload:
-    #     config_accounts = json.loads(payload.get('accounts'))
-    #     print(config_accounts)
+    if 'accounts' in payload:
+        config_accounts = json.loads(payload.get('accounts'))
+        print(config_accounts)
 
     emit('action', 'Initializing request for '+environment+' environment')
     if not is_auto:
@@ -95,15 +81,16 @@ def handle_start_exporter(payload):
     global is_auto
     global is_headless
     global socketio
-    global exporter
+    global executor
     global proxy_list
     sequences = get_main_sequences()
 
 
     for account in ACCOUNTS:
-        exporter = Exporter(environment, is_auto, is_headless, socketio, proxy_list, account)
-        emit('action', 'Starting exporter for linkedIn account: '+account.get('linkedIn').get('username'))
-        emit('action', 'Exporter session ID: ' + exporter.session_id)
+        executor = Executor(environment, is_auto, is_headless, socketio, proxy_list, account)
+        emit('action', 'Starting executor for linkedIn account: '+account.get('linkedIn').get('username'))
+        emit('action', 'executor session ID: ' + executor.session_id)
+        emit('active_screenshots_link', executor.session_id)
         if is_auto:
             emit('action', 'Preparing to auto run all the sequences...')
             selected_sequences = sequences
@@ -125,31 +112,31 @@ def handle_start_exporter(payload):
             sequence_title = sequences[sequence]
             if isinstance(sequence_title, dict):
                 sequence_title = 'Email operation'
-                is_success = getattr(exporter.executor, 'step_email_operation')(selected_email_sequences)
+                is_success = getattr(executor, 'step_email_operation')(selected_email_sequences)
             else:
-                is_success = getattr(exporter.executor, 'step_' + sequence)()
+                is_success = getattr(executor, 'step_' + sequence)()
 
             if not is_success:
                 emit('action', 'Error performing the Sequence: ' + sequence_title + ' ...')
                 break
 
         emit('action', 'Closing web driver instance...')
-        exporter.close_web_driver()
-        emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+exporter.session_id+" ##########")
+        executor.driver.close()
+        emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 
 @socketio.on('gmail_otp_login')
 def handle_gmail_otp_login(payload):
-    global exporter
+    global executor
     emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
-    exporter.executor.gmail.gmail_handler.gmail_otp_login(payload.get('otp'))
+    executor.gmail_handler.gmail_otp_login(payload.get('otp'))
 
 
 
 # common input
 @socketio.on('exception_user_single_response')
 def handle_exception_user_single_response(payload):
-    global exporter
+    global executor
     print("payload")
     print(payload)
     handler = str(payload.get('handler')).strip()
@@ -157,22 +144,21 @@ def handle_exception_user_single_response(payload):
     emit('action', "User's response: " + user_input + ' ...')
     # check type of handler
     if handler == 'linkedin_exception_handler':
-        exporter.executor.linkedin.linkedin_handler.process_exception(user_input)
+        executor.linkedin.linkedin_handler.process_exception(user_input)
     elif handler == 'linkedin_retry_login_handler':
-        exporter.executor.linkedin.process_retry_login(user_input)
+        executor.linkedin.process_retry_login(user_input)
     elif handler == 'linkedin_email_verification_handler':
-        exporter.executor.linkedin.linkedin_handler.email_pin_verify(user_input)
+        executor.linkedin.linkedin_handler.email_pin_verify(user_input)
     elif handler == 'gmail_exception_handler':
-        exporter.executor.gmail.gmail_handler.process_exception(user_input)
+        executor.gmail.gmail_handler.process_exception(user_input)
     elif handler == 'gmail_retry_login_handler':
-        exporter.executor.gmail.process_retry_login(user_input)
+        executor.gmail.process_retry_login(user_input)
     else:
-        exporter.executor.logger.error('Unable to process request')
+        executor.logger.error('Unable to process request')
 
 
 
 
 if __name__ == '__main__':
-    #load_dotenv()
     socketio.run(app,debug=True,host='0.0.0.0')
 

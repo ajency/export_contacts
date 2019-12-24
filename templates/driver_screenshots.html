@@ -29,9 +29,10 @@
 
     <div class="container" style="padding-top:75px;">
 
-      Session ID: {{session_id}}
+      {% for image in images %}
+        <img src="{{ url_for('index') }}static/driver_screenshots/{{image}}" alt="{{image}}" class="img-thumbnail">
+      {% endfor %}
 
-      <img src="20191211-162931/gmail_login_unknown_screen.png" />
     </div> <!-- /container -->
 
 

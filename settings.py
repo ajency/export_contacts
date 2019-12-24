@@ -159,17 +159,17 @@ ACCOUNTS = [
     }
   },
   {
-    'linkedIn': {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
-    'email':{
-      'gmail': [
+    "linkedIn": {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
+    "email":{
+      "gmail": [
         {"username": "testaj13aj@gmail.com", "password": "ajtest@123"}
       ]
     }
   },
   {
-    'linkedIn': {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
-    'email':{
-      'gmail': [
+    "linkedIn": {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
+    "email":{
+      "gmail": [
         {"username": "testaj11aj@gmail.com", "password": "testaj@123"}
       ]
     }

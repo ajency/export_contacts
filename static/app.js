@@ -1,4 +1,6 @@
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket = io.connect('http://' + document.domain + ':' + location.port, {
+    'timeout': 120000
+});
 socket.on('connect', function() {
     // we emit a connected message to let knwo the client that we are connected.
     socket.emit('client_connected', {data: 'New client!'});
@@ -10,6 +12,12 @@ socket.on('message', function (data) {
 
 socket.on('alert', function (data) {
     alert('Alert Message!! ' + data);
+});
+
+socket.on('active_screenshots_link', function (session_id) {
+    var screenshot_url = 'http://' + document.domain + ':' + location.port+'/webdriver_screenshots/'+session_id
+    $("#screenshots_link").show();
+    $("#screenshots_link").find("a").attr('href',screenshot_url);
 });
 
 function json_button() {
@@ -146,7 +154,7 @@ $("input[name='environment']").on("change", function(event){
     var payload = {'env': env,'auto': is_auto, 'headless': is_headless};
 
     var accounts_config = $("#accounts_config").val();
-    if(accounts_config !== ""){
+    if(accounts_config.trim().length > 0){
         payload['accounts'] = accounts_config;
         console.log('Accounts Config <> ', accounts_config);
     }

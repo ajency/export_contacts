@@ -17,7 +17,7 @@ class Screenshot():
         self.driver = driver
 
     def capture(self, key):
-        log_path = 'driver_screenshots/' + self.session_id
+        log_path = 'static/driver_screenshots/' + self.session_id
         Path(log_path).mkdir(parents=True, exist_ok=True)
         filename = log_path + "/" + key + '.png'
         self.driver.save_screenshot(filename)
