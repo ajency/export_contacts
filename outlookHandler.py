@@ -133,7 +133,8 @@ class OutLookHandler(base_handler):
 
 	def normal_sync_outlook_account(self):
 		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember53"]/a')))
-		clk.click()
+		self.driver.execute_script("arguments[0].click();", clk)
+		# clk.click()
 		self.in_progress("Syncing of OutLook account is in progress")
 		time.sleep(3)
 		if len(self.driver.window_handles) > 1:

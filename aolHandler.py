@@ -156,7 +156,8 @@ class AOLHandler(base_handler):
 
 	def normal_sync_aol_account(self):
 		clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ember63"]/a')))
-		clk.click()
+		self.driver.execute_script("arguments[0].click();", clk)
+		# clk.click()
 		self.in_progress("Syncing of AOL account is in progress")
 		time.sleep(3)
 		if len(self.driver.window_handles) > 1:
