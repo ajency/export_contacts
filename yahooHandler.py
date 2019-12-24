@@ -55,7 +55,7 @@ class YahooHandler(base_handler):
 			clk = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
 			self.driver.execute_script("arguments[0].click();", clk)
 			# Logout
-			logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a[3]')))
+			logout = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a[2]')))
 			# self.driver.find_element_by_id('login-username')
 			is_loggedin = True
 		except Exception as e:
