@@ -61,6 +61,7 @@ class GmailHandler(base_handler):
 		self.wait_until_continue_is_true()
 
 
+
 	# check_login_status
 	# is_user_logged_in
 	def is_user_logged_in(self):
@@ -91,6 +92,7 @@ class GmailHandler(base_handler):
 		# pwd.send_keys(Keys.RETURN)
 		login = self.driver.find_element_by_id("passwordNext")
 		login.click()
+		return True
 
 
 
@@ -101,6 +103,7 @@ class GmailHandler(base_handler):
 		self.driver.get(self.logout_url)
 		self.remove_previous_loggedin_gmail_accounts()
 		self.success("Logging out from Gmail successful")
+		return True
 
 
 
@@ -114,7 +117,7 @@ class GmailHandler(base_handler):
 		# verify_email.send_keys(user_input)
 		# confirm = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'email-pin-submit-button')))
 		# self.driver.execute_script("arguments[0].click();", confirm)
-		pass
+		return False
 
 
 	def otp_verification(self, username):
@@ -151,7 +154,7 @@ class GmailHandler(base_handler):
 		self.in_progress("Recaptcha verification")
 		WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, 'playCaptchaButton')))
 		super(GmailHandler, self).exception("Recaptcha verification")
-		pass
+		return False
 
 
 
@@ -176,7 +179,6 @@ class GmailHandler(base_handler):
 			self.success(message)
 			return True
 		else:
-			input()
 			message = "Gmail login for "+username+" failed"
 			# self.exception(message)
 			super(GmailHandler, self).exception(message)
@@ -198,6 +200,7 @@ class GmailHandler(base_handler):
 		time.sleep(3)
 		message = "Removed Gmail logged out accounts from browser"
 		self.success(message)
+		return True
 
 
 	def normal_sync_gmail_account(self):

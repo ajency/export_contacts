@@ -90,7 +90,7 @@ class OutLookHandler(base_handler):
 	# Normal page load - logout 
 	def normal_outlook_logout(self):
 		# Logout
-		clk = driver.find_element_by_id("mectrl_headerPicture")
+		clk = self.driver.find_element_by_id("mectrl_headerPicture")
 		clk.click()
 		logout = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'mectrl_body_signOut')))
 		self.in_progress("Logging out from OutLook")
