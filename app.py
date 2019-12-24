@@ -26,7 +26,7 @@ from proxy_list import get_proxies
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(app, ping_interval=2000, ping_timeout=120000)
 
 # wdriver = ""
 # username = "dummyuser"

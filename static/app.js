@@ -1,4 +1,6 @@
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket = io.connect('http://' + document.domain + ':' + location.port, {
+    'timeout': 120000
+});
 socket.on('connect', function() {
     // we emit a connected message to let knwo the client that we are connected.
     socket.emit('client_connected', {data: 'New client!'});

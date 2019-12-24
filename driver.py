@@ -20,7 +20,7 @@ class Driver():
         # operating system 
         path = os.getcwd()+"/webdriver/linux/chromedriver"
         # operating system [Linux]
-        if platform.system().lower() == 'Darwin':
+        if platform.system().lower() == 'darwin':
             path = os.getcwd()+"/webdriver/mac/chromedriver"
         else:
             path = os.getcwd()+"/webdriver/linux/chromedriver"
