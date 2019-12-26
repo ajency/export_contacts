@@ -74,7 +74,8 @@ class Executor():
 
     def step_import_contacts(self, provider, email):
         self.socketio.emit("action", "Step: import_contacts")
-        return getattr(self, 'import_contacts_from_' + provider)()
+        #return getattr(self, 'import_contacts_from_' + provider)()
+        return True
 
     def step_export_contacts(self, provider, email):
         self.socketio.emit("action", "Step: export_contacts")
@@ -97,6 +98,10 @@ class Executor():
         self.logger.info("==== logging in to gmail account " + email.get('username'))
         return True
 
+    def email_login_yahoo(self,email):
+        self.logger.info("==== logging in to yahoo account " + email.get('username'))
+        return True
+
     def email_login_aol(self,email):
         self.logger.info("==== logging in to aol account " + email.get('username'))
         return True
@@ -105,22 +110,12 @@ class Executor():
         self.logger.info("==== logging in to outlook account " + email.get('username'))
         return True
 
-
-    def import_contacts_from_gmail(self):
-        self.logger.info("==== Importing contacts from gamil ===")
-        return False
-
-    def import_contacts_from_aol(self):
-        self.logger.info("==== Importing contacts from aol ===")
-        return True
-
-    def import_contacts_from_outlook(self):
-        self.logger.info("==== Importing contacts from outlook ===")
-        return True
-
-
     def email_logout_gmail(self):
         self.logger.info("==== logging out from gmail account ===")
+        return True
+
+    def email_logout_yahoo(self):
+        self.logger.info("==== logging out from yahoo account ===")
         return True
 
     def email_logout_aol(self):
