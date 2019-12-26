@@ -3,6 +3,7 @@ from driver import Driver
 from screenshot import Screenshot
 from common_functions import *
 from linkedInHandle import LinkedInHandle
+from yahooHandle import YahooHandle
 
 class Executor():
     def __init__(self, env, auto, headless, socketio, proxy_list, account):
@@ -18,6 +19,7 @@ class Executor():
         self.screenshot = Screenshot(self.session_id, self.driver)
         self.account = account
         self.linkedInHandle = LinkedInHandle(self)
+        self.yahooHandle = YahooHandle(self)
 
 
 
@@ -100,7 +102,13 @@ class Executor():
 
     def email_login_yahoo(self,email):
         self.logger.info("==== logging in to yahoo account " + email.get('username'))
-        return True
+        if self.yahooHandle.login(email):
+            self.socketio.emit('action', 'Login to yahoo successful!')
+            return True
+        else:
+            self.screenshot.capture('yahoo_login_error_'+email.get('username'))
+            self.socketio.emit('action', 'Error yahoo login. Check screenshots for details.')
+            return False
 
     def email_login_aol(self,email):
         self.logger.info("==== logging in to aol account " + email.get('username'))
@@ -116,7 +124,13 @@ class Executor():
 
     def email_logout_yahoo(self):
         self.logger.info("==== logging out from yahoo account ===")
-        return True
+        if self.yahooHandle.logout():
+            self.socketio.emit('action', 'Yahoo in logout successful!')
+            return True
+        else:
+            self.screenshot.capture('yahoo_logout_error')
+            self.socketio.emit('action', 'Error logging out from yahoo. Check screenshots for details.')
+            return False
 
     def email_logout_aol(self):
         self.logger.info("==== logging out from aol account ===")

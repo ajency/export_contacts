@@ -29,9 +29,13 @@
 
     <div class="container" style="padding-top:75px;">
 
-      {% for image in images %}
-        <img src="{{ url_for('index') }}static/driver_screenshots/{{image}}" alt="{{image}}" class="img-thumbnail">
-      {% endfor %}
+      {% if images|length %}
+        {% for image in images %}
+          <img src="{{ url_for('index') }}static/driver_screenshots/{{image}}" alt="{{image}}" class="img-thumbnail">
+        {% endfor %}
+      {% else %}
+        <h3>No Screenshots Found!</h3>
+      {% endif %}
 
     </div> <!-- /container -->
 

@@ -3,6 +3,8 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import json
 import os
+import os.path
+from os import path
 
 from sequence import get_main_sequences
 from executor import Executor
@@ -49,9 +51,11 @@ def handle_alert_event(json,test):
 
 @app.route('/webdriver_screenshots/<string:session_id>')
 def webdriver_screenshots(session_id):
-    images = os.listdir('static/driver_screenshots/'+session_id)
-    images = [session_id+'/' + file for file in images]
-    print(images)
+    image_path = 'static/driver_screenshots/'+session_id
+    images = []
+    if path.exists(image_path):
+        images = os.listdir(image_path)
+        images = [session_id+'/' + file for file in images]
     return render_template('driver_screenshots.html',images=images)
 
 

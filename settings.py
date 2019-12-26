@@ -149,28 +149,8 @@ ACCOUNTS = [
   {
     "linkedIn": {"username": "ralph110293@gmail.com", "password": "ajency#123"},
     "email":{
-      "gmail": [
-        {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
-        {"username": "testaj14aj@gmail.com", "password": "ajtest@123"}
-      ],
-      "outlook": [
-        {"username": "gopaul3212@outlook.com", "password": "ajency#123"}
-      ]
-    }
-  },
-  {
-    "linkedIn": {"username": "gopaul3212@gmail.com", "password": "ajency#123"},
-    "email":{
-      "gmail": [
-        {"username": "testaj13aj@gmail.com", "password": "ajtest@123"}
-      ]
-    }
-  },
-  {
-    "linkedIn": {"username": "testaj14aj@gmail.com", "password": "ajtest@123"},
-    "email":{
-      "gmail": [
-        {"username": "testaj11aj@gmail.com", "password": "testaj@123"}
+      "yahoo": [
+        {"username": "rahulkum89239@yahoo.com", "password": "Ajency#123"}
       ]
     }
   }
