@@ -33,7 +33,8 @@ class Driver():
 
             if len(proxy_list) > 0:
                 prox = random.choice(proxy_list)
-                self.socketio.emit('action', 'Web driver initialized with proxy ' + prox)
+                if self.socketio is not None:
+                    self.socketio.emit('action', 'Web driver initialized with proxy ' + prox)
                 proxy = Proxy()
                 proxy.proxyType = ProxyType.MANUAL
                 proxy.autodetect = False
