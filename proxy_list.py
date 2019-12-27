@@ -7,7 +7,7 @@ user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 co.add_argument("log-level=3")
 co.add_argument('--headless')
 co.add_argument('--disable-gpu')
-co.add_argument('--disable-dev-shm-usage')
+#co.add_argument('--disable-dev-shm-usage')
 # co.add_argument('--window-size=1920,1080')
 # co.add_argument('--single-process')
 co.add_argument('--no-sandbox') # required when running as root user. otherwise you would get no sandbox errors.
