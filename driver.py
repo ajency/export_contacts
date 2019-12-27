@@ -30,6 +30,7 @@ class Driver():
             chrome_options.add_argument('--disable-web-security')
             chrome_options.add_argument('--no-referrers')
             chrome_options.add_argument("'chrome.prefs': {'profile.managed_default_content_settings.images': 2}")
+            chrome_options.add_argument("--start-maximized")
 
             if len(proxy_list) > 0:
                 prox = random.choice(proxy_list)

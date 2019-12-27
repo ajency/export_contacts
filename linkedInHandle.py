@@ -1,5 +1,6 @@
 import time
 from selenium.common.exceptions import TimeoutException
+from selenium import webdriver
 from common_functions import *
 import json
 from yahooHandle import YahooHandle
@@ -18,6 +19,7 @@ class LinkedInHandle():
         self.account = executor.account
         self.yahooHandle = YahooHandle(executor)
         self.session_id = executor.session_id
+        self.screenshot = executor.screenshot
 
         self.login_url = "https://www.linkedin.com/login"
         self.logout_url = "https://www.linkedin.com/mynetwork/import-contacts/"
@@ -119,7 +121,11 @@ class LinkedInHandle():
         self.socketio.emit('action', 'Importing contact from ' + provider)
         email_btn = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[@aria-describedby=\"artdeco-hoverable-"+provider+"-icon\"]")))
-        email_btn.click()
+        self.screenshot.capture('unknown_positioning_import_button')
+        email_btn.send_keys(webdriver.common.keys.Keys.END)
+        self.screenshot.capture('unknown_positioning_import_button_post_scroll')
+        #email_btn.click()
+
         time.sleep(2)
 
         confirm_oauth = False
