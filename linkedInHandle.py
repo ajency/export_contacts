@@ -24,6 +24,7 @@ class LinkedInHandle():
         self.check_login_url = "https://www.linkedin.com/mynetwork/import-contacts/"
         self.import_url = "https://www.linkedin.com/mynetwork/import-contacts/"
         self.export_url = "https://www.linkedin.com/mynetwork/import-contacts/saved-contacts/"
+        self.remove_contacts_url = "https://www.linkedin.com/mynetwork/settings/manage-syncing/"
 
     def login(self):
         self.driver.get(self.login_url)
@@ -149,6 +150,19 @@ class LinkedInHandle():
 
 
     def export_contacts(self, email):
+
+        # contact_list = []
+        # contact1 = []
+        # contact1.append('vijay.yekula@gmail.com')
+        # contact1.append('VIJAY YEKULA')
+        # contact1.append('Experience Design, Evangelist at Philips Healthcare')
+        # contact1.append('https://www.linkedin.com/in/yekula/')
+        # contact_list.append(contact1)
+        # print(contact_list)
+        #
+        # self.process_contacts(contact_list, email.get('username'))
+        # return True
+
         self.driver.get(self.export_url)
         contactList = []
         try:
@@ -236,6 +250,53 @@ class LinkedInHandle():
 
 
 
+    def delete_contacts(self):
+        self.driver.get(self.remove_contacts_url)
+        time.sleep(5)
+        try:
+            removeAllClk = self.driver.find_element_by_xpath('//*[@id="ember44"]/div[1]/button')
+            removeAllClk.click()
+            rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button'
+            rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
+            rmvClk2.click()
+        except Exception as e:
+            try:
+                listResults = self.driver.find_elements_by_xpath(
+                    '//*[@id="ember42"]/section/ul/div')  # //ul[@class="list-style-none.mh5"]/div
+                for account in listResults or []:
+                    rmvClk = account.find_element_by_xpath('.//li/div/button')
+                    self.driver.execute_script("arguments[0].click();", rmvClk)
+                    rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button[@class="js-mn-manage-source-confirm"]'
+                    rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
+                    self.driver.execute_script("arguments[0].click();", rmvClk2)
+            except Exception as e:
+                # self.warning("Removal of synced accounts failed")
+                pass
+            pass
+        time.sleep(5)
+        self.driver.get(self.export_url)
+        time.sleep(1)
+
+        try:
+            WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="artdeco-toasts"]/ul/li/div/p/span')))
+        except Exception as e:
+            pass
+
+        if search_element_by_xpath(self.driver, '//*[@id="artdeco-toasts"]/ul/li/div/p/span'):
+            try:
+                response = self.driver.find_elements_by_xpath('//*[@id="artdeco-toasts"]/ul/li/div/p/span').text
+
+                rmvClk = account.find_element_by_xpath('//*[@id="artdeco-toasts"]/ul/li/button')
+                self.driver.execute_script("arguments[0].click();", rmvClk)
+            except Exception as e:
+                pass
+
+        return True
+
+
+
+
     def process_contacts(self, contacts, source_id):
         import csv
 
@@ -244,7 +305,7 @@ class LinkedInHandle():
         filename = csv_path + "/" + source_id.replace('.', '') + '.csv'
 
         with open(filename, 'w') as outcsv:
-            writer = csv.writer(outcsv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+            writer = csv.writer(outcsv, quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
             writer.writerow(['Email', 'Name', 'Designation', 'Profile'])
             for item in contacts:
                 writer.writerow([item[0], item[1], item[2], item[3]])
