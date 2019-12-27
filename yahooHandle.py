@@ -1,12 +1,6 @@
 import time
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from linkedInHandler import LinkedInHandler
+from selenium.common.exceptions import TimeoutException
 from common_functions import *
-from settings import *
 
 
 class YahooHandle():
@@ -42,7 +36,10 @@ class YahooHandle():
                 login = self.driver.find_element_by_id("login-signin")
                 login.click()
                 time.sleep(2)
-                return True
+                if self.is_logged_in():
+                    return True
+                else:
+                    return False
             except:
                 return False
         else:
@@ -60,6 +57,30 @@ class YahooHandle():
                 EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a[3]')))
             logout.click()
             time.sleep(1)
+            return True
+        except:
+            return False
+
+    def is_logged_in(self):
+        try:
+            p_info_title = self.driver.wait.until(
+                EC.visibility_of_any_elements_located((By.CSS_SELECTOR, "#group-personal-title")))
+            if p_info_title:
+                return True
+            else:
+                return False
+        except TimeoutException:
+            return False
+
+
+    def confirm_import(self):
+        try:
+            self.driver.switch_to.window(self.driver.window_handles[1])
+            agree_btn = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.ID, "oauth2-agree")))
+            agree_btn.click()
+            self.driver.switch_to.window(self.driver.window_handles[0])
             return True
         except:
             return False

@@ -76,13 +76,25 @@ class Executor():
 
     def step_import_contacts(self, provider, email):
         self.socketio.emit("action", "Step: import_contacts")
-        #return getattr(self, 'import_contacts_from_' + provider)()
-        return True
+        if self.linkedInHandle.import_contacts(provider):
+            self.socketio.emit('action', 'Import contacts successful for '+provider+' with email: '+email.get('username'))
+            return True
+        else:
+            self.screenshot.capture('import_contacts_error_'+email.get('username'))
+            self.socketio.emit('action', 'Import contacts failed for '+provider+' with email: '+email.get('username'))
+            return False
 
     def step_export_contacts(self, provider, email):
         self.socketio.emit("action", "Step: export_contacts")
-        #return self.linkedin.export_contacts()
-        return True
+        if self.linkedInHandle.export_contacts(email):
+            self.socketio.emit('action',
+                               'Export contacts successful for ' + provider + ' with email: ' + email.get('username'))
+            return True
+        else:
+            self.screenshot.capture('export_contacts_error_' + email.get('username'))
+            self.socketio.emit('action',
+                               'Export contacts failed for ' + provider + ' with email: ' + email.get('username'))
+            return False
 
     def step_delete_contacts(self, provider, email):
         self.socketio.emit("action", "Step: delete_contacts")

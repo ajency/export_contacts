@@ -125,7 +125,7 @@ def handle_start_exporter(payload):
                 break
 
         emit('action', 'Closing web driver instance...')
-        executor.driver.close()
+        #executor.driver.close()
         emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 
@@ -136,29 +136,14 @@ def handle_gmail_otp_login(payload):
     executor.gmail_handler.gmail_otp_login(payload.get('otp'))
 
 
-
-# common input
-@socketio.on('exception_user_single_response')
-def handle_exception_user_single_response(payload):
+@socketio.on('otp_submission')
+def handle_otp_submission(payload):
     global executor
-    print("payload")
-    print(payload)
-    handler = str(payload.get('handler')).strip()
-    user_input = str(payload.get('user_input')).strip()
-    emit('action', "User's response: " + user_input + ' ...')
-    # check type of handler
-    if handler == 'linkedin_exception_handler':
-        executor.linkedin.linkedin_handler.process_exception(user_input)
-    elif handler == 'linkedin_retry_login_handler':
-        executor.linkedin.process_retry_login(user_input)
-    elif handler == 'linkedin_email_verification_handler':
-        executor.linkedin.linkedin_handler.email_pin_verify(user_input)
-    elif handler == 'gmail_exception_handler':
-        executor.gmail.gmail_handler.process_exception(user_input)
-    elif handler == 'gmail_retry_login_handler':
-        executor.gmail.process_retry_login(user_input)
-    else:
-        executor.logger.error('Unable to process request')
+    emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
+    if payload.get('handler') == 'linkedIn':
+        getattr(executor.linkedInHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+
+
 
 
 

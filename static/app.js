@@ -14,6 +14,17 @@ socket.on('alert', function (data) {
     alert('Alert Message!! ' + data);
 });
 
+
+socket.on('prompt_user', function (data) {
+    var prompt_data = $.parseJSON(data);
+    if(prompt_data.input_type == 'otp'){
+        $("#otp_verification_form").show();
+        $("#otp_verification_form #otp_box").attr('placeholder',prompt_data.message);
+        $("#otp_verification_form #prompt_handler").val(prompt_data.handler);
+        $("#otp_verification_form #prompt_key").val(prompt_data.key);
+    }
+});
+
 socket.on('active_screenshots_link', function (session_id) {
     var screenshot_url = 'http://' + document.domain + ':' + location.port+'/webdriver_screenshots/'+session_id;
     var el = '<a href="'+screenshot_url+'" target="_blank">SCREENSHOTS: '+session_id+'</a><br />';
@@ -206,6 +217,21 @@ $("#get_user_single_input_form").on("submit", function(event){
   socket.emit('exception_user_single_response', payload);
   $(this).hide();
 })
+
+
+
+$("#otp_verification_form").on("submit", function(event){
+  event.preventDefault();
+  var payload = {
+    'otp': $("#otp_box").val(),
+    'handler': $("#prompt_handler").val(),
+    'key': $("#prompt_key").val(),
+  }
+  console.log('Sending data',payload);
+  socket.emit('otp_submission', payload);
+  $(this).hide();
+});
+
 
 
 });

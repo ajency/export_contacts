@@ -147,7 +147,7 @@ GMAIL = [
 
 ACCOUNTS = [
   {
-    "linkedIn": {"username": "ralph110293@gmail.com", "password": "ajency#123"},
+    "linkedIn": {"username": "amitverma2938a@gmail.com", "password": "Minar@123"},
     "email":{
       "yahoo": [
         {"username": "rahulkum89239@yahoo.com", "password": "Ajency#123"}

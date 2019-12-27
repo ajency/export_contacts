@@ -126,7 +126,16 @@
         <h4 class="step_select_msg" style="display:none">Steps Selected - <span class="steps_selected"></span></h4>
       </div>
 
-      <form class="form-inline" id="gmail_otp_verification_form" style="display:none">
+      <form class="form-inline" id="otp_verification_form" style="display:none">
+        <div class="form-group mx-sm-3 mb-2">
+          <input class="form-control" id="otp_box" placeholder="Enter OTP" type="text">
+          <input name="prompt_handler" id="prompt_handler" type="hidden">
+          <input name="prompt_key" id="prompt_key" type="hidden">
+        </div>
+        <button class="btn btn-primary mb-2" type="submit">Submit</button>
+      </form>
+
+      <form class="form-inline" id="" style="display:none">
         <div class="form-group mx-sm-3 mb-2">
           <label class="sr-only" for="gmail_otp">OTP</label>
           <input class="form-control" id="gmail_otp" placeholder="Enter OTP for Gmail" type="text">
