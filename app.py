@@ -60,6 +60,17 @@ def webdriver_screenshots(session_id):
 
 
 
+@app.route('/export_contacts/<string:session_id>')
+def export_contacts(session_id):
+    csv_path = 'static/csv/'+session_id
+    files = []
+    if path.exists(csv_path):
+        files = os.listdir(csv_path)
+        files = [session_id+'/' + file for file in files]
+    return render_template('export_contacts.html',files=files)
+
+
+
 @socketio.on('initiate_process')
 def handle_initiate_process(payload):
     global environment
@@ -124,8 +135,9 @@ def handle_start_exporter(payload):
                 emit('action', 'Error performing the Sequence: ' + sequence_title + ' ...')
                 break
 
+        emit('contacts_csv_link', executor.session_id)
         emit('action', 'Closing web driver instance...')
-        #executor.driver.close()
+        executor.driver.close()
         emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 

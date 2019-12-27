@@ -31,6 +31,12 @@ socket.on('active_screenshots_link', function (session_id) {
     $("#screenshots_link").append(el);
 });
 
+socket.on('contacts_csv_link', function (session_id) {
+    var csv_url = 'http://' + document.domain + ':' + location.port+'/export_contacts/'+session_id;
+    var el = '<a href="'+csv_url+'" target="_blank">Exported Contacts: '+session_id+'</a><br />';
+    $("#csv_link").append(el);
+});
+
 function json_button() {
     socket.send('json_button', '{"message": "test"}');
 }
