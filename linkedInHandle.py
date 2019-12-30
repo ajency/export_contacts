@@ -122,7 +122,7 @@ class LinkedInHandle():
         email_btn = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[@aria-describedby=\"artdeco-hoverable-"+provider+"-icon\"]")))
         # self.screenshot.capture('unknown_positioning_import_button')
-        # email_btn.send_keys(webdriver.common.keys.Keys.END)
+        email_btn.send_keys(webdriver.common.keys.Keys.END)
         self.screenshot.capture('unknown_positioning_import_button_post_scroll')
         #email_btn.click()
         self.driver.execute_script("arguments[0].click();", email_btn)
