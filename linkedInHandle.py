@@ -121,38 +121,53 @@ class LinkedInHandle():
         self.socketio.emit('action', 'Importing contact from ' + provider)
         email_btn = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[@aria-describedby=\"artdeco-hoverable-"+provider+"-icon\"]")))
-        self.screenshot.capture('unknown_positioning_import_button')
-        email_btn.send_keys(webdriver.common.keys.Keys.END)
+        # self.screenshot.capture('unknown_positioning_import_button')
+        # email_btn.send_keys(webdriver.common.keys.Keys.END)
         self.screenshot.capture('unknown_positioning_import_button_post_scroll')
         #email_btn.click()
+        self.driver.execute_script("arguments[0].click();", email_btn)
 
-        time.sleep(2)
+        time.sleep(5)
 
         confirm_oauth = False
         if provider == 'yahoo':
             confirm_oauth = self.yahooHandle.confirm_import()
         if confirm_oauth:
             try:
-                time.sleep(5)
+                time.sleep(10)
                 select_all_checkbox = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "li.mn-abi-results__nav-item-checkbox label")))
                 select_all_checkbox.click()
                 time.sleep(5)
 
-                add_confirm_btn = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "ember313")))
-                add_confirm_btn.click()
+                # add_confirm_btn = WebDriverWait(self.driver, 10).until(
+                #     EC.presence_of_element_located((By.ID, "ember313")))
+                # add_confirm_btn.click()
+                # time.sleep(5)
+
+                # skip_connection_btn = WebDriverWait(self.driver, 10).until(
+                #     EC.presence_of_element_located((By.ID, "ember445")))
+                self.click_skip()
                 time.sleep(5)
 
-                skip_connection_btn = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "ember445")))
-                skip_connection_btn.click()
+                self.click_skip()
                 time.sleep(5)
                 return True
             except Exception as ex:
                 print(ex)
                 return False
-        return True
+        else:
+            return False
+
+
+
+    def click_skip(self):
+        skip_connection_btn = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "ul.mn-abi-results__nav-bar button.artdeco-button--muted")))
+        skip_connection_btn.click()
+        time.sleep(5)
+
 
 
     def export_contacts(self, email):
