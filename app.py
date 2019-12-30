@@ -98,10 +98,11 @@ def handle_start_exporter(payload):
     global socketio
     global executor
     global proxy_list
+    global config_accounts
     sequences = get_main_sequences()
 
 
-    for account in ACCOUNTS:
+    for account in config_accounts:
         executor = Executor(environment, is_auto, is_headless, socketio, proxy_list, account)
         emit('action', 'Starting executor for linkedIn account: '+account.get('linkedIn').get('username'))
         emit('action', 'executor session ID: ' + executor.session_id)
