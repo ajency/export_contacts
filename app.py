@@ -154,6 +154,8 @@ def handle_otp_submission(payload):
     emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
     if payload.get('handler') == 'linkedIn':
         getattr(executor.linkedInHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+    elif payload.get('handler') == 'gmail':
+        getattr(executor.gmailHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
 
 
 

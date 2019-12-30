@@ -4,6 +4,9 @@ from screenshot import Screenshot
 from common_functions import *
 from linkedInHandle import LinkedInHandle
 from yahooHandle import YahooHandle
+from aolHandle import AolHandle
+from gmailHandle import GmailHandle
+from outlookHandle import OutlookHandle
 
 class Executor():
     def __init__(self, env, auto, headless, socketio, proxy_list, account):
@@ -20,6 +23,9 @@ class Executor():
         self.account = account
         self.linkedInHandle = LinkedInHandle(self)
         self.yahooHandle = YahooHandle(self)
+        self.aolHandle = AolHandle(self)
+        self.gmailHandle = GmailHandle(self)
+        self.outlookHandle = OutlookHandle(self)
 
 
 
@@ -58,7 +64,7 @@ class Executor():
             return True
 
     def step_linkedIn_logout(self):
-        self.socketio.emit("action", "Step: linkedIn_login")
+        self.socketio.emit("action", "Step: linkedIn_logout")
         if self.linkedInHandle.logout():
             self.socketio.emit('action', 'Linked in logout successfull!')
             return True
@@ -76,7 +82,7 @@ class Executor():
 
     def step_import_contacts(self, provider, email):
         self.socketio.emit("action", "Step: import_contacts")
-        if self.linkedInHandle.import_contacts(provider):
+        if self.linkedInHandle.import_contacts(provider, email):
             self.socketio.emit('action', 'Import contacts successful for '+provider+' with email: '+email.get('username'))
             return True
         else:
@@ -114,7 +120,13 @@ class Executor():
 
     def email_login_gmail(self,email):
         self.logger.info("==== logging in to gmail account " + email.get('username'))
-        return True
+        if self.gmailHandle.login(email):
+            self.socketio.emit('action', 'Login to gmail successful!')
+            return True
+        else:
+            self.screenshot.capture('gmail_login_error_' + email.get('username'))
+            self.socketio.emit('action', 'Error gmail login. Check screenshots for details.')
+            return False
 
     def email_login_yahoo(self,email):
         self.logger.info("==== logging in to yahoo account " + email.get('username'))
@@ -128,20 +140,38 @@ class Executor():
 
     def email_login_aol(self,email):
         self.logger.info("==== logging in to aol account " + email.get('username'))
-        return True
+        if self.aolHandle.login(email):
+            self.socketio.emit('action', 'Login to aol successful!')
+            return True
+        else:
+            self.screenshot.capture('aol_login_error_' + email.get('username'))
+            self.socketio.emit('action', 'Error aol login. Check screenshots for details.')
+            return False
 
     def email_login_outlook(self,email):
         self.logger.info("==== logging in to outlook account " + email.get('username'))
-        return True
+        if self.outlookHandle.login(email):
+            self.socketio.emit('action', 'Login to outlook successful!')
+            return True
+        else:
+            self.screenshot.capture('outlook_login_error_' + email.get('username'))
+            self.socketio.emit('action', 'Error outlook login. Check screenshots for details.')
+            return False
 
     def email_logout_gmail(self):
         self.logger.info("==== logging out from gmail account ===")
-        return True
+        if self.gmailHandle.logout():
+            self.socketio.emit('action', 'Gmail logout successful!')
+            return True
+        else:
+            self.screenshot.capture('gmail_logout_error')
+            self.socketio.emit('action', 'Error logging out from gmail. Check screenshots for details.')
+            return False
 
     def email_logout_yahoo(self):
         self.logger.info("==== logging out from yahoo account ===")
-        if self.yahooHandle.logout():
-            self.socketio.emit('action', 'Yahoo in logout successful!')
+        if self.yahooHandle.logout('yahoo'):
+            self.socketio.emit('action', 'Yahoo logout successful!')
             return True
         else:
             self.screenshot.capture('yahoo_logout_error')
@@ -150,8 +180,20 @@ class Executor():
 
     def email_logout_aol(self):
         self.logger.info("==== logging out from aol account ===")
-        return True
+        if self.aolHandle.logout('aol'):
+            self.socketio.emit('action', 'AOL logout successful!')
+            return True
+        else:
+            self.screenshot.capture('aol_logout_error')
+            self.socketio.emit('action', 'Error logging out from aol. Check screenshots for details.')
+            return False
 
     def email_logout_outlook(self):
         self.logger.info("==== logging out from outlook account ===")
-        return True
+        if self.outlookHandle.logout():
+            self.socketio.emit('action', 'Outlook logout successful!')
+            return True
+        else:
+            self.screenshot.capture('outlook_logout_error')
+            self.socketio.emit('action', 'Error logging out from outlook. Check screenshots for details.')
+            return False

@@ -45,17 +45,22 @@ class YahooHandle():
         else:
             return False
 
-    def logout(self):
+    def logout(self, source):
         try:
             self.driver.get(self.logout_url)
             clk = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
             self.driver.execute_script("arguments[0].click();", clk)
-            time.sleep(1)
+            time.sleep(3)
             # Logout
+            if source == 'yahoo':
+                logout_selector = '//*[@id="ybarAccountMenuBody"]/a[3]'
+            if source == 'aol':
+                logout_selector = '//*[@id="ybarAccountMenuBody"]/a'
             logout = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenuBody"]/a[3]')))
-            logout.click()
+                EC.presence_of_element_located((By.XPATH, logout_selector)))
+            #logout.click()
+            self.driver.execute_script("arguments[0].click();", logout)
             time.sleep(1)
             return True
         except:
@@ -74,13 +79,16 @@ class YahooHandle():
 
 
     def confirm_import(self):
-        try:
-            self.driver.switch_to.window(self.driver.window_handles[1])
-            agree_btn = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(
-                    (By.ID, "oauth2-agree")))
-            agree_btn.click()
-            self.driver.switch_to.window(self.driver.window_handles[0])
-            return True
-        except:
+        if len(self.driver.window_handles) > 1:
+            try:
+                self.driver.switch_to.window(self.driver.window_handles[1])
+                agree_btn = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.ID, "oauth2-agree")))
+                agree_btn.click()
+                self.driver.switch_to.window(self.driver.window_handles[0])
+                return True
+            except:
+                return False
+        else:
             return False

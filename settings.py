@@ -150,9 +150,18 @@ ACCOUNTS = [
     "linkedIn": {"username": "gopaul3212@gmail.com", "password": "Ajency#123"},
     #"linkedIn": {"username": "amitverma2938a@gmail.com", "password": "Minar@123"},
     "email":{
-      "yahoo": [
-        {"username": "rahulkum89239@yahoo.com", "password": "Ajency#123"}
-      ]
+      # "yahoo": [
+      #   {"username": "rahulkum89239@yahoo.com", "password": "Ajency#123"}
+      # ],
+      # "aol": [
+      #   {"username": "rohankumar593121@aol.com", "password": "Ajency#123"}
+      # ],
+      # "gmail": [
+      #     {"username": "gopaul3212@gmail.com", "password": "ajency#123"}
+      #   ],
+        "outlook": [
+            {"username": "rahulkumat7829211@outlook.com", "password": "Ajency#123"}
+          ]
     }
   }
 ]

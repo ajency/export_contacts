@@ -3,8 +3,12 @@ from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
 from common_functions import *
 import json
-from yahooHandle import YahooHandle
 from pathlib import Path
+
+from yahooHandle import YahooHandle
+from aolHandle import AolHandle
+from gmailHandle import GmailHandle
+from outlookHandle import OutlookHandle
 
 
 class LinkedInHandle():
@@ -18,6 +22,9 @@ class LinkedInHandle():
         self.screenshot = executor.screenshot
         self.account = executor.account
         self.yahooHandle = YahooHandle(executor)
+        self.aolHandle = AolHandle(executor)
+        self.gmailHandle = GmailHandle(executor)
+        self.outlookHandle = OutlookHandle(executor)
         self.session_id = executor.session_id
         self.screenshot = executor.screenshot
 
@@ -116,11 +123,16 @@ class LinkedInHandle():
 
 
 
-    def import_contacts(self,provider):
+    def import_contacts(self, provider, email):
         self.driver.get(self.import_url)
         self.socketio.emit('action', 'Importing contact from ' + provider)
+
+        provider_selector = provider
+        if provider == 'aol':
+            provider_selector = 'aol-mail'
+
         email_btn = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//a[@aria-describedby=\"artdeco-hoverable-"+provider+"-icon\"]")))
+            EC.presence_of_element_located((By.XPATH, "//a[@aria-describedby=\"artdeco-hoverable-"+provider_selector+"-icon\"]")))
         # self.screenshot.capture('unknown_positioning_import_button')
         email_btn.send_keys(webdriver.common.keys.Keys.END)
         self.screenshot.capture('unknown_positioning_import_button_post_scroll')
@@ -132,12 +144,20 @@ class LinkedInHandle():
         confirm_oauth = False
         if provider == 'yahoo':
             confirm_oauth = self.yahooHandle.confirm_import()
+        if provider == 'aol':
+            confirm_oauth = self.aolHandle.confirm_import()
+        if provider == 'gmail':
+            confirm_oauth = self.gmailHandle.confirm_import(email)
+        if provider == 'outlook':
+            confirm_oauth = self.outlookHandle.confirm_import()
+            time.sleep(5)
         if confirm_oauth:
             try:
                 time.sleep(10)
                 select_all_checkbox = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "li.mn-abi-results__nav-item-checkbox label")))
-                select_all_checkbox.click()
+                #select_all_checkbox.click()
+                self.driver.execute_script("arguments[0].click();", select_all_checkbox)
                 time.sleep(5)
 
                 # add_confirm_btn = WebDriverWait(self.driver, 10).until(
@@ -150,9 +170,16 @@ class LinkedInHandle():
                 self.click_skip()
                 time.sleep(5)
 
+                if self.is_imported():
+                    return True
+
                 self.click_skip()
                 time.sleep(5)
-                return True
+
+                if self.is_imported():
+                    return True
+                else:
+                    return False
             except Exception as ex:
                 print(ex)
                 return False
@@ -167,6 +194,18 @@ class LinkedInHandle():
                 (By.CSS_SELECTOR, "ul.mn-abi-results__nav-bar button.artdeco-button--muted")))
         skip_connection_btn.click()
         time.sleep(5)
+
+
+    def is_imported(self):
+        try:
+            another_email_btn = self.driver.wait.until(
+                EC.visibility_of_any_elements_located((By.XPATH, "//button[@data-control-name='import_another_email']")))
+            if another_email_btn:
+                return True
+            else:
+                return False
+        except TimeoutException:
+            return False
 
 
 
