@@ -152,7 +152,7 @@ def handle_start_exporter(payload):
 
         emit('contacts_csv_link', executor.session_id)
         emit('action', 'Closing web driver instance...')
-        #executor.driver.close()
+        executor.driver.close()
         emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 
