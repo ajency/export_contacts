@@ -139,15 +139,18 @@ socket.on('sequence_tree', function (message) {
 
 
 socket.on('tree_progress', function (key) {
+    console.log("sequence started > ", key);
     $("#"+key).addClass('spinner');
 });
 
 socket.on('tree_success', function (key) {
+    console.log("sequence success > ", key);
     $("#"+key).removeClass('spinner');
     $("#"+key).addClass('sequence_success');
 });
 
 socket.on('tree_failed', function (key) {
+    console.log("sequence failed > ", key);
     $("#"+key).removeClass('spinner');
     $("#"+key).addClass('sequence_failed');
 });

@@ -47,7 +47,7 @@ def get_selected_email_sequences(is_auto, payload, email_provider, email_id):
             if seq in get_email_operation_sequences():
                 selected_email_sequences.append(seq)
     for eseq in selected_email_sequences:
-        key_name = str(eseq) + "_" + email_provider +"_" + email_id.replace('.', '')
+        key_name = str(eseq) + "_" + email_provider +"_" + email_id.replace('.', '').replace('@', '')
         seq1 = {'key': key_name, 'title': get_email_operation_sequences().get(eseq)}
         sequences.append(seq1)
     return sequences
@@ -61,7 +61,7 @@ def get_main_sequence_tree(is_auto, payload, email_id):
     for sequence in selected_sequences:
         sequence_title = sequences[sequence]
         if not isinstance(sequence_title, dict):
-            key_name = str(sequence)+"_"+email_id.replace('.', '')
+            key_name = str(sequence)+"_"+email_id.replace('.', '').replace('@', '')
             seq = {'key': key_name, 'title': sequence_title}
             new_seq.append(seq)
     return new_seq

@@ -51,8 +51,13 @@ class Executor():
                 total_email_count += 1
                 self.logger.info("==== Email sequences with user " + email_account.get('username'))
                 for sequence in sequences:
+                    key_name = str(sequence) + "_" + email_provider + "_" + email_account.get('username').replace('.','').replace('@', '')
+                    self.socketio.emit('tree_progress', key_name)
                     is_success = getattr(self, 'step_' + sequence)(email_provider, email_account)
-                    if not is_success:
+                    if is_success:
+                        self.socketio.emit('tree_success', key_name)
+                    else:
+                        self.socketio.emit('tree_failed', key_name)
                         failed_email_count += 1
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
                         break

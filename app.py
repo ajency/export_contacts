@@ -138,9 +138,13 @@ def handle_start_exporter(payload):
                 is_success = getattr(executor, 'step_email_operation')(selected_email_sequences)
             else:
                 email_id = account.get("linkedIn").get("username")
-                key_name = str(sequence) + "_" + email_id.replace('.', '')
+                key_name = str(sequence) + "_" + email_id.replace('.', '').replace('@', '')
                 emit('tree_progress', key_name)
                 is_success = getattr(executor, 'step_' + sequence)()
+                if is_success:
+                    emit('tree_success', key_name)
+                else:
+                    emit('tree_failed', key_name)
 
             if not is_success:
                 emit('action', 'Error performing the Sequence: ' + sequence_title + ' ...')
