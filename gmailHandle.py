@@ -115,22 +115,27 @@ class GmailHandle():
             username = email.get('username')
             try:
                 self.driver.switch_to.window(self.driver.window_handles[1])
+                time.sleep(3)
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(5)
                 account_btn = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, "//div[@data-identifier='"+username+"']")))
-                account_btn.click()
-                #data-identifier = "gopaul3212@gmail.com
-                #submit_approve_access
+                #account_btn.click()
+                self.driver.execute_script("arguments[0].click();", account_btn)
 
                 time.sleep(5)
                 agree_btn = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
                         (By.ID, "submit_approve_access")))
-                agree_btn.click()
+                #agree_btn.click()
+                self.driver.execute_script("arguments[0].click();", agree_btn)
 
 
                 self.driver.switch_to.window(self.driver.window_handles[0])
                 return True
-            except:
+            except Exception as ex:
+                print(ex)
                 return False
         else:
+            self.socketio.emit('action', "No confirm window found!")
             return False

@@ -45,129 +45,135 @@
     <div class="container" style="padding-top:75px;">
 
 
-      <form id="initiate_form" name="initiate_form">
+      <div class="row">
+        <form id="initiate_form" name="initiate_form">
 
-        <fieldset class="form-group">
-    <div class="row">
-      <legend class="col-form-label col-sm-2 pt-0">Environment</legend>
-      <div class="col-sm-10">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="environment" id="environment_dev" value="dev" checked>
-          <label class="form-check-label" for="environment_dev">
-            Development
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="environment" id="environment_prod" value="prod">
-          <label class="form-check-label" for="environment_prod">
-            Production
-          </label>
-        </div>
-      </div>
-    </div>
-  </fieldset>
+        <div class="col-md-5">
+          <div class="row">
+            <div class="col-md-6"><h4>Environment</h4></div>
+            <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="environment" id="environment_dev" value="dev" checked>
+                  <label class="form-check-label" for="environment_dev">
+                    Development
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="environment" id="environment_prod" value="prod">
+                  <label class="form-check-label" for="environment_prod">
+                    Production
+                  </label>
+                </div>
+            </div>
+          </div>
+          <br />
 
-          <fieldset class="form-group">
-    <div class="row">
-      <legend class="col-form-label col-sm-2 pt-0">Auto</legend>
-      <div class="col-sm-10">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="auto" id="auto_true" value="1" checked>
-          <label class="form-check-label" for="auto_true">
-            Yes
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="auto" id="auto_false" value="0">
-          <label class="form-check-label" for="auto_false">
-            No
-          </label>
-        </div>
-      </div>
-    </div>
-  </fieldset>
 
-        <fieldset class="form-group headless_mode">
-    <div class="row">
-      <legend class="col-form-label col-sm-2 pt-0">Headless Mode</legend>
-      <div class="col-sm-10">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="headless_mode" id="headless_mode_true" value="1">
-          <label class="form-check-label" for="headless_mode_true">
-            Yes
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="headless_mode" id="headless_mode_false" value="0" checked>
-          <label class="form-check-label" for="headless_mode_false">
-            No
-          </label>
-        </div>
-      </div>
-    </div>
-  </fieldset>
+          <div class="row">
+            <div class="col-md-6"><h4>Auto</h4></div>
+            <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="auto" id="auto_true" value="1" checked>
+                  <label class="form-check-label" for="auto_true">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="auto" id="auto_false" value="0">
+                  <label class="form-check-label" for="auto_false">
+                    No
+                  </label>
+                </div>
+            </div>
+          </div>
+          <br />
 
-        <div class="form-group">
-          <label for="accounts_config">Accounts Config</label>
-          <textarea class="form-control" id="accounts_config" rows="6"></textarea>
+
+          <div class="row">
+            <div class="col-md-6"><h4>Headless Mode</h4></div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="headless_mode" id="headless_mode_true" value="1">
+                <label class="form-check-label" for="headless_mode_true">
+                  Yes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="headless_mode" id="headless_mode_false" value="0" checked>
+                <label class="form-check-label" for="headless_mode_false">
+                  No
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-success">Start</button>
-      </form>
+        <div class="col-md-7">
+          <div class="form-group">
+            <label for="accounts_config">Accounts Config</label>
+            <textarea class="form-control" id="accounts_config" rows="6"></textarea>
+          </div>
+        </div>
 
-      <!--<a id="start_process" class="btn btn-success">Start</a>-->
+          <button type="submit" class="btn btn-success">Start</button>
 
-      <div>
-        <form id="step_form" name="step_form" style="display:none">
-          <h4>Choose sequences..</h4>
-          <div class="step_fields"></div>
-          <button type="submit" class="btn btn-success">Submit</button>
         </form>
-        <h4 class="step_select_msg" style="display:none">Steps Selected - <span class="steps_selected"></span></h4>
       </div>
 
-      <form class="form-inline" id="otp_verification_form" style="display:none">
-        <div class="form-group mx-sm-3 mb-2">
-          <input class="form-control" id="otp_box" placeholder="Enter OTP" type="text">
-          <input name="prompt_handler" id="prompt_handler" type="hidden">
-          <input name="prompt_key" id="prompt_key" type="hidden">
+
+
+      <div class="row">
+        <form id="step_form" name="step_form" style="display:none">
+          <div class="col-md-12">
+            <h4>Choose sequences..</h4>
+            <div class="step_fields"></div>
+            <button type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <hr />
+
+      <div class="row">
+          <div class="col-md-12">
+            <h4 class="step_select_msg" style="display:none">Steps Selected - <span class="steps_selected"></span></h4>
+          </div>
+      </div>
+
+
+      <div class="row">
+        <form class="form-inline" id="otp_verification_form" style="display:none">
+          <div class="col-md-12">
+            <div class="form-group mx-sm-3 mb-2">
+              <input class="form-control" id="otp_box" placeholder="Enter OTP" type="text" style="width: 300px;">
+              <input name="prompt_handler" id="prompt_handler" type="hidden">
+              <input name="prompt_key" id="prompt_key" type="hidden">
+            </div>
+            <button class="btn btn-primary mb-2" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+
+
+      <div class="row">
+        <div class="col-md-6"><div id="screenshots_link" style="margin-top: 20px;"></div></div>
+        <div class="col-md-6"><div id="csv_link" style="margin-top: 20px;"></div></div>
+      </div>
+
+      <hr />
+
+
+
+
+      <!--<div id="screenshots_link" style="margin-top: 20px;"></div>
+      <div id="csv_link" style="margin-top: 20px;"></div>-->
+
+
+      <div class="row">
+        <div class="col-md-5" id="sequence_tree"></div>
+        <div class="col-md-7">
+          <div class="terminal" style="padding: 10px; background:black; color:grey; margin-top:20px;"></div>
         </div>
-        <button class="btn btn-primary mb-2" type="submit">Submit</button>
-      </form>
-
-      <form class="form-inline" id="" style="display:none">
-        <div class="form-group mx-sm-3 mb-2">
-          <label class="sr-only" for="gmail_otp">OTP</label>
-          <input class="form-control" id="gmail_otp" placeholder="Enter OTP for Gmail" type="text">
-        </div>
-        <button class="btn btn-primary mb-2" type="submit">Submit</button>
-      </form>
-
-
-
-      <!-- <a class="btn" onclick="showTestModal()">Show Modal</a> -->
-
-
-
-      <div>
-      <form id="get_user_single_input_form" name="get_user_single_input_form" style="display:none">
-        <h4 id="message"></h4>
-        <div class="form-group">
-          <input type="hidden" name="handler" id="handler" placeholder="" class="form-control">
-          <input type="text" name="user_input" id="user_input" placeholder="Enter your input" class="form-control">
-        </div>
-        <div class="step_fields"></div>
-        <button type="submit" class="btn btn-success">Submit</button>
-        <hr>
-      </form>
-    </div>
-
-
-      <div id="screenshots_link" style="margin-top: 20px;"></div>
-      <div id="csv_link" style="margin-top: 20px;"></div>
-
-      <div class="terminal" style="padding: 10px; background:black; color:grey; margin-top:20px;">
-        
       </div>
 
 
@@ -178,27 +184,6 @@
     </div> <!-- /container -->
 
 
-
-    <div id="loginCaptchaModal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Type Captcha</h4>
-      </div>
-      <div class="modal-body">
-        <div id="login_captcha_wrap"></div>
-        <form id="login_captcha_form" name="login_captcha_form">
-          <div class="form-group">
-            <input type="text" name="login_captcha" id="login_captcha" placeholder="Captcha" class="form-control">
-          </div>
-          <button type="submit" class="btn btn-success">Submit</button>
-          <!-- <a class="btn" onclick="hideTestModal()">Hide Modal</a> -->
-        </form>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 
 

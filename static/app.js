@@ -86,6 +86,75 @@ socket.on('steps', function (message) {
 
 });
 
+
+
+socket.on('sequence_tree', function (message) {
+    var sequence_tree = JSON.parse(message);
+    //console.log(sequence_tree);
+    var html ="<h4>Sequence Tree</h4><ul class='sequence_tree_list'>";
+    sequence_tree.forEach(function(account){
+        var username = account.linkedIn.username
+        var main_sequences = account.linkedIn.sequences
+        var emails_providers = account.email
+        //console.log(username, main_sequences);
+        html +="<li>";
+            html +="<div>"+username+"</div>";
+                html +="<ul>";
+                if(main_sequences.length > 0){
+                    html +='<li><div>Sequences</div>';
+                        html +="<ul>";
+                        main_sequences.forEach(function(mseq){
+                            html +='<li id="'+mseq.key+'">'+mseq.title+'</li>';
+                        });
+                        html +="</ul>";
+                    html +='</li>';
+                 }
+
+                    $.each(emails_providers, function(provider,emails){
+                        html +='<li><div>'+provider+'</div>';
+                            html +="<ul>";
+                            emails.forEach(function(email){
+                                var email_sequences = email.sequences
+                                html +='<li><div>'+email.username+'</div>';
+                                    html +="<ul>";
+                                    email_sequences.forEach(function(eseq){
+                                        html +='<li id="'+eseq.key+'">'+eseq.title+'</li>';
+                                    });
+                                    html +="</ul>";
+                                html +='</li>';
+                            });
+                            html +="</ul>";
+                        html +='</li>';
+                    });
+
+                html +="</ul>";
+
+
+        html +="</li>";
+    });
+    html +="</ul>";
+    $("#sequence_tree").html(html);
+});
+
+
+
+socket.on('tree_progress', function (key) {
+    $("#"+key).addClass('spinner');
+});
+
+socket.on('tree_success', function (key) {
+    $("#"+key).removeClass('spinner');
+    $("#"+key).addClass('sequence_success');
+});
+
+socket.on('tree_failed', function (key) {
+    $("#"+key).removeClass('spinner');
+    $("#"+key).addClass('sequence_failed');
+});
+
+
+
+
 function isString (obj) {
   return (Object.prototype.toString.call(obj) === '[object String]');
 }

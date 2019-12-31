@@ -6,7 +6,7 @@ import os
 import os.path
 from os import path
 
-from sequence import get_main_sequences
+from sequence import get_main_sequences, get_selected_sequences, generate_sequence_tree
 from executor import Executor
 from proxy_list import get_proxies
 
@@ -102,11 +102,18 @@ def handle_start_exporter(payload):
     sequences = get_main_sequences()
 
 
+
+    sequence_tree = generate_sequence_tree(is_auto, payload, config_accounts)
+    emit('sequence_tree', json.dumps(sequence_tree))
+
+
+
     for account in config_accounts:
         executor = Executor(environment, is_auto, is_headless, socketio, proxy_list, account)
         emit('action', 'Starting executor for linkedIn account: '+account.get('linkedIn').get('username'))
         emit('action', 'executor session ID: ' + executor.session_id)
         emit('active_screenshots_link', executor.session_id)
+
         if is_auto:
             emit('action', 'Preparing to auto run all the sequences...')
             selected_sequences = sequences
@@ -130,6 +137,9 @@ def handle_start_exporter(payload):
                 sequence_title = 'Email operation'
                 is_success = getattr(executor, 'step_email_operation')(selected_email_sequences)
             else:
+                email_id = account.get("linkedIn").get("username")
+                key_name = str(sequence) + "_" + email_id.replace('.', '')
+                emit('tree_progress', key_name)
                 is_success = getattr(executor, 'step_' + sequence)()
 
             if not is_success:
@@ -138,7 +148,7 @@ def handle_start_exporter(payload):
 
         emit('contacts_csv_link', executor.session_id)
         emit('action', 'Closing web driver instance...')
-        executor.driver.close()
+        #executor.driver.close()
         emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 

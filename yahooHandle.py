@@ -62,6 +62,8 @@ class YahooHandle():
             #logout.click()
             self.driver.execute_script("arguments[0].click();", logout)
             time.sleep(1)
+            self.delete_login_cookies()
+            time.sleep(3)
             return True
         except:
             return False
@@ -92,3 +94,9 @@ class YahooHandle():
                 return False
         else:
             return False
+
+    def delete_login_cookies(self):
+        #cookies = ['A1','A1S','A3','AO','APID','APIDTS','AS','B','F','FS','GUC','GUCS','PH','__grade','ucs']
+        #self.driver.delete_cookie(cookiename)
+        self.driver.delete_all_cookies()
+

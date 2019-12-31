@@ -135,7 +135,7 @@ class LinkedInHandle():
             EC.presence_of_element_located((By.XPATH, "//a[@aria-describedby=\"artdeco-hoverable-"+provider_selector+"-icon\"]")))
         # self.screenshot.capture('unknown_positioning_import_button')
         email_btn.send_keys(webdriver.common.keys.Keys.END)
-        self.screenshot.capture('unknown_positioning_import_button_post_scroll')
+        #self.screenshot.capture('unknown_positioning_import_button_post_scroll')
         #email_btn.click()
         self.driver.execute_script("arguments[0].click();", email_btn)
 
@@ -152,6 +152,7 @@ class LinkedInHandle():
             confirm_oauth = self.outlookHandle.confirm_import()
             time.sleep(5)
         if confirm_oauth:
+            print("Passed oauth")
             try:
                 time.sleep(10)
                 select_all_checkbox = WebDriverWait(self.driver, 10).until(
@@ -184,6 +185,7 @@ class LinkedInHandle():
                 print(ex)
                 return False
         else:
+            print("Failed oauth!")
             return False
 
 
@@ -249,6 +251,7 @@ class LinkedInHandle():
 
             listResults = self.driver.find_elements_by_xpath('//ul[@class="abi-saved-contacts__contact-list"]/li')
             if len(listResults) > 0:
+                self.socketio.emit('action', 'Exporting contacts is in progress.....')
                 print("Exporting of contacts is In progress")
                 print("____________________________")
                 for people in listResults:
