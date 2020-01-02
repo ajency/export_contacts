@@ -62,20 +62,26 @@ class LinkedInHandle():
             return False
 
     def logout(self):
-        try:
-            self.driver.get(self.logout_url)
-            clk = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
-            clk.click()
-            time.sleep(2)
-            # Logout
-            logout = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li')))
-            logout.click()
-            time.sleep(2)
-            return True
-        except:
-            return False
+        # try:
+        #     self.driver.get(self.logout_url)
+        #     clk = WebDriverWait(self.driver, 10).until(
+        #         EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-trigger"]')))
+        #     clk.click()
+        #     time.sleep(2)
+        #     # Logout
+        #     logout = WebDriverWait(self.driver, 10).until(
+        #         EC.presence_of_element_located((By.XPATH, '//*[@id="nav-settings__dropdown-options"]/li[5]/ul/li')))
+        #     logout.click()
+        #     time.sleep(2)
+        #     return True
+        # except:
+        #     return False
+        if 'linkedIn' not in self.driver.current_url:
+            self.driver.get(self.login_url)
+            time.sleep(3)
+        self.driver.delete_all_cookies()
+        time.sleep(3)
+        return True
 
     def is_logged_in(self):
         try:
@@ -199,6 +205,7 @@ class LinkedInHandle():
 
 
     def is_imported(self):
+        time.sleep(8)
         try:
             another_email_btn = self.driver.wait.until(
                 EC.visibility_of_any_elements_located((By.XPATH, "//button[@data-control-name='import_another_email']")))

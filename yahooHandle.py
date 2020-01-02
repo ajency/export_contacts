@@ -45,28 +45,35 @@ class YahooHandle():
         else:
             return False
 
-    def logout(self, source):
-        try:
-            self.driver.get(self.logout_url)
-            clk = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
-            self.driver.execute_script("arguments[0].click();", clk)
+    def logout(self):
+        # try:
+        #     self.driver.get(self.logout_url)
+        #     clk = WebDriverWait(self.driver, 10).until(
+        #         EC.presence_of_element_located((By.XPATH, '//*[@id="ybarAccountMenu"]')))
+        #     self.driver.execute_script("arguments[0].click();", clk)
+        #     time.sleep(3)
+        #     # Logout
+        #     if source == 'yahoo':
+        #         logout_selector = '//*[@id="ybarAccountMenuBody"]/a[3]'
+        #     if source == 'aol':
+        #         logout_selector = '//*[@id="ybarAccountMenuBody"]/a'
+        #     logout = WebDriverWait(self.driver, 10).until(
+        #         EC.presence_of_element_located((By.XPATH, logout_selector)))
+        #     #logout.click()
+        #     self.driver.execute_script("arguments[0].click();", logout)
+        #     time.sleep(1)
+        #     self.delete_login_cookies()
+        #     time.sleep(3)
+        #     return True
+        # except:
+        #     return False
+
+        if 'yahoo' not in self.driver.current_url:
+            self.driver.get(self.login_url)
             time.sleep(3)
-            # Logout
-            if source == 'yahoo':
-                logout_selector = '//*[@id="ybarAccountMenuBody"]/a[3]'
-            if source == 'aol':
-                logout_selector = '//*[@id="ybarAccountMenuBody"]/a'
-            logout = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, logout_selector)))
-            #logout.click()
-            self.driver.execute_script("arguments[0].click();", logout)
-            time.sleep(1)
-            self.delete_login_cookies()
-            time.sleep(3)
-            return True
-        except:
-            return False
+        self.driver.delete_all_cookies()
+        time.sleep(3)
+        return True
 
     def is_logged_in(self):
         try:
@@ -94,9 +101,4 @@ class YahooHandle():
                 return False
         else:
             return False
-
-    def delete_login_cookies(self):
-        #cookies = ['A1','A1S','A3','AO','APID','APIDTS','AS','B','F','FS','GUC','GUCS','PH','__grade','ucs']
-        #self.driver.delete_cookie(cookiename)
-        self.driver.delete_all_cookies()
 

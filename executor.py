@@ -57,6 +57,7 @@ class Executor():
                     if is_success:
                         self.socketio.emit('tree_success', key_name)
                     else:
+                        getattr(self, 'step_email_logout')(email_provider, email_account)
                         self.socketio.emit('tree_failed', key_name)
                         failed_email_count += 1
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
@@ -175,7 +176,7 @@ class Executor():
 
     def email_logout_yahoo(self):
         self.logger.info("==== logging out from yahoo account ===")
-        if self.yahooHandle.logout('yahoo'):
+        if self.yahooHandle.logout():
             self.socketio.emit('action', 'Yahoo logout successful!')
             return True
         else:
@@ -185,7 +186,7 @@ class Executor():
 
     def email_logout_aol(self):
         self.logger.info("==== logging out from aol account ===")
-        if self.aolHandle.logout('aol'):
+        if self.aolHandle.logout():
             self.socketio.emit('action', 'AOL logout successful!')
             return True
         else:

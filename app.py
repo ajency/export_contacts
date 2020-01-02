@@ -144,6 +144,7 @@ def handle_start_exporter(payload):
                 if is_success:
                     emit('tree_success', key_name)
                 else:
+                    getattr(executor, 'step_linkedIn_logout')()
                     emit('tree_failed', key_name)
 
             if not is_success:
