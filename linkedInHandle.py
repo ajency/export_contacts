@@ -329,6 +329,8 @@ class LinkedInHandle():
             rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button'
             rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
             rmvClk2.click()
+            time.sleep(3)
+            return True
         except Exception as e:
             try:
                 listResults = self.driver.find_elements_by_xpath(
@@ -339,30 +341,33 @@ class LinkedInHandle():
                     rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button[@class="js-mn-manage-source-confirm"]'
                     rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
                     self.driver.execute_script("arguments[0].click();", rmvClk2)
-            except Exception as e:
-                # self.warning("Removal of synced accounts failed")
-                pass
-            pass
-        time.sleep(5)
-        self.driver.get(self.export_url)
-        time.sleep(1)
-
-        try:
-            WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="artdeco-toasts"]/ul/li/div/p/span')))
-        except Exception as e:
-            pass
-
-        if search_element_by_xpath(self.driver, '//*[@id="artdeco-toasts"]/ul/li/div/p/span'):
-            try:
-                response = self.driver.find_elements_by_xpath('//*[@id="artdeco-toasts"]/ul/li/div/p/span').text
-
-                rmvClk = account.find_element_by_xpath('//*[@id="artdeco-toasts"]/ul/li/button')
-                self.driver.execute_script("arguments[0].click();", rmvClk)
+                time.sleep(3)
+                return True
             except Exception as e:
                 pass
+            return False
 
-        return True
+
+        # time.sleep(5)
+        # self.driver.get(self.export_url)
+        # time.sleep(1)
+        #
+        # try:
+        #     WebDriverWait(self.driver, 30).until(
+        #         EC.presence_of_element_located((By.XPATH, '//*[@id="artdeco-toasts"]/ul/li/div/p/span')))
+        # except Exception as e:
+        #     pass
+        #
+        # if search_element_by_xpath(self.driver, '//*[@id="artdeco-toasts"]/ul/li/div/p/span'):
+        #     try:
+        #         response = self.driver.find_elements_by_xpath('//*[@id="artdeco-toasts"]/ul/li/div/p/span').text
+        #
+        #         rmvClk = account.find_element_by_xpath('//*[@id="artdeco-toasts"]/ul/li/button')
+        #         self.driver.execute_script("arguments[0].click();", rmvClk)
+        #     except Exception as e:
+        #         pass
+        #
+        # return True
 
 
 

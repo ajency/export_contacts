@@ -98,7 +98,7 @@ socket.on('sequence_tree', function (message) {
         var emails_providers = account.email
         //console.log(username, main_sequences);
         html +="<li>";
-            html +="<div>"+username+"</div>";
+            html +="<div> LinkedIn Account: "+username+"</div>";
                 html +="<ul>";
                 if(main_sequences.length > 0){
                     html +='<li><div>Sequences</div>';
