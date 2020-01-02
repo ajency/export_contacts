@@ -27,3 +27,33 @@ li.sequence_success{
 li.sequence_failed{
     color: red;
 }
+
+
+.session_tree {
+    background: #f9f7f7;
+    list-style: none;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #f1efef;
+}
+
+.session_tree_first {
+    background: #f3f3f3;
+    list-style: none;
+    padding: 05px;
+    margin-bottom: 10px;
+    border: 1px solid #f1eded;
+}
+
+.session_tree_second {
+    background: #ececec;
+    list-style: none;
+    padding: 05px;
+    margin-bottom: 10px;
+    border: 1px solid #ece8e8;
+}
+
+.terminal {
+    max-height: 555px;
+    overflow: scroll;
+}

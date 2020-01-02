@@ -64,6 +64,7 @@ socket.on('get_captcha', function (captcha_url) {
 
 socket.on('action', function (message) {
     $(".terminal").append("<p>"+message+"</p>");
+    $(".terminal").animate({ scrollTop: $(".terminal")[0].scrollHeight}, 1000);
 });
 
 socket.on('steps', function (message) {
@@ -97,11 +98,11 @@ socket.on('sequence_tree', function (message) {
         var main_sequences = account.linkedIn.sequences
         var emails_providers = account.email
         //console.log(username, main_sequences);
-        html +="<li>";
+        html +="<li class='session_tree'>";
             html +="<div> LinkedIn Account: "+username+"</div>";
                 html +="<ul>";
                 if(main_sequences.length > 0){
-                    html +='<li><div>Sequences</div>';
+                    html +='<li style="list-style: none;"><div>Sequences</div>';
                         html +="<ul>";
                         main_sequences.forEach(function(mseq){
                             html +='<li id="'+mseq.key+'">'+mseq.title+'</li>';
@@ -111,11 +112,11 @@ socket.on('sequence_tree', function (message) {
                  }
 
                     $.each(emails_providers, function(provider,emails){
-                        html +='<li><div>'+provider+'</div>';
+                        html +='<li class="session_tree_first"><div>'+provider+'</div>';
                             html +="<ul>";
                             emails.forEach(function(email){
                                 var email_sequences = email.sequences
-                                html +='<li><div>'+email.username+'</div>';
+                                html +='<li class="session_tree_second"><div>'+email.username+'</div>';
                                     html +="<ul>";
                                     email_sequences.forEach(function(eseq){
                                         html +='<li id="'+eseq.key+'">'+eseq.title+'</li>';

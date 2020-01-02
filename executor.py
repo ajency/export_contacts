@@ -7,6 +7,7 @@ from yahooHandle import YahooHandle
 from aolHandle import AolHandle
 from gmailHandle import GmailHandle
 from outlookHandle import OutlookHandle
+import time
 
 class Executor():
     def __init__(self, env, auto, headless, socketio, proxy_list, account):
@@ -110,6 +111,7 @@ class Executor():
         self.socketio.emit("action", "Step: delete_contacts")
         if self.linkedInHandle.delete_contacts():
             self.socketio.emit('action', 'Delete contacts successful for ' + provider + ' with email: ' + email.get('username'))
+            time.sleep(10)
             return True
         else:
             self.screenshot.capture('delete_contacts_error_' + email.get('username'))
