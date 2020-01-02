@@ -19,7 +19,7 @@ class YahooHandle():
         self.logout_url = "https://login.yahoo.com/account/"
         self.check_login_url = "https://login.yahoo.com/account/"
 
-    def login(self, email):
+    def login(self, email, provider):
         self.driver.get(self.login_url)
         username = email.get('username')
         password = email.get('password')
@@ -40,7 +40,7 @@ class YahooHandle():
 
                 if search_element_by_css_selector(self.driver, '.validate-btn'):
                     print("checking verification first step")
-                    self.check_phone_login_otp_verification()
+                    self.check_phone_login_otp_verification(provider)
 
                 if self.is_logged_in():
                     return True
@@ -54,23 +54,34 @@ class YahooHandle():
 
 
 
-    def check_phone_login_otp_verification(self):
-        print("checking verification")
+    def check_phone_login_otp_verification(self, provider):
         try:
             phone_number_link = self.driver.find_element_by_css_selector('.validate-btn')
             phone_number_link.click()
             time.sleep(5)
-            self.socketio.emit('action', 'Email verification required for yahoo login')
-            otp_payload = {
-                'input_type': 'otp',
-                'handler': 'yahoo',
-                'key': 'phone_login_otp',
-                'message': 'Yahoo Login OTP'
-            }
+
+            if provider == 'yahoo':
+                self.socketio.emit('action', 'Email verification required for yahoo login')
+                otp_payload = {
+                    'input_type': 'otp',
+                    'handler': 'yahoo',
+                    'key': 'phone_login_otp',
+                    'message': 'Yahoo Login OTP'
+                }
+            elif provider == 'aol':
+                self.socketio.emit('action', 'Email verification required for aol login')
+                otp_payload = {
+                    'input_type': 'otp',
+                    'handler': 'aol',
+                    'key': 'phone_login_otp',
+                    'message': 'AOL Login OTP'
+                }
+
             self.socketio.emit('prompt_user', json.dumps(otp_payload))
             otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
                 driver.find_element_by_css_selector("#verification-code-field").get_attribute("value")) == 6)
             if otp_entered:
+                print("OTP entered")
                 return True
             else:
                 return False

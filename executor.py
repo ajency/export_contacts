@@ -64,7 +64,7 @@ class Executor():
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
                         break
                 if email_account != provider[-1]:
-                    self.driver.implicitly_wait(10)
+                    time.sleep(20)
         if total_email_count == failed_email_count:
             self.socketio.emit('action', 'Error email operation, all email failed.')
             return False
@@ -140,7 +140,7 @@ class Executor():
 
     def email_login_yahoo(self,email):
         self.logger.info("==== logging in to yahoo account " + email.get('username'))
-        if self.yahooHandle.login(email):
+        if self.yahooHandle.login(email, 'yahoo'):
             self.socketio.emit('action', 'Login to yahoo successful!')
             return True
         else:
@@ -150,7 +150,7 @@ class Executor():
 
     def email_login_aol(self,email):
         self.logger.info("==== logging in to aol account " + email.get('username'))
-        if self.aolHandle.login(email):
+        if self.aolHandle.login(email, 'aol'):
             self.socketio.emit('action', 'Login to aol successful!')
             return True
         else:
