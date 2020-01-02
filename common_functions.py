@@ -22,6 +22,14 @@ def search_element_by_id(driver, element_path):
 		return False
 
 
+def search_element_by_css_selector(driver, selector):
+	try:
+		elementFound = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
+		return True
+	except Exception as e:
+		return False
+
+
 def search_element_by_css_selector(driver, element_path):
 	try:
 		elementFound = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, element_path)))

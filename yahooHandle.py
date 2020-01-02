@@ -1,6 +1,7 @@
 import time
 from selenium.common.exceptions import TimeoutException
 from common_functions import *
+import json
 
 
 class YahooHandle():
@@ -36,6 +37,11 @@ class YahooHandle():
                 login = self.driver.find_element_by_id("login-signin")
                 login.click()
                 time.sleep(2)
+
+                if search_element_by_css_selector(self.driver, '.validate-btn'):
+                    print("checking verification first step")
+                    self.check_phone_login_otp_verification()
+
                 if self.is_logged_in():
                     return True
                 else:
@@ -44,6 +50,40 @@ class YahooHandle():
                 return False
         else:
             return False
+
+
+
+
+    def check_phone_login_otp_verification(self):
+        print("checking verification")
+        try:
+            phone_number_link = self.driver.find_element_by_css_selector('.validate-btn')
+            phone_number_link.click()
+            time.sleep(5)
+            self.socketio.emit('action', 'Email verification required for yahoo login')
+            otp_payload = {
+                'input_type': 'otp',
+                'handler': 'yahoo',
+                'key': 'phone_login_otp',
+                'message': 'Yahoo Login OTP'
+            }
+            self.socketio.emit('prompt_user', json.dumps(otp_payload))
+            otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
+                driver.find_element_by_css_selector("#verification-code-field").get_attribute("value")) == 6)
+            if otp_entered:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(e)
+            return False
+
+
+    def submit_phone_login_otp(self, otp):
+        otp_input = self.driver.wait.until(EC.presence_of_element_located((By.ID, "verification-code-field")))
+        otp_input.send_keys(otp)
+
+
 
     def logout(self):
         # try:

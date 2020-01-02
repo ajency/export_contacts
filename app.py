@@ -172,6 +172,10 @@ def handle_otp_submission(payload):
         getattr(executor.linkedInHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
     elif payload.get('handler') == 'gmail':
         getattr(executor.gmailHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+    elif payload.get('handler') == 'yahoo':
+        getattr(executor.yahooHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+    elif payload.get('handler') == 'aol':
+        getattr(executor.aolHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
 
 
 
