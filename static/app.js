@@ -22,6 +22,9 @@ socket.on('prompt_user', function (data) {
         $("#otp_verification_form #otp_box").attr('placeholder',prompt_data.message);
         $("#otp_verification_form #prompt_handler").val(prompt_data.handler);
         $("#otp_verification_form #prompt_key").val(prompt_data.key);
+
+        $("#user_prompt_title").text(prompt_data.message);
+        $('#userPromptModal').modal({ show: true, backdrop: 'static', keyboard: false});
     }
 });
 
@@ -200,6 +203,9 @@ socket.on('exception_user_single_request', function (message) {
 
 $( document ).ready(function() {
 
+    //$('#userPromptModal').modal({ show: true, backdrop: 'static', keyboard: false});
+
+
   $("#login_form").on("submit", function(event){
    event.preventDefault();
    var username = $("#username",this).val();
@@ -301,6 +307,7 @@ $("#get_user_single_input_form").on("submit", function(event){
 
 $("#otp_verification_form").on("submit", function(event){
   event.preventDefault();
+  $('#userPromptModal').modal('hide');
   var payload = {
     'otp': $("#otp_box").val(),
     'handler': $("#prompt_handler").val(),
@@ -308,6 +315,7 @@ $("#otp_verification_form").on("submit", function(event){
   }
   console.log('Sending data',payload);
   socket.emit('otp_submission', payload);
+
   $(this).hide();
 });
 

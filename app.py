@@ -30,7 +30,7 @@ def index():
     return render_template('index.html')
 
 @socketio.on('client_connected')
-def handle_client_connect_event(json):
+def handle_client_connect_event(payload):
     global proxy_list
     #print('received json: {0}'.format(str(json)))
     emit('action', 'Connected to uplink...')
