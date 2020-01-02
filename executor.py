@@ -63,6 +63,8 @@ class Executor():
                         failed_email_count += 1
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
                         break
+                if email_account != provider[-1]:
+                    self.driver.implicitly_wait(10)
         if total_email_count == failed_email_count:
             self.socketio.emit('action', 'Error email operation, all email failed.')
             return False

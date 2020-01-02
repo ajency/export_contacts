@@ -50,7 +50,12 @@ class LinkedInHandle():
                 login = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, '//*[@id="app__container"]/main/div/form/div[3]/button')))
                 login.click()
-                time.sleep(1)
+                time.sleep(2)
+
+                if search_element_by_id(self.driver, 'input__phone_verification_pin'):
+                    self.check_phone_login_otp_verification()
+
+
                 self.check_email_login_otp_verification()
                 if self.is_logged_in():
                     return True
@@ -108,7 +113,7 @@ class LinkedInHandle():
                     'message': 'Linked In Login OTP'
                 }
                 self.socketio.emit('prompt_user', json.dumps(otp_payload))
-                otp_entered = WebDriverWait(self.driver, 100).until(lambda driver: len(
+                otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
                     driver.find_element_by_css_selector("#input__email_verification_pin").get_attribute("value")) == 6)
                 if otp_entered:
                     confirm_btn = self.driver.wait.until(
@@ -124,6 +129,39 @@ class LinkedInHandle():
 
     def submit_email_login_otp(self, otp):
         otp_input = self.driver.wait.until(EC.presence_of_element_located((By.ID, "input__email_verification_pin")))
+        otp_input.send_keys(otp)
+
+
+
+    def check_phone_login_otp_verification(self):
+        try:
+            phone_verification_link_present = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.ID, "input__phone_verification_pin")))
+            if phone_verification_link_present:
+                self.socketio.emit('action', 'Phone verification required for linked in login')
+                otp_payload = {
+                    'input_type': 'otp',
+                    'handler': 'linkedIn',
+                    'key': 'phone_login_otp',
+                    'message': 'Linked In Phone Verification OTP'
+                }
+                self.socketio.emit('prompt_user', json.dumps(otp_payload))
+                otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
+                    driver.find_element_by_css_selector("#input__phone_verification_pin").get_attribute("value")) == 6)
+                if otp_entered:
+                    confirm_btn = self.driver.wait.until(
+                        EC.presence_of_element_located((By.ID, "two-step-submit-button")))
+                    confirm_btn.click()
+                    time.sleep(1)
+                else:
+                    pass
+            else:
+                pass
+        except TimeoutException:
+            pass
+
+    def submit_phone_login_otp(self, otp):
+        otp_input = self.driver.wait.until(EC.presence_of_element_located((By.ID, "input__phone_verification_pin")))
         otp_input.send_keys(otp)
 
 
