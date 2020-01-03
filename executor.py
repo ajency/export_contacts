@@ -45,13 +45,22 @@ class Executor():
         self.socketio.emit("action", "Step: email_operation")
         total_email_count = 0
         failed_email_count = 0
-        for email_provider in self.account.get('email'):
+        emails = self.account.get('email')
+        for email_provider in emails:
+
+            last_provider = False
+            if email_provider == sorted(emails.keys())[-1]:
+                last_provider = True
+
             provider = self.account.get('email').get(email_provider)
             self.logger.info("==== Email operation started for provider " + email_provider)
             for email_account in provider:
+
                 last_entry = False
-                if email_account != provider[-1]:
+                if email_account == provider[len(provider)-1] and last_provider:
+                    print("last operation!! for email "+ email_account.get('username'))
                     last_entry = True
+
                 total_email_count += 1
                 self.logger.info("==== Email sequences with user " + email_account.get('username'))
                 for sequence in sequences:
@@ -66,8 +75,6 @@ class Executor():
                         failed_email_count += 1
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
                         break
-                # if email_account != provider[-1]:
-                #     time.sleep(20)
         if total_email_count == failed_email_count:
             self.socketio.emit('action', 'Error email operation, all email failed.')
             return False
