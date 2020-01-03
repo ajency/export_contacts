@@ -19,6 +19,8 @@ socket.on('prompt_user', function (data) {
     var prompt_data = $.parseJSON(data);
     if(prompt_data.input_type == 'otp'){
         $("#otp_verification_form").show();
+        $("#otp_verification_form #otp_box").val('');
+        $("#otp_verification_form #otp_box").focus();
         $("#otp_verification_form #otp_box").attr('placeholder',prompt_data.message);
         $("#otp_verification_form #prompt_handler").val(prompt_data.handler);
         $("#otp_verification_form #prompt_key").val(prompt_data.key);

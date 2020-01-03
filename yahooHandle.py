@@ -78,12 +78,16 @@ class YahooHandle():
                 }
 
             self.socketio.emit('prompt_user', json.dumps(otp_payload))
-            otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
-                driver.find_element_by_css_selector("#verification-code-field").get_attribute("value")) == 6)
+            # otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
+            #     driver.find_element_by_css_selector("#verification-code-field").get_attribute("value")) == 6)
+
+            otp_entered = WebDriverWait(self.driver, 300).until(EC.presence_of_element_located((By.ID, "group-personal-title")))
+
             if otp_entered:
                 print("OTP entered")
                 return True
             else:
+                print("OTP timeout")
                 return False
         except Exception as e:
             print(e)
