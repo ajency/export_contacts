@@ -358,16 +358,21 @@ class LinkedInHandle():
 
 
 
-    def delete_contacts(self):
+    def delete_contacts(self, last_entry):
+        emails = self.account.get('email')
         self.driver.get(self.remove_contacts_url)
         time.sleep(5)
         try:
             removeAllClk = self.driver.find_element_by_xpath('//*[@id="ember44"]/div[1]/button')
             removeAllClk.click()
+            time.sleep(2)
             rmvclk2Selector = '//*[@id="artdeco-modal-outlet"]/div/div/div[2]/div/ul/li[2]/button'
             rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
             rmvClk2.click()
             time.sleep(3)
+            if not last_entry:
+                self.socketio.emit("action", "Confirming delete action..")
+                self.confirm_delete()
             return True
         except Exception as e:
             try:
@@ -380,33 +385,22 @@ class LinkedInHandle():
                     rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
                     self.driver.execute_script("arguments[0].click();", rmvClk2)
                 time.sleep(3)
+                if not last_entry:
+                    self.socketio.emit("action", "Confirming delete action..")
+                    self.confirm_delete()
                 return True
             except Exception as e:
                 pass
             return False
 
 
-        # time.sleep(5)
-        # self.driver.get(self.export_url)
-        # time.sleep(1)
-        #
-        # try:
-        #     WebDriverWait(self.driver, 30).until(
-        #         EC.presence_of_element_located((By.XPATH, '//*[@id="artdeco-toasts"]/ul/li/div/p/span')))
-        # except Exception as e:
-        #     pass
-        #
-        # if search_element_by_xpath(self.driver, '//*[@id="artdeco-toasts"]/ul/li/div/p/span'):
-        #     try:
-        #         response = self.driver.find_elements_by_xpath('//*[@id="artdeco-toasts"]/ul/li/div/p/span').text
-        #
-        #         rmvClk = account.find_element_by_xpath('//*[@id="artdeco-toasts"]/ul/li/button')
-        #         self.driver.execute_script("arguments[0].click();", rmvClk)
-        #     except Exception as e:
-        #         pass
-        #
-        # return True
-
+    def confirm_delete(self):
+        while True:
+            time.sleep(10)
+            self.driver.get(self.export_url)
+            if search_element_by_css_selector(self.driver, '.abi-empty-contact__sync-contact'):
+                self.socketio.emit("action", "Contact deletion confirmed..")
+                break
 
 
 

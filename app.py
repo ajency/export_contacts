@@ -82,6 +82,7 @@ def handle_initiate_process(payload):
     is_headless = payload.get('headless')
 
     if 'accounts' in payload:
+        print(payload.get('accounts'))
         config_accounts = json.loads(payload.get('accounts'))
         print(config_accounts)
 

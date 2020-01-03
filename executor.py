@@ -49,22 +49,25 @@ class Executor():
             provider = self.account.get('email').get(email_provider)
             self.logger.info("==== Email operation started for provider " + email_provider)
             for email_account in provider:
+                last_entry = False
+                if email_account != provider[-1]:
+                    last_entry = True
                 total_email_count += 1
                 self.logger.info("==== Email sequences with user " + email_account.get('username'))
                 for sequence in sequences:
                     key_name = str(sequence) + "_" + email_provider + "_" + email_account.get('username').replace('.','').replace('@', '')
                     self.socketio.emit('tree_progress', key_name)
-                    is_success = getattr(self, 'step_' + sequence)(email_provider, email_account)
+                    is_success = getattr(self, 'step_' + sequence)(email_provider, email_account, last_entry)
                     if is_success:
                         self.socketio.emit('tree_success', key_name)
                     else:
-                        getattr(self, 'step_email_logout')(email_provider, email_account)
+                        getattr(self, 'step_email_logout')(email_provider, email_account, last_entry)
                         self.socketio.emit('tree_failed', key_name)
                         failed_email_count += 1
                         self.socketio.emit('action','Error performing '+sequence+' for email id: '+email_account.get('username')+'. Skipping....')
                         break
-                if email_account != provider[-1]:
-                    time.sleep(20)
+                # if email_account != provider[-1]:
+                #     time.sleep(20)
         if total_email_count == failed_email_count:
             self.socketio.emit('action', 'Error email operation, all email failed.')
             return False
@@ -84,12 +87,12 @@ class Executor():
 
 
 
-    def step_email_login(self, provider, email):
+    def step_email_login(self, provider, email, last_entry):
         self.socketio.emit("action", "Step: email_login")
         self.socketio.emit('action','Performing email login with id '+email.get('username'))
         return getattr(self, 'email_login_' + provider)(email)
 
-    def step_import_contacts(self, provider, email):
+    def step_import_contacts(self, provider, email, last_entry):
         self.socketio.emit("action", "Step: import_contacts")
         if self.linkedInHandle.import_contacts(provider, email):
             self.socketio.emit('action', 'Import contacts successful for '+provider+' with email: '+email.get('username'))
@@ -99,7 +102,7 @@ class Executor():
             self.socketio.emit('action', 'Import contacts failed for '+provider+' with email: '+email.get('username'))
             return False
 
-    def step_export_contacts(self, provider, email):
+    def step_export_contacts(self, provider, email, last_entry):
         self.socketio.emit("action", "Step: export_contacts")
         if self.linkedInHandle.export_contacts(email):
             self.socketio.emit('action', 'Export contacts successful for ' + provider + ' with email: ' + email.get('username'))
@@ -109,9 +112,9 @@ class Executor():
             self.socketio.emit('action', 'Export contacts failed for ' + provider + ' with email: ' + email.get('username'))
             return False
 
-    def step_delete_contacts(self, provider, email):
+    def step_delete_contacts(self, provider, email, last_entry):
         self.socketio.emit("action", "Step: delete_contacts")
-        if self.linkedInHandle.delete_contacts():
+        if self.linkedInHandle.delete_contacts(last_entry):
             self.socketio.emit('action', 'Delete contacts successful for ' + provider + ' with email: ' + email.get('username'))
             time.sleep(10)
             return True
@@ -120,7 +123,7 @@ class Executor():
             self.socketio.emit('action', 'Delete contacts failed for ' + provider + ' with email: ' + email.get('username'))
             return False
 
-    def step_email_logout(self, provider, email):
+    def step_email_logout(self, provider, email, last_entry):
         self.socketio.emit("action", "Step: email_logout")
         return getattr(self, 'email_logout_' + provider)()
 
