@@ -64,21 +64,9 @@ class OutlookHandle():
 
 
     def logout(self):
-        try:
-            self.driver.get(self.accounts_url)
-            clk = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "mectrl_headerPicture")))
-            self.driver.execute_script("arguments[0].click();", clk)
-            time.sleep(3)
-            logout_selector = '//*[@id="mectrl_body_signOut"]'
-            logout = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, logout_selector)))
-            # logout.click()
-            self.driver.execute_script("arguments[0].click();", logout)
-            time.sleep(1)
-            return True
-        except:
-            return False
+        self.driver.delete_all_cookies()
+        time.sleep(3)
+        return True
 
     def is_logged_in(self):
         try:
