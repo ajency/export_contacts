@@ -359,7 +359,6 @@ class LinkedInHandle():
 
 
     def delete_contacts(self, last_entry):
-        emails = self.account.get('email')
         self.driver.get(self.remove_contacts_url)
         time.sleep(5)
         try:
@@ -370,9 +369,8 @@ class LinkedInHandle():
             rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
             rmvClk2.click()
             time.sleep(3)
-            if not last_entry:
-                self.socketio.emit("action", "Confirming delete action..")
-                self.confirm_delete()
+            self.socketio.emit("action", "Confirming delete action..")
+            self.confirm_delete()
             return True
         except Exception as e:
             try:
@@ -385,9 +383,8 @@ class LinkedInHandle():
                     rmvClk2 = self.driver.find_element_by_xpath(rmvclk2Selector)
                     self.driver.execute_script("arguments[0].click();", rmvClk2)
                 time.sleep(3)
-                if not last_entry:
-                    self.socketio.emit("action", "Confirming delete action..")
-                    self.confirm_delete()
+                self.socketio.emit("action", "Confirming delete action..")
+                self.confirm_delete()
                 return True
             except Exception as e:
                 pass
