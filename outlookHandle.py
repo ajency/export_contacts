@@ -64,6 +64,9 @@ class OutlookHandle():
 
 
     def logout(self):
+        if 'outlook' not in self.driver.current_url:
+            self.driver.get(self.login_url)
+            time.sleep(3)
         self.driver.delete_all_cookies()
         time.sleep(3)
         return True
