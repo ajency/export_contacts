@@ -248,6 +248,7 @@ class LinkedInHandle():
             another_email_btn = self.driver.wait.until(
                 EC.visibility_of_any_elements_located((By.XPATH, "//button[@data-control-name='import_another_email']")))
             if another_email_btn:
+                time.sleep(5)
                 return True
             else:
                 return False

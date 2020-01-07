@@ -87,6 +87,12 @@ class OutlookHandle():
         if len(self.driver.window_handles) > 1:
             self.driver.switch_to.window(self.driver.window_handles[1])
             time.sleep(5)
+
+            if search_element_by_css_selector(self.driver, '#iShowSkip'):
+                skip_link = self.driver.find_element_by_css_selector('#iShowSkip')
+                skip_link.click()
+                time.sleep(3)
+
             try:
                 submit_btn = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
