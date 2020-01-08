@@ -241,7 +241,7 @@ $("input[name='environment']").on("change", function(event){
 });
 
 
- $("#initiate_form").on("submit", function(event){
+ $("#initiate_form_btn").on("click", function(event){
   event.preventDefault();
     var auto = $("input:checked[name='auto']").val();
     var is_auto = (auto == '1')? true : false;

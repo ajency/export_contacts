@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+
+    <title>LinkedIn Exporter</title>
+
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">LinkedIn Exporter</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <span class="badge badge-info environment_badge" style="display:none"></span>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+
+
+    <div class="container" style="padding-top:75px;">
+
+
+      <div class="row">
+        <form id="initiate_form" name="initiate_form">
+
+        <div class="col-md-5">
+          <div class="row">
+            <div class="col-md-6"><h4>Environment</h4></div>
+            <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="environment" id="environment_dev" value="dev" checked>
+                  <label class="form-check-label" for="environment_dev">
+                    Development
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="environment" id="environment_prod" value="prod">
+                  <label class="form-check-label" for="environment_prod">
+                    Production
+                  </label>
+                </div>
+            </div>
+          </div>
+          <br />
+
+
+          <div class="row">
+            <div class="col-md-6"><h4>Auto</h4></div>
+            <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="auto" id="auto_true" value="1" checked>
+                  <label class="form-check-label" for="auto_true">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="auto" id="auto_false" value="0">
+                  <label class="form-check-label" for="auto_false">
+                    No
+                  </label>
+                </div>
+            </div>
+          </div>
+          <br />
+
+
+          <div class="row">
+            <div class="col-md-6"><h4>Headless Mode</h4></div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="headless_mode" id="headless_mode_true" value="1">
+                <label class="form-check-label" for="headless_mode_true">
+                  Yes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="headless_mode" id="headless_mode_false" value="0" checked>
+                <label class="form-check-label" for="headless_mode_false">
+                  No
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-7">
+          <div class="form-group">
+            <label for="accounts_config">Accounts Config</label>
+            <textarea class="form-control" id="accounts_config" rows="6"></textarea>
+          </div>
+        </div>
+
+          <button type="submit" class="btn btn-success">Start</button>
+
+        </form>
+      </div>
+
+
+
+      <div class="row">
+        <form id="step_form" name="step_form" style="display:none">
+          <div class="col-md-12">
+            <h4>Choose sequences..</h4>
+            <div class="step_fields"></div>
+            <button type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <hr />
+
+      <div class="row">
+          <div class="col-md-12">
+            <h4 class="step_select_msg" style="display:none">Steps Selected - <span class="steps_selected"></span></h4>
+          </div>
+      </div>
+
+
+      <!--<div class="row">
+        <form class="form-inline" id="otp_verification_form" style="display:none">
+          <div class="col-md-12">
+            <div class="form-group mx-sm-3 mb-2">
+              <input class="form-control" id="otp_box" placeholder="Enter OTP" type="text" style="width: 300px;">
+              <input name="prompt_handler" id="prompt_handler" type="hidden">
+              <input name="prompt_key" id="prompt_key" type="hidden">
+            </div>
+            <button class="btn btn-primary mb-2" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>-->
+
+
+      <div class="row">
+        <div class="col-md-6"><div id="screenshots_link" style="margin-top: 20px;"></div></div>
+        <div class="col-md-6"><div id="csv_link" style="margin-top: 20px;"></div></div>
+      </div>
+
+      <hr />
+
+
+
+
+      <!--<div id="screenshots_link" style="margin-top: 20px;"></div>
+      <div id="csv_link" style="margin-top: 20px;"></div>-->
+
+
+      <div class="row">
+        <div class="col-md-5" id="sequence_tree"></div>
+        <div class="col-md-7">
+          <h4>Live Feed</h4>
+          <div class="terminal" style="padding: 10px; background:black; color:grey; margin-top:10px;"></div>
+        </div>
+      </div>
+
+
+      <hr>
+
+      <footer>
+      </footer>
+    </div> <!-- /container -->
+
+
+
+
+    <div id="userPromptModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="user_prompt_title">Type Captcha</h4>
+      </div>
+      <div class="modal-body user_prompt_body">
+
+        <!--<div class="row">
+          <form class="form-inline" id="otp_verification_form" style="display:block">
+            <div class="col-md-12">
+              <div class="form-group mx-sm-3 mb-2">
+                <input class="form-control" id="otp_box" placeholder="Enter OTP" type="text" style="width: 300px;">
+                <input name="prompt_handler" id="prompt_handler" type="hidden">
+                <input name="prompt_key" id="prompt_key" type="hidden">
+              </div>
+              <button class="btn btn-primary mb-2" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>-->
+
+        <form id="otp_verification_form" style="display:none;">
+          <div class="form-group">
+            <input type="text" name="login_captcha" id="otp_box" placeholder="Enter OTP" class="form-control">
+          </div>
+          <input name="prompt_handler" id="prompt_handler" type="hidden">
+          <input name="prompt_key" id="prompt_key" type="hidden">
+          <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
+

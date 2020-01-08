@@ -27,7 +27,13 @@ config_accounts = ACCOUNTS
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    #return render_template('index.html')
+    return render_template('index.html', current_user={})
+
+
+@app.route('/exporter')
+def export_runner():
+    return render_template('exporter.html', current_user={})
 
 @socketio.on('client_connected')
 def handle_client_connect_event(payload):
