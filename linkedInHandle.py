@@ -314,7 +314,8 @@ class LinkedInHandle():
                     try:
                         linkedInDesignation = people.find_element_by_css_selector(linkedInDesignationSelector).text
                     except Exception as e:
-                        linkedInDesignation = ''
+                        #linkedInDesignation = ''
+                        continue
 
                     # open modal to get email & linkedIn Url
                     contactClk = self.driver.find_element_by_xpath(
