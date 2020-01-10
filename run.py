@@ -28,5 +28,10 @@ Migrate(app, db)
 # def handle_client_connect_event(payload):
 #     emit('action', 'Connected to uplink...')
 
-# if __name__ == '__main__':
-#     socketio.run(app,debug=True,host='0.0.0.0')
+#if __name__ == '__main__':
+    #socketio.run(app,debug=True,host='0.0.0.0')
+    #app.run(debug=True,host='0.0.0.0', port=5000)
+
+
+#export FLASK_APP=run.py
+#flask run --host=0.0.0.0 --port=5000
