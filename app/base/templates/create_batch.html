@@ -1,0 +1,26 @@
+{% extends "empty_base_site.html" %}
+
+{% block title %} Login {% endblock title %}
+
+{% block content %}
+
+    <div class="header py-lg-8">
+
+
+
+
+      <div class="container">
+            {% if batch_id %}
+                <h5> Batch created successfully </h5>
+                <h4>Batch ID: {{batch_id}}</h4>
+            {% else %}
+                 <form method=post enctype=multipart/form-data>
+                    <input type=file name=file>
+                    <input type=submit value=Upload>
+                </form>
+            {% endif %}
+      </div>
+
+    </div>
+
+{% endblock content %}

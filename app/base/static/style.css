@@ -1,0 +1,59 @@
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+
+.spinner{
+    color: grey;
+    padding-left: 05px;
+}
+.spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin-top: 05px;
+  margin-left: -15px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #000;
+  animation: spinner .6s linear infinite;
+}
+
+li.sequence_success{
+    color: green;
+}
+
+li.sequence_failed{
+    color: red;
+}
+
+
+.session_tree {
+    background: #f9f7f7;
+    list-style: none;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #f1efef;
+}
+
+.session_tree_first {
+    background: #f3f3f3;
+    list-style: none;
+    padding: 05px;
+    margin-bottom: 10px;
+    border: 1px solid #f1eded;
+}
+
+.session_tree_second {
+    background: #ececec;
+    list-style: none;
+    padding: 05px;
+    margin-bottom: 10px;
+    border: 1px solid #ece8e8;
+}
+
+.terminal {
+    max-height: 555px;
+    overflow: scroll;
+}

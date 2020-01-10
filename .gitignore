@@ -1,3 +1,5 @@
+# byte-compiled / optimized / DLL files
+
 
 custom_logs\.log
 
@@ -13,6 +15,34 @@ __pycache__
 .env
 logs/
 
-driver_screenshots/
-static/driver_screenshots
-static/csv
+
+app/base/static/driver_screenshots
+app/base/static/csv
+
+
+
+__pycache__/
+*.py[cod]
+
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# database & logs
+*.db
+*.log
+
+# venv
+env
+venv
+
+# other
+.DS_Store
+
+# sphinx docs
+_build
+_static
+_templates
+
+# javascript
+package-lock.json
