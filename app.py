@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
 import json
 import os
@@ -12,9 +12,36 @@ from proxy_list import get_proxies
 
 from settings import ACCOUNTS
 
+from flask_sqlalchemy import SQLAlchemy
+
+from views import views_blueprint
+
+
+
+
+
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app.config.from_object("config.Config")
+
+SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(
+        app.config["DATABASE_USER"],
+        app.config["DATABASE_PASSWORD"],
+        app.config["DATABASE_HOST"],
+        app.config["DATABASE_PORT"],
+        app.config["DATABASE_NAME"]
+    )
+
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+db = SQLAlchemy(app)
+#db.init_app(app)
+
+try:
+    app.register_blueprint(views_blueprint)
+except Exception as e:
+    print(e)
+
+
 socketio = SocketIO(app, ping_interval=2000, ping_timeout=120000)
 
 environment = 'dev'
@@ -25,15 +52,34 @@ proxy_list = []
 config_accounts = ACCOUNTS
 
 
-@app.route('/')
-def index():
-    #return render_template('index.html')
-    return render_template('index.html', current_user={})
+# @app.route('/')
+# def index():
+#     #return render_template('index.html')
+#     return render_template('index.html', current_user={})
+#
+#
+# @app.route('/exporter')
+# def export_runner():
+#     return render_template('exporter.html', current_user={})
 
-
-@app.route('/exporter')
-def export_runner():
-    return render_template('exporter.html', current_user={})
+# @app.route('/create_batch', methods=['GET', 'POST'])
+# def create_batch():
+#     from models import Batch, Contact
+#     if request.method == 'POST':
+#         df = pd.read_csv(request.files.get('file'))
+#
+#         batch = Batch(count=df.shape[0], status="PENDING")
+#         db.session.add(batch)
+#         db.session.commit()
+#
+#         for _, row in df.iterrows():
+#             print(row["email"])
+#             contact = Contact(batch_id=batch.id, email=row["email"], status="PENDING")
+#             db.session.add(contact)
+#         db.session.commit()
+#
+#         return render_template('create_batch.html', shape=df.shape)
+#     return render_template('create_batch.html')
 
 @socketio.on('client_connected')
 def handle_client_connect_event(payload):

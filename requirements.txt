@@ -30,4 +30,6 @@ selenium
 six
 SQLAlchemy
 Werkzeug
+pandas
+flask-sqlalchemy
 
