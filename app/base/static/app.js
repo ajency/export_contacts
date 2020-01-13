@@ -15,6 +15,13 @@ socket.on('alert', function (data) {
 });
 
 
+socket.on('validation_error', function (data) {
+    $("#initiate_form").show();
+    $("#initiate_form_btn").show();
+    $("#validaiton_error").show().text(data);
+});
+
+
 socket.on('prompt_user', function (data) {
     var prompt_data = $.parseJSON(data);
     if(prompt_data.input_type == 'otp'){
@@ -288,6 +295,8 @@ $("input[name='environment']").on("change", function(event){
     socket.emit('initiate_process', payload);
     if(payload.auto){
         $("#initiate_form").hide();
+        $("#initiate_form_btn").hide();
+        $("#validaiton_error").hide();
         $(".step_select_msg").show();
         $(".steps_selected").text("AUTO");
         if(payload.hasOwnProperty('batch_id')){

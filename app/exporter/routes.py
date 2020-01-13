@@ -13,6 +13,7 @@ from .proxy_list import get_proxies
 from .sequence import get_main_sequences, generate_sequence_tree
 from .executor import Executor
 from .contact_importer import ContactImporter
+from .batch_runner import BatchRunner
 
 
 environment = 'dev'
@@ -150,14 +151,10 @@ def handle_start_batch(batch_id):
     global environment
     global is_auto
     global is_headless
-    global socketio
-    global executor
     global proxy_list
 
-    print(batch_id)
-
-    sequence_tree = generate_sequence_tree(is_auto, {}, config_accounts)
-    emit('sequence_tree', json.dumps(sequence_tree))
+    batch_runner = BatchRunner(batch_id, env=environment, auto=is_auto, headless=is_headless, proxy_list=proxy_list)
+    batch_runner.run()
 
 
 

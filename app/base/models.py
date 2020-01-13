@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 import datetime
 from flask_login import UserMixin
-from sqlalchemy import Binary, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Binary, Column, Integer, String, ForeignKey, DateTime, Boolean
 
 from app import db, login_manager
 
@@ -59,6 +59,7 @@ class Account(db.Model):
     password = Column(String)
     failed_count = Column(Integer)
     status = Column(String)
+    running = Column(Boolean)
 
     def __repr__(self):
         return str(self.username)
@@ -74,6 +75,9 @@ class Batch(db.Model):
     count = Column(Integer)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     status = Column(String)
+    # contacts = db.relationship("Contact",
+    #                         secondary="association",
+    #                         backref="batch_id")
 
     def __repr__(self):
         return str(self.id)

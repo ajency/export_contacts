@@ -57,3 +57,8 @@ li.sequence_failed{
     max-height: 555px;
     overflow: scroll;
 }
+
+#validaiton_error {
+    font-size: 14px;
+    color:red;
+}
