@@ -2,12 +2,13 @@ import os,sys,platform,random
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from flask_socketio import emit
 
 class Driver():
     """docstring for Driver"""
-    def __init__(self, socketio):
-        super(Driver, self).__init__()
-        self.socketio = socketio
+    # def __init__(self, socketio):
+    #     super(Driver, self).__init__()
+    #     self.socketio = socketio
 
 
     def get_driver_path(self):
@@ -33,8 +34,7 @@ class Driver():
 
             if len(proxy_list) > 0:
                 prox = random.choice(proxy_list)
-                if self.socketio is not None:
-                    self.socketio.emit('action', 'Web driver initialized with proxy ' + prox)
+                emit('action', 'Web driver initialized with proxy ' + prox)
                 proxy = Proxy()
                 proxy.proxyType = ProxyType.MANUAL
                 proxy.autodetect = False

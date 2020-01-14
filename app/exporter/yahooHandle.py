@@ -2,6 +2,7 @@ import time
 from selenium.common.exceptions import TimeoutException
 from .common_functions import *
 import json
+from flask_socketio import emit
 
 
 class YahooHandle():
@@ -11,7 +12,6 @@ class YahooHandle():
         super(YahooHandle, self).__init__()
         self.driver = executor.driver
         self.logger = executor.logger
-        self.socketio = executor.socketio
         self.screenshot = executor.screenshot
         self.account = executor.account
 
@@ -61,7 +61,7 @@ class YahooHandle():
             time.sleep(5)
 
             if provider == 'yahoo':
-                self.socketio.emit('action', 'Email verification required for yahoo login')
+                emit('action', 'Email verification required for yahoo login')
                 otp_payload = {
                     'input_type': 'otp',
                     'handler': 'yahoo',
@@ -69,7 +69,7 @@ class YahooHandle():
                     'message': 'Yahoo Login OTP'
                 }
             elif provider == 'aol':
-                self.socketio.emit('action', 'Email verification required for aol login')
+                emit('action', 'Email verification required for aol login')
                 otp_payload = {
                     'input_type': 'otp',
                     'handler': 'aol',
@@ -77,7 +77,7 @@ class YahooHandle():
                     'message': 'AOL Login OTP'
                 }
 
-            self.socketio.emit('prompt_user', json.dumps(otp_payload))
+            emit('prompt_user', json.dumps(otp_payload))
             # otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
             #     driver.find_element_by_css_selector("#verification-code-field").get_attribute("value")) == 6)
 

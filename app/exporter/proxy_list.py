@@ -1,7 +1,7 @@
 from .driver import Driver
 
 def get_proxies():
-    web_driver = Driver(None)
+    web_driver = Driver()
     driver = web_driver.initialize_chrome_driver(True, [])
 
     driver.get("https://free-proxy-list.net/")

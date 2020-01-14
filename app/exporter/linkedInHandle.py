@@ -9,6 +9,7 @@ from .yahooHandle import YahooHandle
 from .aolHandle import AolHandle
 from .gmailHandle import GmailHandle
 from .outlookHandle import OutlookHandle
+from flask_socketio import emit
 
 
 class LinkedInHandle():
@@ -18,7 +19,6 @@ class LinkedInHandle():
         super(LinkedInHandle, self).__init__()
         self.driver = executor.driver
         self.logger = executor.logger
-        self.socketio = executor.socketio
         self.screenshot = executor.screenshot
         self.account = executor.account
         self.yahooHandle = YahooHandle(executor)
@@ -105,14 +105,14 @@ class LinkedInHandle():
             email_verification_link_present = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "input__email_verification_pin")))
             if email_verification_link_present:
-                self.socketio.emit('action', 'Email verification required for linked in login')
+                emit('action', 'Email verification required for linked in login')
                 otp_payload = {
                     'input_type': 'otp',
                     'handler': 'linkedIn',
                     'key': 'email_login_otp',
                     'message': 'Linked In Login OTP'
                 }
-                self.socketio.emit('prompt_user', json.dumps(otp_payload))
+                emit('prompt_user', json.dumps(otp_payload))
                 otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
                     driver.find_element_by_css_selector("#input__email_verification_pin").get_attribute("value")) == 6)
                 if otp_entered:
@@ -138,14 +138,14 @@ class LinkedInHandle():
             phone_verification_link_present = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "input__phone_verification_pin")))
             if phone_verification_link_present:
-                self.socketio.emit('action', 'Phone verification required for linked in login')
+                emit('action', 'Phone verification required for linked in login')
                 otp_payload = {
                     'input_type': 'otp',
                     'handler': 'linkedIn',
                     'key': 'phone_login_otp',
                     'message': 'Linked In Phone Verification OTP'
                 }
-                self.socketio.emit('prompt_user', json.dumps(otp_payload))
+                emit('prompt_user', json.dumps(otp_payload))
                 otp_entered = WebDriverWait(self.driver, 300).until(lambda driver: len(
                     driver.find_element_by_css_selector("#input__phone_verification_pin").get_attribute("value")) == 6)
                 if otp_entered:
@@ -169,7 +169,7 @@ class LinkedInHandle():
 
     def import_contacts(self, provider, email):
         self.driver.get(self.import_url)
-        self.socketio.emit('action', 'Importing contact from ' + provider)
+        emit('action', 'Importing contact from ' + provider)
 
         provider_selector = provider
         if provider == 'aol':
@@ -286,7 +286,7 @@ class LinkedInHandle():
             summary = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="ember42"]/div/div/div[1]/div/section/div[1]/p')))
             totalContacts = int(summary.text.split(" ")[0])
-            self.socketio.emit("action", "Total contacts found : " + str(totalContacts))
+            emit("action", "Total contacts found : " + str(totalContacts))
             time.sleep(1)
             # scroll to bottom
             prompt = 0
@@ -297,7 +297,7 @@ class LinkedInHandle():
 
             listResults = self.driver.find_elements_by_xpath('//ul[@class="abi-saved-contacts__contact-list"]/li')
             if len(listResults) > 0:
-                self.socketio.emit('action', 'Exporting contacts is in progress.....')
+                emit('action', 'Exporting contacts is in progress.....')
                 print("Exporting of contacts is In progress")
                 print("____________________________")
                 for people in listResults:
@@ -374,7 +374,7 @@ class LinkedInHandle():
             rmvClk2.click()
             time.sleep(3)
             if not last_entry:
-                self.socketio.emit("action", "Confirming delete action..")
+                emit("action", "Confirming delete action..")
                 self.confirm_delete()
             return True
         except Exception as e:
@@ -389,7 +389,7 @@ class LinkedInHandle():
                     self.driver.execute_script("arguments[0].click();", rmvClk2)
                 time.sleep(3)
                 if not last_entry:
-                    self.socketio.emit("action", "Confirming delete action..")
+                    emit("action", "Confirming delete action..")
                     self.confirm_delete()
                 return True
             except Exception as e:
@@ -402,7 +402,7 @@ class LinkedInHandle():
             time.sleep(7)
             self.driver.get(self.export_url)
             if search_element_by_css_selector(self.driver, '.abi-empty-contact__sync-contact'):
-                self.socketio.emit("action", "Contact deletion confirmed..")
+                emit("action", "Contact deletion confirmed..")
                 break
 
 

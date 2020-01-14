@@ -2,6 +2,7 @@ import time
 from selenium.common.exceptions import TimeoutException
 from .common_functions import *
 import json
+from flask_socketio import emit
 
 
 class GmailHandle():
@@ -11,7 +12,6 @@ class GmailHandle():
         super(GmailHandle, self).__init__()
         self.driver = executor.driver
         self.logger = executor.logger
-        self.socketio = executor.socketio
         self.screenshot = executor.screenshot
         self.account = executor.account
 
@@ -32,7 +32,7 @@ class GmailHandle():
             next_btn.click()
             time.sleep(5)
         except TimeoutException:
-            self.socketio.emit('action', 'Error locating the next button after putting username')
+            emit('action', 'Error locating the next button after putting username')
             return False
 
         password_input = self.driver.wait.until(
@@ -44,7 +44,7 @@ class GmailHandle():
             password_next_btn.click()
             time.sleep(5)
         except TimeoutException:
-            self.socketio.emit('action', 'Error locating the next button after putting password')
+            emit('action', 'Error locating the next button after putting password')
             return False
 
         if self.is_logged_in():
@@ -56,7 +56,7 @@ class GmailHandle():
                 mobile_verificaiton_button = self.driver.wait.until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "li.JDAKTe div.lCoei")))
                 if mobile_verificaiton_button:
-                    self.socketio.emit('action', 'Clicking on mobile verification link')
+                    emit('action', 'Clicking on mobile verification link')
                     mobile_verificaiton_button.click()
 
                     otp_payload = {
@@ -65,7 +65,7 @@ class GmailHandle():
                         'key': 'phone_verification_otp',
                         'message': 'Gmail Phone Verification OTP'
                     }
-                    self.socketio.emit('prompt_user', json.dumps(otp_payload))
+                    emit('prompt_user', json.dumps(otp_payload))
 
                     try:
                         otp_entered = WebDriverWait(self.driver, 200).until(lambda driver: len(
@@ -137,5 +137,5 @@ class GmailHandle():
                 print(ex)
                 return False
         else:
-            self.socketio.emit('action', "No confirm window found!")
+            emit('action', "No confirm window found!")
             return False

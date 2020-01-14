@@ -1,5 +1,6 @@
 from .yahooHandle import YahooHandle
 import time
+from flask_socketio import emit
 
 
 class AolHandle(YahooHandle):
@@ -8,7 +9,6 @@ class AolHandle(YahooHandle):
     def __init__(self, executor):
         self.driver = executor.driver
         self.logger = executor.logger
-        self.socketio = executor.socketio
         self.screenshot = executor.screenshot
         self.account = executor.account
 

@@ -1,6 +1,7 @@
 import time
 from selenium.common.exceptions import TimeoutException
 from .common_functions import *
+from flask_socketio import emit
 
 
 class OutlookHandle():
@@ -10,7 +11,6 @@ class OutlookHandle():
         super(OutlookHandle, self).__init__()
         self.driver = executor.driver
         self.logger = executor.logger
-        self.socketio = executor.socketio
         self.screenshot = executor.screenshot
         self.account = executor.account
 
@@ -33,7 +33,7 @@ class OutlookHandle():
             self.driver.execute_script("arguments[0].click();", next_btn)
             time.sleep(5)
         except TimeoutException:
-            self.socketio.emit('action', 'Error locating the next button after putting username')
+            emit('action', 'Error locating the next button after putting username')
             return False
 
         password_input = self.driver.wait.until(
@@ -46,7 +46,7 @@ class OutlookHandle():
             self.driver.execute_script("arguments[0].click();", signin_btn)
             time.sleep(5)
         except TimeoutException:
-            self.socketio.emit('action', 'Error locating the sign in button after putting password')
+            emit('action', 'Error locating the sign in button after putting password')
             return False
 
         if self.is_logged_in():

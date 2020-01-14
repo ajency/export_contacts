@@ -14,12 +14,14 @@ from .sequence import get_main_sequences, generate_sequence_tree
 from .executor import Executor
 from .contact_importer import ContactImporter
 from .batch_runner import BatchRunner
+from .export_runner import ExportRunner
 
 
 environment = 'dev'
 is_auto = True
 is_headless = True
 executor = None
+export_runner = None
 proxy_list = []
 config_accounts = []
 
@@ -27,11 +29,6 @@ config_accounts = []
 def handle_client_connect_event(payload):
     global proxy_list
     emit('action', 'Connected to uplink...')
-
-    emit('action', 'Fetching fresh proxy list from  remote...')
-    proxy_list = get_proxies()
-    emit('action', 'Proxy list updated...')
-    print(proxy_list)
 
 
 
@@ -61,87 +58,91 @@ def handle_start_exporter(payload):
     global environment
     global is_auto
     global is_headless
-    global socketio
-    global executor
-    global proxy_list
+    #global socketio
+    #global executor
+    #global proxy_list
     global config_accounts
-    sequences = get_main_sequences()
-
+    #sequences = get_main_sequences()
+    global export_runner
 
 
     sequence_tree = generate_sequence_tree(is_auto, payload, config_accounts)
     emit('sequence_tree', json.dumps(sequence_tree))
 
+    export_runner = ExportRunner(None, env=environment, auto=is_auto, headless=is_headless, accounts=config_accounts)
+    export_runner.run(payload)
 
 
-    for account in config_accounts:
-        executor = Executor(environment, is_auto, is_headless, socketio, proxy_list, account)
-        emit('action', 'Starting executor for linkedIn account: '+account.get('linkedIn').get('username'))
-        emit('action', 'executor session ID: ' + executor.session_id)
-        emit('active_screenshots_link', executor.session_id)
-
-        if is_auto:
-            emit('action', 'Preparing to auto run all the sequences...')
-            selected_sequences = sequences
-            selected_email_sequences = sequences.get('email_operation')
-        else:
-            emit('action', 'Preparing to run selected sequence...')
-            payload_sequences = payload.get('steps')
-            selected_sequences = []
-            selected_email_sequences = []
-            for seq in payload_sequences:
-                if seq in sequences.get('email_operation'):
-                    if not 'email_operation' in selected_sequences:
-                        selected_sequences.append('email_operation')
-                    selected_email_sequences.append(seq)
-                else:
-                    selected_sequences.append(seq)
-
-        for sequence in selected_sequences:
-            sequence_title = sequences[sequence]
-            if isinstance(sequence_title, dict):
-                sequence_title = 'Email operation'
-                is_success = getattr(executor, 'step_email_operation')(selected_email_sequences)
-            else:
-                email_id = account.get("linkedIn").get("username")
-                key_name = str(sequence) + "_" + email_id.replace('.', '').replace('@', '')
-                emit('tree_progress', key_name)
-                is_success = getattr(executor, 'step_' + sequence)()
-                if is_success:
-                    emit('tree_success', key_name)
-                else:
-                    getattr(executor, 'step_linkedIn_logout')()
-                    emit('tree_failed', key_name)
-
-            if not is_success:
-                emit('action', 'Error performing the Sequence: ' + sequence_title + ' ...')
-                break
-
-        emit('contacts_csv_link', executor.session_id)
-        emit('action', 'Closing web driver instance...')
-        executor.driver.close()
-        emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 
-@socketio.on('gmail_otp_login')
-def handle_gmail_otp_login(payload):
-    global executor
-    emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
-    executor.gmail_handler.gmail_otp_login(payload.get('otp'))
+    # for account in config_accounts:
+    #     executor = Executor(environment, is_auto, is_headless, socketio, proxy_list, account)
+    #     emit('action', 'Starting executor for linkedIn account: '+account.get('linkedIn').get('username'))
+    #     emit('action', 'executor session ID: ' + executor.session_id)
+    #     emit('active_screenshots_link', executor.session_id)
+    #
+    #     if is_auto:
+    #         emit('action', 'Preparing to auto run all the sequences...')
+    #         selected_sequences = sequences
+    #         selected_email_sequences = sequences.get('email_operation')
+    #     else:
+    #         emit('action', 'Preparing to run selected sequence...')
+    #         payload_sequences = payload.get('steps')
+    #         selected_sequences = []
+    #         selected_email_sequences = []
+    #         for seq in payload_sequences:
+    #             if seq in sequences.get('email_operation'):
+    #                 if not 'email_operation' in selected_sequences:
+    #                     selected_sequences.append('email_operation')
+    #                 selected_email_sequences.append(seq)
+    #             else:
+    #                 selected_sequences.append(seq)
+    #
+    #     for sequence in selected_sequences:
+    #         sequence_title = sequences[sequence]
+    #         if isinstance(sequence_title, dict):
+    #             sequence_title = 'Email operation'
+    #             is_success = getattr(executor, 'step_email_operation')(selected_email_sequences)
+    #         else:
+    #             email_id = account.get("linkedIn").get("username")
+    #             key_name = str(sequence) + "_" + email_id.replace('.', '').replace('@', '')
+    #             emit('tree_progress', key_name)
+    #             is_success = getattr(executor, 'step_' + sequence)()
+    #             if is_success:
+    #                 emit('tree_success', key_name)
+    #             else:
+    #                 getattr(executor, 'step_linkedIn_logout')()
+    #                 emit('tree_failed', key_name)
+    #
+    #         if not is_success:
+    #             emit('action', 'Error performing the Sequence: ' + sequence_title + ' ...')
+    #             break
+    #
+    #     emit('contacts_csv_link', executor.session_id)
+    #     emit('action', 'Closing web driver instance...')
+    #     executor.driver.close()
+    #     emit('action', '######## CLOSED WEBDRIVER FOR SESSION #: '+executor.session_id+" ##########")
 
 
-@socketio.on('otp_submission')
-def handle_otp_submission(payload):
-    global executor
-    emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
-    if payload.get('handler') == 'linkedIn':
-        getattr(executor.linkedInHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
-    elif payload.get('handler') == 'gmail':
-        getattr(executor.gmailHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
-    elif payload.get('handler') == 'yahoo':
-        getattr(executor.yahooHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
-    elif payload.get('handler') == 'aol':
-        getattr(executor.aolHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+# @socketio.on('gmail_otp_login')
+# def handle_gmail_otp_login(payload):
+#     global executor
+#     emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
+#     executor.gmail_handler.gmail_otp_login(payload.get('otp'))
+
+
+# @socketio.on('otp_submission')
+# def handle_otp_submission(payload):
+#     global executor
+#     emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
+#     if payload.get('handler') == 'linkedIn':
+#         getattr(executor.linkedInHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+#     elif payload.get('handler') == 'gmail':
+#         getattr(executor.gmailHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+#     elif payload.get('handler') == 'yahoo':
+#         getattr(executor.yahooHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+#     elif payload.get('handler') == 'aol':
+#         getattr(executor.aolHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
 
 
 
@@ -154,7 +155,24 @@ def handle_start_batch(batch_id):
     global proxy_list
 
     batch_runner = BatchRunner(batch_id, env=environment, auto=is_auto, headless=is_headless, proxy_list=proxy_list)
+    export_runner = batch_runner.export_runner
     batch_runner.run()
+
+
+
+
+@socketio.on('otp_submission')
+def handle_otp_submission(payload):
+    global export_runner
+    emit('action', 'OTP entered is ' + payload.get('otp') + ' ...')
+    if payload.get('handler') == 'linkedIn':
+        getattr(export_runner.executor.linkedInHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+    elif payload.get('handler') == 'gmail':
+        getattr(export_runner.executor.gmailHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+    elif payload.get('handler') == 'yahoo':
+        getattr(export_runner.executor.yahooHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
+    elif payload.get('handler') == 'aol':
+        getattr(export_runner.executor.aolHandle, 'submit_' + payload.get('key'))(payload.get('otp'))
 
 
 

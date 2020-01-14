@@ -4,6 +4,7 @@ from flask_socketio import emit
 from app.base.models import Batch, Account, Contact
 from sqlalchemy.sql import func
 from .sequence import generate_sequence_tree
+from .export_runner import ExportRunner
 
 class BatchRunner():
 
@@ -12,11 +13,12 @@ class BatchRunner():
 
     def __init__(self, batch_id, **kwargs):
         self.batch_id = batch_id
-        self.env = kwargs.get("env", "dev");
-        self.auto = kwargs.get("auto", True);
-        self.headless = kwargs.get("headless", True);
-        self.proxy_list = kwargs.get("proxy_list", []);
+        self.env = kwargs.get("env", "dev")
+        self.auto = kwargs.get("auto", True)
+        self.headless = kwargs.get("headless", True)
+        self.proxy_list = kwargs.get("proxy_list", [])
         self.accounts = []
+        self.export_runner = None
 
 
     def run(self):
@@ -32,6 +34,9 @@ class BatchRunner():
 
         sequence_tree = generate_sequence_tree(self.auto, {}, self.accounts)
         emit('sequence_tree', json.dumps(sequence_tree))
+
+        self.export_runner = ExportRunner(self.batch_id, env=self.env, auto=self.auto, headless=self.headless, accounts=self.accounts)
+        self.export_runner.run(None)
 
 
     def populate_accounts(self, total_records):
